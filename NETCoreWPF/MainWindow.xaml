@@ -8,8 +8,8 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
+            
         </Grid.ColumnDefinitions>
-        <CheckBox Content="CheckBox" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
-
+        
     </Grid>
 </Window>
