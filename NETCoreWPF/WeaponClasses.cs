@@ -68,7 +68,22 @@ namespace NETCoreWPF
                         damageRange1,
                         damageRange2;
     }
+    /*
+     formatting for firemodes:
+        a600 -> automatic 600rpm
+        s750 -> semiautomatic 750rpm
+        s40la -> semiautomatic 40rpm, lever action
+        s300sh8 -> semiautomatic 300 rpm, shotgun with 8 pellets
+        
+     
+    char firstCharacter = str[0];
+    try{
+        
+    }
 
+     
+     
+     */
     
 
 
@@ -79,26 +94,82 @@ namespace NETCoreWPF
 
         public FireModeList(string[] firemodes)
         {
-            foreach (string str in firemodes)
-            {
-                if (str == "automatic" || str == "auto" || str == "a")
+            for(int j = 0; j < firemodes.Length; j++) {
+                string str = firemodes[j];
+
+                char firstCharacter = str[0];
+
+
+                List<string> resultInt = new List<string>();
+                List<string> resultString = new List<string>();
+                int count = 0; //count for numbers
+                int count1 = 0; //count for letters
+                for (int i = 0; i < str.Length; i++)
+                {
+
+                    if (Convert.ToInt32(str[i]) > 64 && Convert.ToInt32(str[i]) < 91)
+                    { //if uppercase, turns into lowercase
+                        str = str.Replace(str[i], (char)(Convert.ToInt32(str[i]) + 32));
+                    }
+
+                    if (Convert.ToInt32(str[i]) > 47 && Convert.ToInt32(str[i]) < 58)
+                    { //detects number, increments count
+
+                        count++;
+                        if (i + 1 == str.Length)
+                        { //detects if the end of the string has been reached and adds previous whole number
+                            resultInt.Add(str.Substring(i - count + 1, count));
+                        }
+
+                        if (i > 0)
+                        { //avoids outofboundexception
+                            if (Convert.ToInt32(str[i - 1]) > 96 && Convert.ToInt32(str[i - 1]) < 123)
+                            { //detects if previous character is a letter and adds the whole word before into the list
+                                resultString.Add(str.Substring(i - count1, count1));
+                            }
+                        }
+
+                        count1 = 0; //reset letter counter
+                    }
+                    else
+                    {
+
+                        if (i > 0)
+                        { //avoids outofboundexception
+                            if (Convert.ToInt32(str[i - 1]) > 47 && Convert.ToInt32(str[i - 1]) < 58)
+                            { //detects if previous character is a number and adds the whole number before into the list
+                                resultInt.Add(str.Substring(i - count, count));
+                            }
+                        }
+
+                        if (Convert.ToInt32(str[i]) > 96 && Convert.ToInt32(str[i]) < 123)
+                        { //detects letter, increments count
+                            count1++;
+                            if (i + 1 == str.Length)
+                            { //detects if the end of the string has been reached and adds previous whole word
+                                resultString.Add(str.Substring(i - count + 1, count));
+                            }
+                        }
+
+                        count = 0; //reset number counter
+                    }
+                }
+
+                //foreach (string ite in resultInt) Console.WriteLine(ite);
+
+                //foreach (string itee in resultString) Console.WriteLine(itee);
+
+                if ((str.Contains("automatic") || str.Contains("auto") || str.Contains("a")) && firstCharacter == 'a')
                 {
                     //FireMode Automatic = new FireMode()
-                } else if(str == "semiautomatic" || str == "semi" || str == "s")
+                } else if(str.Contains("semiautomatic") || str.Contains("semi") || str.Contains("s"))
                 {
 
-                } else if(str == "b"  || str == "i" || str == "oneburst")
-                {
-
-                } else if(str == "bb" || str == "ii" || str=="twoburst")
-                {
-
-                } else if(str == "bbb" || str == "iii" || str == "threeburst")
-                {
-
-                }
+                } 
             }
         }
+
+        public List<string> Mode { get { return modes; } }
     }
 
     class FireMode{
@@ -110,7 +181,7 @@ namespace NETCoreWPF
         private bool special;
         private string specialMode;
 
-        public FireMode(double firerate, string mode, bool burst, int burstMode, bool special, string specialMode)
+        public FireMode(double firerate, string mode, bool burst, string burstMode, bool special, string specialMode, int pellets)
         {
             this.firerate = firerate;
             this.mode = mode;
