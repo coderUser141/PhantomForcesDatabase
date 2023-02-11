@@ -89,21 +89,32 @@ namespace NETCoreWPF
 
     public class FireModeList
     {
-        protected List<string> modes = new List<string>();
+        private List<FireMode> modes = new List<FireMode>();
         
+        public FireMode this[int index]
+        {
+            get { return modes[index]; }
+            set { modes[index] = value; }
+        }
 
         public FireModeList(string[] firemodes)
         {
-            for(int j = 0; j < firemodes.Length; j++) {
-                string str = firemodes[j];
 
-                char firstCharacter = str[0];
+            for(int j = 0; j < firemodes.Length; j++) { //iterates through the firemodes
+                
+                string str = firemodes[j]; 
 
+                string mode;
+                int firerate;
+                string specialFlags;
+                int pellets;
 
                 List<string> resultInt = new List<string>();
                 List<string> resultString = new List<string>();
                 int count = 0; //count for numbers
                 int count1 = 0; //count for letters
+
+                //iterates through the individual string and parses
                 for (int i = 0; i < str.Length; i++)
                 {
 
@@ -155,31 +166,46 @@ namespace NETCoreWPF
                     }
                 }
 
-                //foreach (string ite in resultInt) Console.WriteLine(ite);
+                firerate = Convert.ToInt32(resultInt[0]);
+                mode = resultString[0];
+                specialFlags = resultString[1];
+                pellets = Convert.ToInt32(resultInt[1]);
 
-                //foreach (string itee in resultString) Console.WriteLine(itee);
+                char firstCharacterMode = mode[0];
 
-                if ((str.Contains("automatic") || str.Contains("auto") || str.Contains("a")) && firstCharacter == 'a')
+                
+                if ((mode.Contains("automatic") || str.Contains("auto")) && firstCharacterMode == 'a')
                 {
-                    //FireMode Automatic = new FireMode()
-                } else if(str.Contains("semiautomatic") || str.Contains("semi") || str.Contains("s"))
+                    FireMode Automatic = new FireMode(firerate, "Automatic", false, "", (specialFlags.Length != 0), specialFlags, 0);
+                } else if((mode.Contains("semiautomatic") || mode.Contains("semi")) && firstCharacterMode == 's')
                 {
+                    if (specialFlags.Contains("boltaction") || specialFlags.Contains("bolt") || specialFlags.Contains("ba")) {
+                        FireMode BoltAction = new FireMode(firerate, "SemiAutomatic", false, "", true, "BoltAction", 0);
+                    } else if(specialFlags.Contains("leveraction") || specialFlags.Contains("lever") || specialFlags.Contains("la"))
+                    {
+                        FireMode LeverAction = new FireMode(firerate, "SemiAutomatic", false, "", true, "LeverAction", 0);
+                    } else if(specialFlags.Contains("pumpshotgun") || specialFlags.Contains("pump") || specialFlags.Contains("ps"))
+                    {
+                        FireMode PumpShotgun = new FireMode(firerate, "SemiAutomatic", false, "", true, "PumpShotgun", pellets);
+                    }
+
+                    FireMode SemiAutomatic = new FireMode(firerate, "SemiAutomatic", false, "", (specialFlags.Length != 0), specialFlags, 0);
 
                 } 
             }
         }
 
-        public List<string> Mode { get { return modes; } }
     }
 
-    class FireMode{
+    public class FireMode{
 
         private double firerate;
         private string mode;
         private bool burst;
-        private int burstMode;
+        private string burstMode;
         private bool special;
         private string specialMode;
+        private int pellets;
 
         public FireMode(double firerate, string mode, bool burst, string burstMode, bool special, string specialMode, int pellets)
         {
@@ -187,10 +213,23 @@ namespace NETCoreWPF
             this.mode = mode;
             if (burst)
             {
-                
+                this.burstMode = burstMode;
+            } else
+            {
+                this.burstMode = "";
             }
 
+            if (special)
+            {
+                this.specialMode = specialMode;
+            } else
+            {
+                this.specialMode = "";
+            }
 
+            this.burst = burst;
+            this.special = special;
+            this.pellets = pellets;
         }
 
     }
@@ -233,6 +272,7 @@ namespace NETCoreWPF
         }
     }
 
+    /*
     class Melee : Weapon, Carried
     {
         public double frontStabDamage;
@@ -250,5 +290,5 @@ namespace NETCoreWPF
         public int storedCapacity;
 
     }
-
+    */
 }
