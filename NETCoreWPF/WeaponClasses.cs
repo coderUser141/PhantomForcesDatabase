@@ -81,9 +81,21 @@ namespace NETCoreWPF
         {
             foreach (string str in firemodes)
             {
-                if (str == "automatic" || str == "auto")
+                if (str == "automatic" || str == "auto" || str == "a")
                 {
                     //FireMode Automatic = new FireMode()
+                } else if(str == "semiautomatic" || str == "semi" || str == "s")
+                {
+
+                } else if(str == "b"  || str == "i" || str == "oneburst")
+                {
+
+                } else if(str == "bb" || str == "ii" || str=="twoburst")
+                {
+
+                } else if(str == "bbb" || str == "iii" || str == "threeburst")
+                {
+
                 }
             }
         }
@@ -95,18 +107,19 @@ namespace NETCoreWPF
         private string mode;
         private bool burst;
         private int burstMode;
+        private bool special;
+        private string specialMode;
 
-        public FireMode(double firerate, string mode, bool burst, int burstMode)
+        public FireMode(double firerate, string mode, bool burst, int burstMode, bool special, string specialMode)
         {
             this.firerate = firerate;
             this.mode = mode;
             if (burst)
             {
-                switch (burstMode)
-                {
-
-                }
+                
             }
+
+
         }
 
     }
