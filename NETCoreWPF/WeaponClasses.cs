@@ -3,10 +3,16 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows.Input;
+using System.Xml.Linq;
 
 namespace NETCoreWPF
 {
     
+    /// <summary>
+    /// Defines a weapon 
+    /// </summary>
+    /// <param name="name">Name of weapon</param>
+    /// <param name="hasRank"></param>
     class Weapon
     {
 
@@ -19,18 +25,17 @@ namespace NETCoreWPF
             this.name = name;
             if (hasRank)
             {
-                this.hasRank = true;
                 this.rank = rank;
             } else
             {
-                this.hasRank = false;
                 this.rank = 0;
             }
+            this.hasRank = hasRank;
         }
 
-        protected string Name { get; set; }
-        protected int Rank { get; set; }
-        protected bool HasRank { get; set; }
+        protected string Name { get { return name; } set { name = value; } }
+        protected int Rank { get { return rank; } set { rank = value; } }
+        protected bool HasRank { get { return hasRank; } set { hasRank = value; } }
 
     }
 
@@ -50,16 +55,11 @@ namespace NETCoreWPF
             this.walkspeed = ws;
         }
 
-        protected double LimbMultiplier { get; set; }
-        protected double TorsoMultiplier { get; set; }
-        protected double HeadMultiplier { get; set; }
-        protected double WalkSpeed { get; set; }
+        protected double LimbMultiplier { get { return limbMultipler; } set { limbMultipler = value; } }
+        protected double TorsoMultiplier { get { return torsoMultiplier; } set { torsoMultiplier = value; } }
+        protected double HeadMultiplier { get { return headMultiplier; } set { headMultiplier = value; } }
+        protected double WalkSpeed { get { return walkspeed; } set { walkspeed = value; } }
     }
-
-    /*class CarriedAux
-    {
-        //Gun GunAux();
-    }*/
 
     class Ranged
     {
@@ -67,47 +67,51 @@ namespace NETCoreWPF
                         range2,
                         damageRange1,
                         damageRange2;
+
+        public Ranged(double range1, double range2, double damageRange1, double damageRange2)
+        {
+            this.range1 = range1;
+            this.range2 = range2;
+            this.damageRange1 = damageRange1;
+            this.damageRange2 = damageRange2;
+        }
+
+        protected double Range1 { get { return range1; } set { range1 = value; } }
+        protected double Range2 { get { return range2; } set { range2 = value; } }
+        protected double DamageRange1 { get { return damageRange1; } set { damageRange1 = value; } }
+        protected double DamageRange2 { get { return damageRange2; } set { damageRange2 = value; } }
+
     }
+
     /*
      formatting for firemodes:
         a600 -> automatic 600rpm
         s750 -> semiautomatic 750rpm
         s40la -> semiautomatic 40rpm, lever action
         s300sh8 -> semiautomatic 300 rpm, shotgun with 8 pellets
-        
-     
-    char firstCharacter = str[0];
-    try{
-        
-    }
-
-     
-     
      */
-    
-
 
     public class FireModeList
     {
         private List<FireMode> modes = new List<FireMode>();
-        
+
         public FireMode this[int index]
         {
             get { return modes[index]; }
             set { modes[index] = value; }
         }
 
-        public FireModeList(string[] firemodes)
+        public FireMode ParseFireModeString(string[] firemodes)
         {
+            for (int j = 0; j < firemodes.Length; j++)
+            { //iterates through the firemodes
 
-            for(int j = 0; j < firemodes.Length; j++) { //iterates through the firemodes
-                
-                string str = firemodes[j]; 
+                string str = firemodes[j];
 
-                string mode;
-                int firerate;
-                string specialFlags;
-                int pellets;
+                string mode = "";
+                int firerate = 0;
+                string specialFlags = "";
+                int pellets = 0;
 
                 List<string> resultInt = new List<string>();
                 List<string> resultString = new List<string>();
@@ -166,39 +170,151 @@ namespace NETCoreWPF
                     }
                 }
 
-                firerate = Convert.ToInt32(resultInt[0]);
-                mode = resultString[0];
-                specialFlags = resultString[1];
-                pellets = Convert.ToInt32(resultInt[1]);
+                firerate = (resultInt[0].Length != 0) ? Convert.ToInt32(resultInt[0]) : 0;
+                mode = (resultString[0].Length != 0) ? resultString[0] : "";
+                try
+                {
+                    specialFlags = (resultString[1].Length != 0) ? resultString[1] : "";
+                }
+                catch (Exception ex)
+                {
+                    specialFlags = "";
+                }
+                try
+                {
+                    pellets = (resultInt[1].Length != 0) ? Convert.ToInt32(resultInt[1]) : 0;
+                }
+                catch (Exception ex)
+                {
+                    pellets = 0;
+                }
 
                 char firstCharacterMode = mode[0];
 
-                
-                if ((mode.Contains("automatic") || str.Contains("auto")) && firstCharacterMode == 'a')
+
+                if ((mode.Contains("automatic") || str.Contains("auto")) || firstCharacterMode == 'a')
                 {
-                    FireMode Automatic = new FireMode(firerate, "Automatic", false, "", (specialFlags.Length != 0), specialFlags, 0);
-                } else if((mode.Contains("semiautomatic") || mode.Contains("semi")) && firstCharacterMode == 's')
+                    return new FireMode(firerate, "Automatic", false, "", (specialFlags.Length != 0), specialFlags, 0);
+                    //modes.Add(Automatic);
+
+                }
+                else if ((mode.Contains("semiautomatic") || mode.Contains("semi")) || firstCharacterMode == 's')
                 {
-                    if (specialFlags.Contains("boltaction") || specialFlags.Contains("bolt") || specialFlags.Contains("ba")) {
-                        FireMode BoltAction = new FireMode(firerate, "SemiAutomatic", false, "", true, "BoltAction", 0);
-                    } else if(specialFlags.Contains("leveraction") || specialFlags.Contains("lever") || specialFlags.Contains("la"))
+                    if (specialFlags.Contains("boltaction") || specialFlags.Contains("bolt") || specialFlags.Contains("ba"))
                     {
-                        FireMode LeverAction = new FireMode(firerate, "SemiAutomatic", false, "", true, "LeverAction", 0);
-                    } else if(specialFlags.Contains("pumpshotgun") || specialFlags.Contains("pump") || specialFlags.Contains("ps"))
+                        return new FireMode(firerate, "SemiAutomatic", false, "", true, "BoltAction", 0);
+                        //modes.Add(BoltAction);
+                    }
+                    else if (specialFlags.Contains("leveraction") || specialFlags.Contains("lever") || specialFlags.Contains("la"))
                     {
-                        FireMode PumpShotgun = new FireMode(firerate, "SemiAutomatic", false, "", true, "PumpShotgun", pellets);
+                        return new FireMode(firerate, "SemiAutomatic", false, "", true, "LeverAction", 0);
+                        //modes.Add(LeverAction);
+                    }
+                    else if (specialFlags.Contains("pumpshotgun") || specialFlags.Contains("pump") || specialFlags.Contains("ps"))
+                    {
+                        return new FireMode(firerate, "SemiAutomatic", false, "", true, "PumpShotgun", pellets);
+                        //modes.Add(PumpShotgun);
+                    }
+                    else if ((specialFlags.Contains("shotgun") || specialFlags.Contains("sh")) && !(specialFlags.Contains("pumpshotgun")))
+                    {
+                        return new FireMode(firerate, "SemiAutomatic", false, "", true, "Shotgun", pellets);
+                        //modes.Add(Shotgun);
                     }
 
-                    FireMode SemiAutomatic = new FireMode(firerate, "SemiAutomatic", false, "", (specialFlags.Length != 0), specialFlags, 0);
 
-                } 
+                    return new FireMode(firerate, "SemiAutomatic", false, "", (specialFlags.Length != 0), specialFlags, 0);
+                    //modes.Add(SemiAutomatic);
+
+                }
+                else if ((mode.Contains("burst") || firstCharacterMode == 'b'))
+                {
+                    if (specialFlags.Contains("b") && !(specialFlags.Contains("bb")) && !(specialFlags.Contains("bbb")))
+                    {
+                        return new FireMode(firerate, "Burst", true, "I", true, "InstantBurst", 0);
+                        //modes.Add(InstantBurst);
+                    }
+                    else if (specialFlags.Contains("bb") && !(specialFlags.Contains("bbb")))
+                    {
+
+                        return new FireMode(firerate, "Burst", true, "II", true, "DoubleBurst", 0);
+                        //modes.Add(DoubleBurst);
+                    }
+                    else if (specialFlags.Contains("bbb"))
+                    {
+                        return new FireMode(firerate, "Burst", true, "III", true, "TripleBurst", 0);
+                        //modes.Add(TripleBurst);
+                    } else
+                    {
+                        break;
+                    }
+
+                    
+                } else
+                {
+                    break;
+                }
             }
+
+            return new FireMode(0, "", false, "", false, "", 0);
+        }
+
+
+        /// <summary>
+        /// Searches the list for a specific FireMode
+        /// </summary>
+        /// <param name="item">The FireMode to search with</param>
+        /// <returns>True if the list contains the FireMode, false otherwise</returns>
+        public bool searchList(FireMode item)
+        {
+            if (modes.Contains(item))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        
+
+        /// <summary>
+        /// Searches the list for a specific FireMode's index.
+        /// </summary>
+        /// <param name="item">The FireMode to search with</param>
+        /// <returns>Index of item if it is found, otherwise -1</returns>
+        public int indexOfItem(FireMode item)
+        {
+            if (modes.Contains(item))
+            {
+                return modes.IndexOf(item);
+            }
+            else
+            {
+                return -1;
+            }
+        }
+
+        public bool addElement(FireMode firemode)
+        {
+            modes.Add(firemode);
+            return searchList(firemode);
+        }
+
+        //public void
+
+
+        public FireModeList(string[] firemodes)
+        {
+            modes.Add(ParseFireModeString(firemodes));
+            
         }
 
     }
 
     public class FireMode{
 
+        
         private double firerate;
         private string mode;
         private bool burst;
@@ -232,6 +348,15 @@ namespace NETCoreWPF
             this.pellets = pellets;
         }
 
+        public double Firerate { get { return firerate; } set { firerate = value; } }
+        public string Mode { get { return mode; } set{ mode = value; } }
+        public bool Burst { get { return burst; } set { burst = value; } }
+        public string BurstMode { get { return burstMode;} set { burstMode = value; } }
+        public bool Special { get { return special; } set { special = value; } }
+        public string SpecialMode { get { return specialMode;} set { specialMode = value; } }
+        public int Pellets { get { return pellets; } set { pellets = value; } }
+
+
     }
 
 
@@ -240,6 +365,8 @@ namespace NETCoreWPF
         
 
         private FireModeList fireModes;
+        private Carried carriedAttributes;
+        private Ranged rangedAttributes;
         private string caliber;
         private int ammoCapacity;
         private int magazineCapacity;
@@ -249,7 +376,7 @@ namespace NETCoreWPF
         private double reloadSpeed;
         private double emptyReloadSpeed;
 
-        public Gun(string name, bool hasRank, int rank, string caliber, int ammoCapacity, int magazineCapacity, string[] firemodes, double penetration, double muzzleVelocity, double aimingWalkspeed, double reloadSpeed, double emptyReloadSpeed) : base(name, hasRank, rank)
+        public Gun(string name, bool hasRank, int rank, string caliber, int ammoCapacity, int magazineCapacity, string[] firemodes, Carried carriedAttributes, Ranged rangedAttributes, double penetration, double muzzleVelocity, double aimingWalkspeed, double reloadSpeed, double emptyReloadSpeed) : base(name, hasRank, rank)
         {
             this.caliber = caliber;
             this.ammoCapacity = ammoCapacity;
@@ -259,7 +386,10 @@ namespace NETCoreWPF
             this.reloadSpeed = reloadSpeed;
             this.muzzleVelocity = muzzleVelocity;
             this.penetration = penetration;
-            this.fireModes = new FireModeList(firemodes);
+            fireModes = new FireModeList(firemodes);
+            this.carriedAttributes = carriedAttributes;
+            this.rangedAttributes = rangedAttributes;
+            
         }
 
         public class Conversion//abstract class 
@@ -292,3 +422,112 @@ namespace NETCoreWPF
     }
     */
 }
+
+
+
+/*
+weapons:
+    gun
+    grenade
+    melee
+
+class Weapon{
+    protected string name;
+    protected int rank;
+}
+
+class Carried{
+    protected double limbMultipler, 
+                        torsoMultiplier, 
+                        headMultiplier, 
+                        walkspeed;
+}
+
+class Ranged{
+    protected double range1, 
+                    range2,
+                    damageRange1,
+                    damageRange2;
+}
+
+class Gun : Weapon, Carried, Ranged {
+    public string caliber;
+    public double firerate;
+    public int ammoCapacity;
+    public int magazineCapacity;
+    public string[ ] firemodes = new string[5];
+    public double penetration;
+    public double muzzleVelocity;
+    public double aimingWalkspeed;
+    public double reloadSpeed;
+    public double emptyReloadSpeed;
+
+    public class Conversion{
+        public string attachment;
+        public string conversionName;
+
+        public bool ammoConversion; 
+        public string ammoType; //depends on above bool
+    }
+}
+
+class Melee : Weapon, Carried {
+    public double frontStabDamage;
+    public double backStabDamage;
+    public double bladeLength;
+
+
+}
+
+class Grenade : Weapon, Ranged {
+    public bool fuse;
+    public double fuseTime; //depends on above bool
+    
+    public int storedCapacity;
+
+}
+
+carried class (for gun, melee):
+    limb multiplier
+    torso multiplier
+    head multiplier
+    walkspeed
+    
+ranged weapon (for gun, grenade):
+    range 1
+    range 2
+    damage range 1
+    damage range 2
+
+weapon general properties
+    name
+    rank
+
+gun properties
+    caliber
+    firerate
+    ammo capacity
+    mag capacity
+    fire modes
+    penetration
+    muzzle velocity
+    aiming walkspeed
+    reload time
+    empty reload time
+
+    special attachments
+    special conversions 
+    conversion names
+
+melee properties
+    front stab damage
+    back stab damage
+    blade length
+ 
+grenade
+    fuse? (true/false)
+    fuse time
+    stored capacity
+    
+
+ */
