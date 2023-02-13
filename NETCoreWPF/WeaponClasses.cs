@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows.Input;
@@ -91,36 +92,74 @@ namespace NETCoreWPF
         s300sh8 -> semiautomatic 300 rpm, shotgun with 8 pellets
      */
 
+    /// <summary>
+    /// Class defining a list of <c>FireMode</c> objects.
+    /// </summary>
     public class FireModeList
     {
         private List<FireMode> modes = new List<FireMode>();
 
+        /// <summary>
+        /// <c>FireModeList</c> indexer
+        /// </summary>
+        /// <param name="index">Index of the <c>FireModeList</c>.</param>
+        /// <returns></returns>
         public FireMode this[int index]
         {
             get { return modes[index]; }
             set { modes[index] = value; }
         }
 
-        public FireMode ParseFireModeString(string[] firemodes)
+        /// <summary>
+        /// Parses a string into a <c>FireMode</c> object. Case-insensitive. Does not accept any special characters or spaces.
+        /// <example>
+        /// Example of formatting:
+        /// <code>
+        /// a600 -> automatic 600rpm
+        /// s750 -> semiautomatic 750rpm
+        /// s40la0 -> semiautomatic 40rpm, lever action
+        /// s300sh8 -> semiautomatic 300 rpm, shotgun with 8 pellets
+        /// b400bb0 -> burst (double) 400rpm
+        /// </code>
+        /// Code formatting: mode,firerate(rpm),special modes,pellets(for shotguns)
+        /// <code>
+        /// mode = (a|auto|automatic), (s|semi|semiautomatic), (b|burst)
+        /// firerate = any integer
+        /// special modes = for burst: (b = InstantBurst,bb = DoubleBurst,bbb = TripleBurst); 
+        ///                 for semiautomatic: (la|lever|leveraction = LeverAction, 
+        ///                                     ps|pump|pumpshotgun = PumpShotgun,
+        ///                                     sh|shotgun = Shotgun)
+        /// pellets = any integer, but required to include and can be set to 0
+        /// </code>
+        /// </example>
+        /// </summary>
+        /// <param name="firemodes">A string specified in the format above. Case-insensitive. Does not accept any special characters or spaces.</param>
+        /// <returns><c>FireMode</c> object referring to Automatic, Semiautomatic</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="NullReferenceException"></exception>
+        public FireMode ParseFireModeString(string firemodes)
         {
-            for (int j = 0; j < firemodes.Length; j++)
-            { //iterates through the firemodes
+            
 
-                string str = firemodes[j];
+            string str = firemodes;
 
-                string mode = "";
-                int firerate = 0;
-                string specialFlags = "";
-                int pellets = 0;
+            string mode = "";
+            int firerate = 0;
+            string specialFlags = "";
+            int pellets = 0;
 
-                List<string> resultInt = new List<string>();
-                List<string> resultString = new List<string>();
-                int count = 0; //count for numbers
-                int count1 = 0; //count for letters
-
+            List<string> resultInt = new List<string>();
+            List<string> resultString = new List<string>();
+            int count = 0; //count for numbers
+            int count1 = 0; //count for letters
+            string output = " ";
+            try
+            {
                 //iterates through the individual string and parses
                 for (int i = 0; i < str.Length; i++)
                 {
+                    output = (count+", "+count1+", "+i+" ");
+                    File.AppendAllText("test.log", output);
 
                     if (Convert.ToInt32(str[i]) > 64 && Convert.ToInt32(str[i]) < 91)
                     { //if uppercase, turns into lowercase
@@ -134,6 +173,8 @@ namespace NETCoreWPF
                         if (i + 1 == str.Length)
                         { //detects if the end of the string has been reached and adds previous whole number
                             resultInt.Add(str.Substring(i - count + 1, count));
+                            output = (str.Substring(i - count + 1, count) + " ");
+                            File.AppendAllText("test.log", output);
                         }
 
                         if (i > 0)
@@ -141,6 +182,9 @@ namespace NETCoreWPF
                             if (Convert.ToInt32(str[i - 1]) > 96 && Convert.ToInt32(str[i - 1]) < 123)
                             { //detects if previous character is a letter and adds the whole word before into the list
                                 resultString.Add(str.Substring(i - count1, count1));
+                                output = (str.Substring(i - count, count) + " ");
+
+                                File.AppendAllText("test.log", output);
                             }
                         }
 
@@ -154,6 +198,9 @@ namespace NETCoreWPF
                             if (Convert.ToInt32(str[i - 1]) > 47 && Convert.ToInt32(str[i - 1]) < 58)
                             { //detects if previous character is a number and adds the whole number before into the list
                                 resultInt.Add(str.Substring(i - count, count));
+                                output = (str.Substring(i - count, count) + " ");
+
+                                File.AppendAllText("test.log", output);
                             }
                         }
 
@@ -163,6 +210,8 @@ namespace NETCoreWPF
                             if (i + 1 == str.Length)
                             { //detects if the end of the string has been reached and adds previous whole word
                                 resultString.Add(str.Substring(i - count + 1, count));
+                                output = (str.Substring(i - count + 1, count) + " ");
+                                File.AppendAllText("test.log", output);
                             }
                         }
 
@@ -172,98 +221,124 @@ namespace NETCoreWPF
 
                 firerate = (resultInt[0].Length != 0) ? Convert.ToInt32(resultInt[0]) : 0;
                 mode = (resultString[0].Length != 0) ? resultString[0] : "";
-                try
-                {
-                    specialFlags = (resultString[1].Length != 0) ? resultString[1] : "";
-                }
-                catch (Exception ex)
-                {
-                    specialFlags = "";
-                }
-                try
-                {
-                    pellets = (resultInt[1].Length != 0) ? Convert.ToInt32(resultInt[1]) : 0;
-                }
-                catch (Exception ex)
-                {
-                    pellets = 0;
-                }
-
-                char firstCharacterMode = mode[0];
-
-
-                if ((mode.Contains("automatic") || str.Contains("auto")) || firstCharacterMode == 'a')
-                {
-                    return new FireMode(firerate, "Automatic", false, "", (specialFlags.Length != 0), specialFlags, 0);
-                    //modes.Add(Automatic);
-
-                }
-                else if ((mode.Contains("semiautomatic") || mode.Contains("semi")) || firstCharacterMode == 's')
-                {
-                    if (specialFlags.Contains("boltaction") || specialFlags.Contains("bolt") || specialFlags.Contains("ba"))
-                    {
-                        return new FireMode(firerate, "SemiAutomatic", false, "", true, "BoltAction", 0);
-                        //modes.Add(BoltAction);
-                    }
-                    else if (specialFlags.Contains("leveraction") || specialFlags.Contains("lever") || specialFlags.Contains("la"))
-                    {
-                        return new FireMode(firerate, "SemiAutomatic", false, "", true, "LeverAction", 0);
-                        //modes.Add(LeverAction);
-                    }
-                    else if (specialFlags.Contains("pumpshotgun") || specialFlags.Contains("pump") || specialFlags.Contains("ps"))
-                    {
-                        return new FireMode(firerate, "SemiAutomatic", false, "", true, "PumpShotgun", pellets);
-                        //modes.Add(PumpShotgun);
-                    }
-                    else if ((specialFlags.Contains("shotgun") || specialFlags.Contains("sh")) && !(specialFlags.Contains("pumpshotgun")))
-                    {
-                        return new FireMode(firerate, "SemiAutomatic", false, "", true, "Shotgun", pellets);
-                        //modes.Add(Shotgun);
-                    }
-
-
-                    return new FireMode(firerate, "SemiAutomatic", false, "", (specialFlags.Length != 0), specialFlags, 0);
-                    //modes.Add(SemiAutomatic);
-
-                }
-                else if ((mode.Contains("burst") || firstCharacterMode == 'b'))
-                {
-                    if (specialFlags.Contains("b") && !(specialFlags.Contains("bb")) && !(specialFlags.Contains("bbb")))
-                    {
-                        return new FireMode(firerate, "Burst", true, "I", true, "InstantBurst", 0);
-                        //modes.Add(InstantBurst);
-                    }
-                    else if (specialFlags.Contains("bb") && !(specialFlags.Contains("bbb")))
-                    {
-
-                        return new FireMode(firerate, "Burst", true, "II", true, "DoubleBurst", 0);
-                        //modes.Add(DoubleBurst);
-                    }
-                    else if (specialFlags.Contains("bbb"))
-                    {
-                        return new FireMode(firerate, "Burst", true, "III", true, "TripleBurst", 0);
-                        //modes.Add(TripleBurst);
-                    } else
-                    {
-                        break;
-                    }
-
-                    
-                } else
-                {
-                    break;
-                }
+            }
+            catch (NullReferenceException)
+            {
+                return new FireMode(-1, "NullReferenceException", false, "Null", false, "String cannot be null", 0);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return new FireMode(-2, "ArgumentOutOfRangeException", false, "Null", false, "String must have both numbers and letters", 0);
             }
 
-            return new FireMode(0, "", false, "", false, "", 0);
+
+            try
+            {
+                specialFlags = (resultString[1].Length != 0) ? resultString[1] : "";
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+
+                specialFlags = "";
+            }
+
+            try
+            {
+                pellets = (resultInt[1].Length != 0) ? Convert.ToInt32(resultInt[1]) : 0;
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                pellets = 0;
+            }
+
+            char firstCharacterMode = mode[0];
+
+
+            if ((mode.Contains("automatic") || str.Contains("auto")) || firstCharacterMode == 'a')
+            {
+                return new FireMode(firerate, "Automatic", false, "", (specialFlags.Length != 0), specialFlags, 0);
+                //modes.Add(Automatic);
+
+            }
+            else if ((mode.Contains("semiautomatic") || mode.Contains("semi") || mode.Contains("semi-automatic")) || firstCharacterMode == 's')
+            {
+                if (specialFlags.Contains("boltaction") || specialFlags.Contains("bolt") || specialFlags.Contains("ba"))
+                {
+                    return new FireMode(firerate, "SemiAutomatic", false, "", true, "BoltAction", 0);
+                    //modes.Add(BoltAction);
+                }
+                else if (specialFlags.Contains("leveraction") || specialFlags.Contains("lever") || specialFlags.Contains("la"))
+                {
+                    return new FireMode(firerate, "SemiAutomatic", false, "", true, "LeverAction", 0);
+                    //modes.Add(LeverAction);
+                }
+                else if (specialFlags.Contains("pumpshotgun") || specialFlags.Contains("pump") || specialFlags.Contains("ps"))
+                {
+                    return new FireMode(firerate, "SemiAutomatic", false, "", true, "PumpShotgun", pellets);
+                    //modes.Add(PumpShotgun);
+                }
+                else if ((specialFlags.Contains("shotgun") || specialFlags.Contains("sh")) && !(specialFlags.Contains("pumpshotgun")))
+                {
+                    return new FireMode(firerate, "SemiAutomatic", false, "", true, "Shotgun", pellets);
+                    //modes.Add(Shotgun);
+                }
+
+
+                return new FireMode(firerate, "SemiAutomatic", false, "", (specialFlags.Length != 0), specialFlags, 0);
+                //modes.Add(SemiAutomatic);
+
+            }
+            else if ((mode.Contains("burst") || firstCharacterMode == 'b'))
+            {
+                
+                if (specialFlags.Contains("bbb"))
+                {
+                    return new FireMode(firerate, "Burst", true, "III", true, "TripleBurst", 0);
+                    //modes.Add(TripleBurst);
+                }else if (specialFlags.Contains("bb"))
+                {
+
+                    return new FireMode(firerate, "Burst", true, "II", true, "DoubleBurst", 0);
+                    //modes.Add(DoubleBurst);
+                }
+                else if (specialFlags.Contains("b"))
+                {
+                    return new FireMode(firerate, "Burst", true, "I", true, "InstantBurst", pellets);
+                    //modes.Add(InstantBurst);
+                }
+
+
+
+            }
+
+            return new FireMode(5, "", false, resultString[1], false, "", 0);
+        }
+
+        /// <summary>
+        /// Iterates through the string array of firemodes.
+        /// </summary>
+        /// <param name="firemodes">An array of strings as specified in the <c>ParseFireModeString</c> method as <see cref="ParseFireModeString(string)">seen here</see>.</param>
+        public void ParseFireModeStringIterator(string[] firemodes)
+        {
+            try {
+                foreach(string str in firemodes)
+                {
+                    modes.Add(ParseFireModeString(str));
+
+                }
+            }
+            catch (NullReferenceException)
+            {
+                modes.Add(new FireMode(-3, "NullReferenceException", false, "Null", false, "Cannot pass null as string array", 0));
+            }
         }
 
 
         /// <summary>
-        /// Searches the list for a specific FireMode
+        /// Searches the list for a specific <c>FireMode</c>.
         /// </summary>
-        /// <param name="item">The FireMode to search with</param>
-        /// <returns>True if the list contains the FireMode, false otherwise</returns>
+        /// <param name="item">The <c>FireMode</c> to search with.</param>
+        /// <returns>True if the list contains the FireMode, false otherwise.</returns>
         public bool searchList(FireMode item)
         {
             if (modes.Contains(item))
@@ -276,13 +351,13 @@ namespace NETCoreWPF
             }
         }
 
-        
+
 
         /// <summary>
-        /// Searches the list for a specific FireMode's index.
+        /// Searches the list for a specific <c>FireMode</c>'s index.
         /// </summary>
-        /// <param name="item">The FireMode to search with</param>
-        /// <returns>Index of item if it is found, otherwise -1</returns>
+        /// <param name="item">The <c>FireMode</c> to search with.</param>
+        /// <returns>Index of item if it is found, otherwise -1.</returns>
         public int indexOfItem(FireMode item)
         {
             if (modes.Contains(item))
@@ -295,6 +370,12 @@ namespace NETCoreWPF
             }
         }
 
+
+        /// <summary>
+        /// Adds element to the end of the <c>FireModeList</c> list
+        /// </summary>
+        /// <param name="firemode">The <c>FireMode</c> to add.</param>
+        /// <returns></returns>
         public bool addElement(FireMode firemode)
         {
             modes.Add(firemode);
@@ -303,15 +384,22 @@ namespace NETCoreWPF
 
         //public void
 
-
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="firemodes"><see cref="ParseFireModeStringIterator(string[])">See parameters.</see></param>
         public FireModeList(string[] firemodes)
         {
-            modes.Add(ParseFireModeString(firemodes));
-            
+            ParseFireModeStringIterator(firemodes);
+            int r = 5;
         }
 
     }
 
+
+    /// <summary>
+    /// Class that defines firemodes for guns.
+    /// </summary>
     public class FireMode{
 
         

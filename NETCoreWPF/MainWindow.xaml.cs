@@ -29,6 +29,7 @@ namespace NETCoreWPF
             //DDataAccess BDA = new DDataAccess("Server=LAPTOP-FGMJ15RD;Database=Nephtalima;Trusted_Connection=True;MultipleActiveResultSets=true");
             //BaseDataAccess.GetConnection();
             //Weapon gun = new Gun("FAL Para Shorty", true, 98, "7.62x45mm", 140, 20, new string[] {"a600","s600"}, 1.8, 1800, 15, 13, 14);
+            FireModeList blah = new FireModeList(new string[] {"automatic400agtcfc666cygcyft787656", "burst600b0", "s856la0", "s200sh8", "a 340"});
         }
     }
 }
