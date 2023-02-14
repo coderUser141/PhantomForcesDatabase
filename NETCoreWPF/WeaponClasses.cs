@@ -10,17 +10,21 @@ namespace NETCoreWPF
 {
     
     /// <summary>
-    /// Defines a weapon 
+    /// Defines a weapon object.
     /// </summary>
-    /// <param name="name">Name of weapon</param>
-    /// <param name="hasRank"></param>
-    class Weapon
+    public class Weapon
     {
 
         private string name;
         private int rank;
         private bool hasRank;
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="name">Name of the weapon.</param>
+        /// <param name="hasRank">If the weapon has a rank.</param>
+        /// <param name="rank">If the previous parameter is true, the rank of the weapon.</param>
         public Weapon(string name, bool hasRank, int rank)
         {
             this.name = name;
@@ -34,13 +38,25 @@ namespace NETCoreWPF
             this.hasRank = hasRank;
         }
 
+        /// <summary>
+        /// Name getter/setter.
+        /// </summary>
         protected string Name { get { return name; } set { name = value; } }
+        /// <summary>
+        /// Rank getter/setter.
+        /// </summary>
         protected int Rank { get { return rank; } set { rank = value; } }
+        /// <summary>
+        /// HasRank getter/setter.
+        /// </summary>
         protected bool HasRank { get { return hasRank; } set { hasRank = value; } }
 
     }
 
-    class Carried
+    /// <summary>
+    /// Creates objects for defining carried weapons' attributes (melees, guns).
+    /// </summary>
+    public class Carried
     {
 
         private double limbMultipler,
@@ -48,27 +64,55 @@ namespace NETCoreWPF
                             headMultiplier,
                             walkspeed;
 
-        public Carried(double lM, double tM, double hM, double ws)
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="limbMultipler">Limb multiplier of the weapon.</param>
+        /// <param name="torsoMultiplier">Torso multiplier of the weapon.</param>
+        /// <param name="headMultiplier">Head multiplier of the weapon.</param>
+        /// <param name="walkspeed">Walkspeed of the weapon.</param>
+        public Carried(double limbMultipler, double torsoMultiplier, double headMultiplier, double walkspeed)
         {
-            this.limbMultipler = lM;
-            this.torsoMultiplier = tM;
-            this.headMultiplier = hM;
-            this.walkspeed = ws;
+            this.limbMultipler = limbMultipler;
+            this.torsoMultiplier = torsoMultiplier;
+            this.headMultiplier = headMultiplier;
+            this.walkspeed = walkspeed;
         }
 
+        /// <summary>
+        /// LimbMultipler getter/setter.
+        /// </summary>
         protected double LimbMultiplier { get { return limbMultipler; } set { limbMultipler = value; } }
+        /// <summary>
+        /// TorsoMultiplier getter/setter.
+        /// </summary>
         protected double TorsoMultiplier { get { return torsoMultiplier; } set { torsoMultiplier = value; } }
+        /// <summary>
+        /// HeadMultiplier getter/setter.
+        /// </summary>
         protected double HeadMultiplier { get { return headMultiplier; } set { headMultiplier = value; } }
+        /// <summary>
+        /// WalkSpeed getter/setter.
+        /// </summary>
         protected double WalkSpeed { get { return walkspeed; } set { walkspeed = value; } }
     }
 
-    class Ranged
+    /// <summary>
+    /// Creates objects for defining ranged weapons' attributes (grenades, guns).
+    /// </summary>
+    public class Ranged
     {
         private double range1,
                         range2,
                         damageRange1,
                         damageRange2;
-
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="range1">Close range in studs.</param>
+        /// <param name="range2">Far range in studs.</param>
+        /// <param name="damageRange1">Range 1's damage.</param>
+        /// <param name="damageRange2">Range 2's damage.</param>
         public Ranged(double range1, double range2, double damageRange1, double damageRange2)
         {
             this.range1 = range1;
@@ -76,21 +120,24 @@ namespace NETCoreWPF
             this.damageRange1 = damageRange1;
             this.damageRange2 = damageRange2;
         }
-
+        /// <summary>
+        /// Range1 getter/setter.
+        /// </summary>
         protected double Range1 { get { return range1; } set { range1 = value; } }
+        /// <summary>
+        /// Range2 getter/setter.
+        /// </summary>
         protected double Range2 { get { return range2; } set { range2 = value; } }
+        /// <summary>
+        /// DamageRange1 getter/setter.
+        /// </summary>
         protected double DamageRange1 { get { return damageRange1; } set { damageRange1 = value; } }
+        /// <summary>
+        /// DamageRange2 getter/setter.
+        /// </summary>
         protected double DamageRange2 { get { return damageRange2; } set { damageRange2 = value; } }
 
     }
-
-    /*
-     formatting for firemodes:
-        a600 -> automatic 600rpm
-        s750 -> semiautomatic 750rpm
-        s40la -> semiautomatic 40rpm, lever action
-        s300sh8 -> semiautomatic 300 rpm, shotgun with 8 pellets
-     */
 
     /// <summary>
     /// Class defining a list of <c>FireMode</c> objects.
@@ -382,10 +429,18 @@ namespace NETCoreWPF
             return searchList(firemode);
         }
 
-        //public void
 
         /// <summary>
-        /// Constructor
+        /// Adds new default firemode.
+        /// </summary>
+        /// <param name="firemode">The <c>FireMode</c> to insert.</param>
+        public void addNewDefaultFiremode(FireMode firemode)
+        {
+            modes.Insert(0, firemode);
+        }
+
+        /// <summary>
+        /// Constructor.
         /// </summary>
         /// <param name="firemodes"><see cref="ParseFireModeStringIterator(string[])">See parameters.</see></param>
         public FireModeList(string[] firemodes)
@@ -411,6 +466,16 @@ namespace NETCoreWPF
         private string specialMode;
         private int pellets;
 
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="firerate">Firerate of the gun in rounds per minute (RPM).</param>
+        /// <param name="mode">Firing mode name, e.g. <c>(Automatic|Semiautomatic|Burst)</c>.</param>
+        /// <param name="burst">Specifies if the firemode has burst capabilities.</param>
+        /// <param name="burstMode">If the previous value is true, specifies if the firemode has InstantBurst("I"), DoubleBurst("II"), or TripleBurst("III").</param>
+        /// <param name="special">Specifies if the firemode has special modes.</param>
+        /// <param name="specialMode">If the previous value is true, specifies if the firemode has any special modes.</param>
+        /// <param name="pellets">If the firemode is of a shotgun, specifies the number of pellets.</param>
         public FireMode(double firerate, string mode, bool burst, string burstMode, bool special, string specialMode, int pellets)
         {
             this.firerate = firerate;
@@ -435,13 +500,33 @@ namespace NETCoreWPF
             this.special = special;
             this.pellets = pellets;
         }
-
+        /// <summary>
+        /// Firerate getter/setter.
+        /// </summary>
         public double Firerate { get { return firerate; } set { firerate = value; } }
+        /// <summary>
+        /// Mode getter/setter.
+        /// </summary>
         public string Mode { get { return mode; } set{ mode = value; } }
+        /// <summary>
+        /// Burst getter/setter.
+        /// </summary>
         public bool Burst { get { return burst; } set { burst = value; } }
+        /// <summary>
+        /// BurstMode getter/setter.
+        /// </summary>
         public string BurstMode { get { return burstMode;} set { burstMode = value; } }
+        /// <summary>
+        /// Special getter/setter.
+        /// </summary>
         public bool Special { get { return special; } set { special = value; } }
+        /// <summary>
+        /// SpecialMode getter/setter.
+        /// </summary>
         public string SpecialMode { get { return specialMode;} set { specialMode = value; } }
+        /// <summary>
+        /// Pellets getter/setter.
+        /// </summary>
         public int Pellets { get { return pellets; } set { pellets = value; } }
 
 
@@ -490,25 +575,34 @@ namespace NETCoreWPF
         }
     }
 
-    /*
-    class Melee : Weapon, Carried
+    
+    class Melee : Weapon
     {
         public double frontStabDamage;
         public double backStabDamage;
         public double bladeLength;
 
-        
+        public Melee(string name, bool hasRank, int rank, double frontStabDamage, double backStabDamage, double bladeLength) : base(name, hasRank, rank)
+        {
+            this.frontStabDamage = frontStabDamage;
+            this.backStabDamage = backStabDamage;
+            this.bladeLength = bladeLength;
+
+        }
     }
 
-    class Grenade : Weapon, Ranged
+    class Grenade : Weapon
     {
         public bool fuse;
         public double fuseTime; //depends on above bool
 
         public int storedCapacity;
 
+        public Grenade(string name, bool hasRank, int rank) : base(name, hasRank, rank)
+        {
+        }
     }
-    */
+    
 }
 
 
