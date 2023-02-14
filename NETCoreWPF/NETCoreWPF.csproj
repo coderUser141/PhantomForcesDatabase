@@ -13,4 +13,12 @@
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\Users\peter\source\repos\NETCoreWPF\NETCoreWPF\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="C:\Users\peter\source\repos\NETCoreWPF\NETCoreWPF\.editorconfig" />
+  </ItemGroup>
+
 </Project>

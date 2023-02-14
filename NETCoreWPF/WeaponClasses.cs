@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Transactions;
 using System.Windows.Input;
 using System.Xml.Linq;
 
@@ -15,9 +16,9 @@ namespace NETCoreWPF
     public class Weapon
     {
 
-        private string name;
-        private int rank;
-        private bool hasRank;
+        protected string name;
+        protected int rank;
+        protected bool hasRank;
 
         /// <summary>
         /// Constructor.
@@ -41,15 +42,15 @@ namespace NETCoreWPF
         /// <summary>
         /// Name getter/setter.
         /// </summary>
-        protected string Name { get { return name; } set { name = value; } }
+        public string Name { get { return name; } set { name = value; } }
         /// <summary>
         /// Rank getter/setter.
         /// </summary>
-        protected int Rank { get { return rank; } set { rank = value; } }
+        public int Rank { get { return rank; } set { rank = value; } }
         /// <summary>
         /// HasRank getter/setter.
         /// </summary>
-        protected bool HasRank { get { return hasRank; } set { hasRank = value; } }
+        public bool HasRank { get { return hasRank; } set { hasRank = value; } }
 
     }
 
@@ -82,60 +83,60 @@ namespace NETCoreWPF
         /// <summary>
         /// LimbMultipler getter/setter.
         /// </summary>
-        protected double LimbMultiplier { get { return limbMultipler; } set { limbMultipler = value; } }
+        public double LimbMultiplier { get { return limbMultipler; } set { limbMultipler = value; } }
         /// <summary>
         /// TorsoMultiplier getter/setter.
         /// </summary>
-        protected double TorsoMultiplier { get { return torsoMultiplier; } set { torsoMultiplier = value; } }
+        public double TorsoMultiplier { get { return torsoMultiplier; } set { torsoMultiplier = value; } }
         /// <summary>
         /// HeadMultiplier getter/setter.
         /// </summary>
-        protected double HeadMultiplier { get { return headMultiplier; } set { headMultiplier = value; } }
+        public double HeadMultiplier { get { return headMultiplier; } set { headMultiplier = value; } }
         /// <summary>
         /// WalkSpeed getter/setter.
         /// </summary>
-        protected double WalkSpeed { get { return walkspeed; } set { walkspeed = value; } }
+        public double WalkSpeed { get { return walkspeed; } set { walkspeed = value; } }
     }
 
     /// <summary>
     /// Creates objects for defining ranged weapons' attributes (grenades, guns).
     /// </summary>
-    public class Ranged
+    public class Ranged 
     {
         private double range1,
                         range2,
-                        damageRange1,
-                        damageRange2;
+                        range1Damage,
+                        range2Damage;
         /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="range1">Close range in studs.</param>
         /// <param name="range2">Far range in studs.</param>
-        /// <param name="damageRange1">Range 1's damage.</param>
-        /// <param name="damageRange2">Range 2's damage.</param>
-        public Ranged(double range1, double range2, double damageRange1, double damageRange2)
+        /// <param name="range1Damage">Range 1's damage.</param>
+        /// <param name="range2Damage">Range 2's damage.</param>
+        public Ranged(double range1, double range2, double range1Damage, double range2Damage)
         {
             this.range1 = range1;
             this.range2 = range2;
-            this.damageRange1 = damageRange1;
-            this.damageRange2 = damageRange2;
+            this.range1Damage = range1Damage;
+            this.range2Damage = range2Damage;
         }
         /// <summary>
         /// Range1 getter/setter.
         /// </summary>
-        protected double Range1 { get { return range1; } set { range1 = value; } }
+        public double Range1 { get { return range1; } set { range1 = value; } }
         /// <summary>
         /// Range2 getter/setter.
         /// </summary>
-        protected double Range2 { get { return range2; } set { range2 = value; } }
+        public double Range2 { get { return range2; } set { range2 = value; } }
         /// <summary>
         /// DamageRange1 getter/setter.
         /// </summary>
-        protected double DamageRange1 { get { return damageRange1; } set { damageRange1 = value; } }
+        public double Range1Damage { get { return range1Damage; } set { range1Damage = value; } }
         /// <summary>
         /// DamageRange2 getter/setter.
         /// </summary>
-        protected double DamageRange2 { get { return damageRange2; } set { damageRange2 = value; } }
+        public double Range2Damage { get { return range2Damage; } set { range2Damage = value; } }
 
     }
 
@@ -184,7 +185,7 @@ namespace NETCoreWPF
         /// <returns><c>FireMode</c> object referring to Automatic, Semiautomatic</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="NullReferenceException"></exception>
-        public FireMode ParseFireModeString(string firemodes)
+        public static FireMode ParseFireModeString(string firemodes)
         {
             
 
@@ -195,8 +196,8 @@ namespace NETCoreWPF
             string specialFlags = "";
             int pellets = 0;
 
-            List<string> resultInt = new List<string>();
-            List<string> resultString = new List<string>();
+            List<string> resultInt = new();
+            List<string> resultString = new();
             int count = 0; //count for numbers
             int count1 = 0; //count for letters
             string output = " ";
@@ -220,7 +221,7 @@ namespace NETCoreWPF
                         if (i + 1 == str.Length)
                         { //detects if the end of the string has been reached and adds previous whole number
                             resultInt.Add(str.Substring(i - count + 1, count));
-                            output = (str.Substring(i - count + 1, count) + " ");
+                            output = string.Concat(str.AsSpan(i - count + 1, count), " ");
                             File.AppendAllText("test.log", output);
                         }
 
@@ -229,7 +230,7 @@ namespace NETCoreWPF
                             if (Convert.ToInt32(str[i - 1]) > 96 && Convert.ToInt32(str[i - 1]) < 123)
                             { //detects if previous character is a letter and adds the whole word before into the list
                                 resultString.Add(str.Substring(i - count1, count1));
-                                output = (str.Substring(i - count, count) + " ");
+                                output = string.Concat(str.AsSpan(i - count, count), " ");
 
                                 File.AppendAllText("test.log", output);
                             }
@@ -245,7 +246,7 @@ namespace NETCoreWPF
                             if (Convert.ToInt32(str[i - 1]) > 47 && Convert.ToInt32(str[i - 1]) < 58)
                             { //detects if previous character is a number and adds the whole number before into the list
                                 resultInt.Add(str.Substring(i - count, count));
-                                output = (str.Substring(i - count, count) + " ");
+                                output = string.Concat(str.AsSpan(i - count, count), " ");
 
                                 File.AppendAllText("test.log", output);
                             }
@@ -257,7 +258,7 @@ namespace NETCoreWPF
                             if (i + 1 == str.Length)
                             { //detects if the end of the string has been reached and adds previous whole word
                                 resultString.Add(str.Substring(i - count + 1, count));
-                                output = (str.Substring(i - count + 1, count) + " ");
+                                output = string.Concat(str.AsSpan(i - count + 1, count), " ");
                                 File.AppendAllText("test.log", output);
                             }
                         }
@@ -304,8 +305,7 @@ namespace NETCoreWPF
             if ((mode.Contains("automatic") || str.Contains("auto")) || firstCharacterMode == 'a')
             {
                 return new FireMode(firerate, "Automatic", false, "", (specialFlags.Length != 0), specialFlags, 0);
-                //modes.Add(Automatic);
-
+                //modes.Add(Automatic); //Automatic SemiAutomatic Burst | BoltAction LeverAction PumpShotgun Shotgun TripleBurst DoubleBurst InstantBurst
             }
             else if ((mode.Contains("semiautomatic") || mode.Contains("semi") || mode.Contains("semi-automatic")) || firstCharacterMode == 's')
             {
@@ -348,7 +348,7 @@ namespace NETCoreWPF
                     return new FireMode(firerate, "Burst", true, "II", true, "DoubleBurst", 0);
                     //modes.Add(DoubleBurst);
                 }
-                else if (specialFlags.Contains("b"))
+                else if (specialFlags.Contains('b'))
                 {
                     return new FireMode(firerate, "Burst", true, "I", true, "InstantBurst", pellets);
                     //modes.Add(InstantBurst);
@@ -437,6 +437,28 @@ namespace NETCoreWPF
         public void addNewDefaultFiremode(FireMode firemode)
         {
             modes.Insert(0, firemode);
+        }
+
+        public bool searchListProperties(string mode, int firerate, int pellets)
+        {
+            //Automatic SemiAutomatic Burst | BoltAction LeverAction PumpShotgun Shotgun TripleBurst DoubleBurst InstantBurst
+            foreach(FireMode firemode in modes)
+            {
+                if (mode.ToLower() == firemode.Mode.ToLower() || (mode.ToLower().Contains("semi") && firemode.Mode.ToLower() == "semiautomatic") || firemode.Pellets == pellets || firemode.Firerate == firerate)
+                {
+                    return true;
+                } else
+                {
+                    if(mode.ToLower() == firemode.SpecialMode.ToLower() && firemode.Special)
+                    {
+                        return true;
+                    } else
+                    {
+                        return false;
+                    }
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -532,10 +554,43 @@ namespace NETCoreWPF
 
     }
 
-
-    class Gun : Weapon
+    public class ConversionList
     {
-        
+
+        private List<Conversion> conversions = new List<Conversion>();
+
+        public Conversion this[int index]
+        {
+            get
+            {
+                return conversions[index];
+            }
+            set
+            {
+                conversions[index] = value;
+            }
+        }
+
+        public void addConversion(Conversion conversion)
+        {
+            conversions.Add(conversion);
+        }
+
+        public Conversion DefaultConversion { get { return conversions[0]; } }
+
+        public ConversionList(Conversion defaultConversion)
+        {
+            addConversion(defaultConversion);
+
+        }
+    }
+
+    public class Conversion
+    {
+        private string attachment;
+        private string conversionName;
+        private bool ammoConversion;
+
 
         private FireModeList fireModes;
         private Carried carriedAttributes;
@@ -548,31 +603,220 @@ namespace NETCoreWPF
         private double aimingWalkspeed;
         private double reloadSpeed;
         private double emptyReloadSpeed;
+        private double suppression;
 
-        public Gun(string name, bool hasRank, int rank, string caliber, int ammoCapacity, int magazineCapacity, string[] firemodes, Carried carriedAttributes, Ranged rangedAttributes, double penetration, double muzzleVelocity, double aimingWalkspeed, double reloadSpeed, double emptyReloadSpeed) : base(name, hasRank, rank)
+        /// <summary>
+        /// DO NOT USE THIS OVERLOAD
+        /// </summary>
+        /// <param name="armourPiercing"></param>
+        /// <param name="hollowPoint"></param>
+        /// <param name="carriedAttributes"></param>
+        /// <param name="rangedAttributes"></param>
+        /// <param name="penetration"></param>
+        /// <param name="suppression"></param>
+        public Conversion(bool armourPiercing, bool hollowPoint, Carried carriedAttributes, Ranged rangedAttributes, double penetration, double suppression)
         {
+            if (hollowPoint) {
+                this.carriedAttributes = new Carried(carriedAttributes.LimbMultiplier, carriedAttributes.TorsoMultiplier / carriedAttributes.TorsoMultiplier, carriedAttributes.HeadMultiplier * (1 / 1.2), carriedAttributes.WalkSpeed);
+                this.rangedAttributes = new Ranged(10.5529 * Math.Log(rangedAttributes.Range1, 2.61), rangedAttributes.Range2 * 0.9, rangedAttributes.Range1Damage * 1.2, rangedAttributes.Range2Damage / 1.2);
+                this.penetration = penetration * 0.5;
+                this.suppression = suppression * 1.1;
+            } else if (armourPiercing)
+            {
+                this.carriedAttributes = new Carried(carriedAttributes.LimbMultiplier, carriedAttributes.TorsoMultiplier, carriedAttributes.HeadMultiplier, carriedAttributes.WalkSpeed);
+                this.rangedAttributes = new Ranged(rangedAttributes.Range1 * 0.5, rangedAttributes.Range2, rangedAttributes.Range1Damage, rangedAttributes.Range2Damage);
+                this.penetration = penetration * 1.5;
+                this.suppression = suppression * 0.5;
+            }
+        }
+
+        public Conversion(bool armourPiercing, bool hollowPoint, Gun gun)
+        {
+            if (hollowPoint)
+            {
+                this.carriedAttributes = new Carried(gun.CarriedAttributes.LimbMultiplier, gun.CarriedAttributes.TorsoMultiplier / gun.CarriedAttributes.TorsoMultiplier, gun.CarriedAttributes.HeadMultiplier * (1 / 1.2), gun.CarriedAttributes.WalkSpeed);
+                this.rangedAttributes = new Ranged(10.5529 * Math.Log(gun.RangedAttributes.Range1, 2.61), gun.RangedAttributes.Range2 * 0.9, gun.RangedAttributes.Range1Damage * 1.2, gun.RangedAttributes.Range2Damage / 1.2);
+                penetration = gun.Penetration * 0.5;
+                suppression = gun.Suppression * 1.1;
+
+                //pass through params
+                fireModes = gun.FireModes;
+                caliber = gun.Caliber;
+                aimingWalkspeed = gun.AimingWalkspeed;
+                attachment = "Hollow Point";
+                conversionName = gun.Name + " Hollow Point";
+                emptyReloadSpeed = gun.EmptyReloadSpeed;
+                reloadSpeed = gun.ReloadSpeed;
+                muzzleVelocity = gun.MuzzleVelocity;
+                ammoCapacity = gun.AmmoCapacity;
+                magazineCapacity = gun.MagazineCapacity;
+            }
+            else if (armourPiercing)
+            {
+                this.carriedAttributes = new Carried(gun.CarriedAttributes.LimbMultiplier, gun.CarriedAttributes.TorsoMultiplier, gun.CarriedAttributes.HeadMultiplier, gun.CarriedAttributes.WalkSpeed);
+                this.rangedAttributes = new Ranged(gun.RangedAttributes.Range1 * 0.5, gun.RangedAttributes.Range2, gun.RangedAttributes.Range1Damage, gun.RangedAttributes.Range2Damage);
+                penetration = gun.Penetration * 1.5;
+                suppression = gun.Suppression * 0.5;
+
+
+                //pass through params
+                fireModes = gun.FireModes;
+                caliber = gun.Caliber;
+                aimingWalkspeed = gun.AimingWalkspeed;
+                attachment = "Armour Piercing";
+                conversionName = gun.Name + " Armour Piercing";
+                emptyReloadSpeed = gun.EmptyReloadSpeed;
+                reloadSpeed = gun.ReloadSpeed;
+                muzzleVelocity = gun.MuzzleVelocity;
+                ammoCapacity = gun.AmmoCapacity;
+                magazineCapacity = gun.MagazineCapacity;
+            }
+        }
+
+        public Conversion(string attachment, string conversionName, bool ammoConversion, string caliber, int ammoCapacity, int magazineCapacity, string[] firemodes, Carried carriedAttributes, Ranged rangedAttributes, double penetration, double muzzleVelocity, double reloadSpeed, double emptyReloadSpeed, double suppression)
+        { //new conversions
+            this.attachment = attachment;
+            this.ammoConversion = ammoConversion;
+            this.conversionName = conversionName;
+
             this.caliber = caliber;
             this.ammoCapacity = ammoCapacity;
-            this.emptyReloadSpeed = emptyReloadSpeed;
             this.magazineCapacity = magazineCapacity;
-            this.aimingWalkspeed = aimingWalkspeed;
-            this.reloadSpeed = reloadSpeed;
-            this.muzzleVelocity = muzzleVelocity;
-            this.penetration = penetration;
             fireModes = new FireModeList(firemodes);
             this.carriedAttributes = carriedAttributes;
             this.rangedAttributes = rangedAttributes;
-            
+            this.penetration = penetration;
+            this.muzzleVelocity = muzzleVelocity;
+            this.reloadSpeed = reloadSpeed;
+            this.emptyReloadSpeed = emptyReloadSpeed;
+            this.suppression = suppression;
         }
 
-        public class Conversion//abstract class 
+        public Conversion(string attachment, string conversionName, bool ammoConversion, string caliber, int ammoCapacity, int magazineCapacity, FireModeList firemodes, Carried carriedAttributes, Ranged rangedAttributes, double penetration, double muzzleVelocity, double reloadSpeed, double emptyReloadSpeed, double suppression)
+        { //new conversions (with same firemodes)
+            this.attachment = attachment;
+            this.ammoConversion = ammoConversion;        
+            this.conversionName = conversionName;
+
+            this.caliber = caliber;
+            this.ammoCapacity = ammoCapacity;
+            this.magazineCapacity = magazineCapacity;
+            fireModes = firemodes;
+            this.carriedAttributes = carriedAttributes;
+            this.rangedAttributes = rangedAttributes;
+            this.penetration = penetration;
+            this.muzzleVelocity = muzzleVelocity;
+            this.reloadSpeed = reloadSpeed;
+            this.emptyReloadSpeed = emptyReloadSpeed;
+            this.suppression = suppression;
+        }
+
+
+        public Conversion(string caliber, int ammoCapacity, int magazineCapacity, string[] firemodes, Carried carriedAttributes, Ranged rangedAttributes, double penetration, double muzzleVelocity, double reloadSpeed, double emptyReloadSpeed, double suppression)
+        { //default
+
+            this.caliber = caliber;
+            this.ammoCapacity = ammoCapacity;
+            this.magazineCapacity = magazineCapacity;
+            fireModes = new FireModeList(firemodes);
+            this.carriedAttributes = carriedAttributes;
+            this.rangedAttributes = rangedAttributes;
+            this.penetration = penetration;
+            this.muzzleVelocity = muzzleVelocity;
+            this.reloadSpeed = reloadSpeed;
+            this.emptyReloadSpeed = emptyReloadSpeed;
+            this.suppression = suppression;
+
+        }
+
+        public string Attachment { get { return attachment; } set { attachment = value; } }
+        public string ConversionName { get { return conversionName; } set { conversionName = value; } }
+        public bool AmmoConversion { get { return ammoConversion; } set { ammoConversion = value; } }
+        public FireModeList FireModes { get { return fireModes; } set { fireModes = value; } }
+        public Carried CarriedAttributes { get { return carriedAttributes; } set { carriedAttributes = value; } }
+        public Ranged RangedAttributes { get { return rangedAttributes; } set { rangedAttributes = value; } }
+        public string Caliber { get { return caliber; } set { caliber = value; } }
+        public int AmmoCapacity { get { return ammoCapacity; } set { ammoCapacity = value; } }
+        public int MagazineCapacity { get { return magazineCapacity; } set { magazineCapacity = value; } }
+        public double Penetration { get { return penetration; } set { penetration = value; } }
+        public double MuzzleVelocity { get { return muzzleVelocity; } set { muzzleVelocity = value; } }
+        public double AimingWalkspeed { get { return aimingWalkspeed; } set { aimingWalkspeed = value; } }
+        public double ReloadSpeed { get { return reloadSpeed; } set { reloadSpeed = value; } }
+        public double EmptyReloadSpeed { get { return emptyReloadSpeed; } set { emptyReloadSpeed = value; } }
+        public double Suppression { get { return suppression; } set { suppression = value; } }
+    }
+
+    public class Gun : Weapon
+    {
+
+        private ConversionList conversions;
+
+        private FireModeList fireModes;
+        private Carried carriedAttributes;
+        private Ranged rangedAttributes;
+        private string caliber;
+        private int ammoCapacity;
+        private int magazineCapacity;
+        private double penetration;
+        private double muzzleVelocity;
+        private double aimingWalkspeed;
+        private double reloadSpeed;
+        private double emptyReloadSpeed;
+        private double suppression;
+
+
+        public Gun(string name, bool hasRank, int rank, Conversion defaultGun, double aimingWalkspeed, bool hasArmourPiercing, bool hasHollowPoint) : base(name, hasRank, rank)
         {
-            public string attachment;
-            public string conversionName;
 
-            public bool ammoConversion;
-            public string ammoType; //depends on above bool
+            caliber = defaultGun.Caliber;
+            ammoCapacity = defaultGun.AmmoCapacity;
+            magazineCapacity = defaultGun.MagazineCapacity;
+            fireModes = defaultGun.FireModes;
+            carriedAttributes = defaultGun.CarriedAttributes;
+            rangedAttributes = defaultGun.RangedAttributes;
+            penetration = defaultGun.Penetration;
+            muzzleVelocity = defaultGun.MuzzleVelocity;
+            reloadSpeed = defaultGun.ReloadSpeed;
+            emptyReloadSpeed = defaultGun.EmptyReloadSpeed;
+            suppression = defaultGun.Suppression;
+            this.aimingWalkspeed = aimingWalkspeed;
+
+            conversions = new ConversionList(defaultGun);
+            if (hasArmourPiercing)
+            {
+                conversions.addConversion(new Conversion(true, false, this));
+            }
+            if (hasHollowPoint)
+            {
+                conversions.addConversion(new Conversion(false, true, this));
+            }
+
+
+
         }
+
+        public void addNewConversionList(Conversion defaultConversion)
+        {
+            conversions = new ConversionList(defaultConversion);
+        }
+
+        public ConversionList Conversions { get { return conversions; } set { conversions = value; } }
+
+
+        public FireModeList FireModes { get { return fireModes; } set { fireModes = value; } }
+        public Carried CarriedAttributes { get { return carriedAttributes; } set { carriedAttributes = value; } }
+        public Ranged RangedAttributes { get { return rangedAttributes; } set { rangedAttributes = value; } }
+        public string Caliber { get { return caliber; } set { caliber = value; } }
+        public int AmmoCapacity { get { return ammoCapacity; } set { ammoCapacity = value; } }
+        public int MagazineCapacity { get { return magazineCapacity; } set { magazineCapacity = value; } }
+        public double Penetration { get { return penetration; } set { penetration = value; } }
+        public double MuzzleVelocity { get { return muzzleVelocity; } set { muzzleVelocity = value; } }
+        public double AimingWalkspeed { get { return aimingWalkspeed; } set { aimingWalkspeed = value; } }
+        public double ReloadSpeed { get { return reloadSpeed; } set { reloadSpeed = value; } }
+        public double EmptyReloadSpeed { get { return emptyReloadSpeed; } set { emptyReloadSpeed = value; } }
+        public double Suppression { get { return suppression; } set { suppression = value; } }
+
+
     }
 
     
