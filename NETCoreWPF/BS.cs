@@ -1,14 +1,104 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Common;
-using System.Data;
+using System.Linq;
 using System.Text;
-using System.Data.SqlClient;
-using static System.Net.Mime.MediaTypeNames;
+using System.Threading.Tasks;
+//using SQLite;
 
 namespace NETCoreWPF
 {
+    public partial class MainWindow
+    {
+        /*
+        public class DBInfo
+        {
+            [PrimaryKey,AutoIncrement]
+            public int id { get; set; }
+            public string Column1 { get; set; }
+            public string Column2 { get; set; }
 
+            public DBInfo() { }
+
+            public DBInfo(string column1, string column2)
+            {
+                Column1 = column1;
+                Column2 = column2;
+            } 
+        }*/
+
+        public static void ConnectionBS()
+        {
+            /*
+                //SQLiteConnectionString connectionString = "";
+                SqliteConnectionStringBuilder connectionStringBuilder = new SqliteConnectionStringBuilder();
+                //connectionStringBuilder.Password = "Menskirts#";
+                connectionStringBuilder.ConnectionString = @"Data Source=C:\Irma.db";
+                Console.WriteLine(connectionStringBuilder.ToString());
+                SqliteConnection cnn = new SqliteConnection(connectionStringBuilder.ConnectionString);
+                cnn.Open();
+                MessageBox.Show("Connection open");
+                cnn.Close();
+                */
+
+            /*
+            FbConnectionStringBuilder fbConnectionStringBuilder = new FbConnectionStringBuilder();
+            fbConnectionStringBuilder.Database = @"C:\Barakh.fdb";
+            fbConnectionStringBuilder.DataSource = "localhost";
+            fbConnectionStringBuilder.UserID = "SYSDBA";
+            fbConnectionStringBuilder.Password = "Ordcrayt31()";
+            FbConnection fbn = new FbConnection(@"Server=192.168.1.131;User=SYSDBA;Password=Ordcrayt31();Charser=NONE;Database=C:\Barakh.fdb".ToString());
+            //fbn.ConnectionString = fbConnectionStringBuilder.ToString();
+            //fbn.ConnectionString = @"Server=localhost;User=SYSDBA;Password=Ordcrayt31();Charser=NONE;Database=C:\Barakh.fdb";
+            string s = "";
+            try
+            {
+                fbn.Open();
+                FbCommand com = new("CREATE TABLE testtable(column1 int, column2 varchar(20), PRIMARY KEY(column1));");
+                com.ExecuteNonQuery();
+            }
+            catch(Exception ex)
+            {
+                s = ex.Message;
+                MessageBox.Show(s);
+            }
+            */
+            /*
+            string s = "";
+            SqlConnectionStringBuilder connectionStringBuilder = new(@"Server=localhost;User=SYSDBA;Password=Ordcrayt31();Database=C:\Barakh.fdb");
+            SqlConnection connection = new(connectionStringBuilder.ToString());
+            try
+            {
+                connection.Open();
+                SqlCommand com = new("CREATE TABLE testtable(column1 int, column2 varchar(20), PRIMARY KEY(column1));");
+                com.ExecuteNonQuery();
+                connection.Close();
+            }
+            catch(Exception ex)
+            {
+                s = ex.Message;
+                MessageBox.Show(s);
+            }
+            */
+            //FbConnection fbn = new(fbConnectionStringBuilder.ConnectionString);
+            /*
+            if (File.Exists(@"C:\Databases\Ketto.db"))
+            {
+                //do nothing
+            }
+            else
+            {
+                var db = new SQLiteConnection(@"C:\Databases\Ketto.db");
+                db.CreateTable<DBInfo>();
+                db.Close();
+            }
+
+            DBInfo temp = new DBInfo("bruh", "moment");
+            var dbe = new SQLiteConnection(@"C:\Databases\Ketto.db");
+            dbe.Insert(temp);
+            dbe.Close();
+            */
+        }
+    }
     /*
     public class BaseDataAccess
     {
@@ -203,5 +293,4 @@ namespace NETCoreWPF
  
         return Test;
  }*/
-
 }

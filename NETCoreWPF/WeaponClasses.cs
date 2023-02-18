@@ -1,17 +1,26 @@
 ﻿using Azure.Core;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Transactions;
 using System.Windows.Input;
 using System.Windows.Media.Media3D;
 using System.Xml.Linq;
+using System.Data.SqlClient;
+//using System.Data.SQLite;
+//using System.Data.SQLite;
+
 
 namespace NETCoreWPF
 {
     
+
+
     /// <summary>
     /// Defines a weapon object.
     /// </summary>
@@ -39,7 +48,7 @@ namespace NETCoreWPF
         public Weapon(string name, bool hasRank, int rank)
         {
             this.name = name;
-            if (hasRank)
+            if (hasRank && rank > 0)
             {
                 this.rank = rank;
             } else
@@ -61,6 +70,48 @@ namespace NETCoreWPF
         /// HasRank getter/setter.
         /// </summary>
         public bool HasRank { get { return hasRank; } set { hasRank = value; } }
+
+        /// <summary>
+        /// General calculator for how many hits it takes to kill an enemy.
+        /// </summary>
+        /// <param name="rangedAttributes">The <see cref="Ranged.Ranged(double, double, double, double)">rangedAttributes</see> of the weapon.</param>
+        /// <param name="multiplier">The multiplier associated with the weapon.</param>
+        /// <param name="range">The distance to the target.</param>
+        /// <returns></returns>
+        public static int lethalityCalculatorGeneral(Ranged rangedAttributes, double multiplier, double range)
+        {
+            if (rangedAttributes.Range2Damage > 0 && range >= 0)
+            {
+                for (int i = 0; i < 50; i++)
+                {
+                    double outt = Ranged.damageFunction(rangedAttributes, range) * multiplier * i;
+                    if (outt >= 100)
+                    {
+                        return i;
+                    }
+
+                    if (i > 25) return -2;
+
+                }
+            }
+
+            return -1;
+
+        }
+
+        /// <summary>
+        /// Gun calculator for how many shots it takes to kill an enemy.
+        /// </summary>
+        /// <param name="conversion">The <c>Conversion</c> object to be used for the calculations.</param>
+        /// <param name="range">The distance to the target.</param>
+        /// <returns></returns>
+        public static Tuple<int, int, int> lethalityCalculator(Conversion conversion, double range)
+        {
+            int limb = lethalityCalculatorGeneral(conversion.RangedAttributes, conversion.CarriedAttributes.LimbMultiplier, range);
+            int torso = lethalityCalculatorGeneral(conversion.RangedAttributes, conversion.CarriedAttributes.TorsoMultiplier, range);
+            int head = lethalityCalculatorGeneral(conversion.RangedAttributes, conversion.CarriedAttributes.HeadMultiplier, range);
+            return Tuple.Create(limb, torso, head);
+        }
 
     }
 
@@ -132,7 +183,12 @@ namespace NETCoreWPF
             this.range2Damage = range2Damage;
         }
 
-
+        /// <summary>
+        /// Damage for a given weapon and range.
+        /// </summary>
+        /// <param name="weapon">The weapon to be used for calculations.</param>
+        /// <param name="range">The distance to the target.</param>
+        /// <returns></returns>
         public static double damageFunction(Ranged weapon, double range)
         {
             double range1 = weapon.Range1;
@@ -205,7 +261,6 @@ namespace NETCoreWPF
         public FireModeList(string[] firemodes)
         {
             ParseFireModeStringIterator(firemodes);
-            int r = 5;
         }
 
         /// <summary>
@@ -686,7 +741,15 @@ namespace NETCoreWPF
             conversions.Insert(index, conversion);
         }
 
-
+        /// <summary>
+        /// Gets the length of the list.
+        /// </summary>
+        /// <returns>The count of elements in the list.</returns>
+        public int getLength()
+        {
+            return conversions.Count;
+            
+        }
 
         /// <summary>
         /// Constructor.
@@ -993,7 +1056,6 @@ namespace NETCoreWPF
         public double Suppression { get { return suppression; } set { suppression = value; } }
     }
 
-
     /// <summary>
     /// Defines a gun.
     /// </summary>
@@ -1060,34 +1122,7 @@ namespace NETCoreWPF
             return new ConversionList(defaultConversion);
         }
 
-        public static int lethalityCalculatorGeneral(Ranged rangedAttributes, double multiplier, double range)
-        {
-            if (rangedAttributes.Range2Damage > 0)
-            {
-                for (int i = 0; i < 50; i++)
-                {
-                    double outt = Ranged.damageFunction(rangedAttributes, range) * multiplier * i;
-                    if (outt >= 100)
-                    {
-                        return i;
-                    }
-
-                    if (i > 25) return -2;
-
-                }
-            }
-
-            return -1;
-
-        }
-
-        public static Tuple<int,int,int> lethalityCalculator(Ranged rangedAttributes, Carried carriedAttributes, double range)
-        {
-            int limb = lethalityCalculatorGeneral(rangedAttributes, carriedAttributes.LimbMultiplier, range);
-            int torso = lethalityCalculatorGeneral(rangedAttributes, carriedAttributes.TorsoMultiplier, range);
-            int head = lethalityCalculatorGeneral(rangedAttributes, carriedAttributes.HeadMultiplier, range);
-            return Tuple.Create(limb,torso,head);
-        }
+        
 
         
         //public 
@@ -1294,6 +1329,216 @@ namespace NETCoreWPF
         public Ranged RangedAttributes { get { return rangedAttributes; } set { rangedAttributes = value; } }
 
     }
+
+    /*
+    public interface ICategory
+    {
+        ICategory LCategory { get; set; }
+    }
+    */
+
+    public class Category//<Weapon> //: ICategory
+    {
+        private Dictionary<int,Weapon> weaponList = new();
+        /*
+        public Category(ICategory lCategory = null)
+        {
+            LCategory = lCategory; 
+        }
+        public ICategory LCategory { get; set; }
+        */
+
+        public Weapon this[int index]
+        {
+            get
+            {
+                return weaponList[index];
+            }
+            set
+            {
+                weaponList[index] = value;
+            }
+        }
+
+        public Category(Weapon weapon)
+        {
+            if (weapon != null) addWeapon(weapon);
+        }
+
+        //generates id from weapon rank
+        private static int IDGenerator(Weapon weapon)
+        {
+            if(weapon.Rank > 10000)
+            {
+                return -1;
+            }
+
+            return weapon.Rank * 10;
+        }
+
+        //matches a key and value pair (give a key, get a value; give a value, get a key)
+        public bool matchKeyValue(ref int key, ref Weapon value)
+        {
+            if (weaponList.ContainsKey(key))
+            {
+                value = weaponList[key];
+                return true;
+            }
+            else if (weaponList.ContainsValue(value))
+            {
+                for(int t = 0; t < weaponList.Count; t++){
+                    if(weaponList[t] == value)
+                    {
+                        value = weaponList[t];
+                        return true;
+                    }
+                }
+                return false;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+        //if the list has a key
+        public bool hasKey(int key)
+        {
+            foreach(int r in weaponList.Keys)
+            {
+                if (r == key) return true;
+            }
+            return false;
+        }
+
+        //if the list has a weapon
+        public bool hasWeapon(Weapon weapon)
+        {
+            foreach(Weapon weapon1 in weaponList.Values)
+            {
+                if (weapon1 == weapon) return true;
+            }
+            return false;
+        }
+
+        //give a weapon, get its id
+        public int IDLookup(Weapon weapon)
+        {
+            foreach(int id in weaponList.Keys)
+            {
+                if (weaponList[id] == weapon)
+                {
+                    return id;
+                }
+            }
+            return -1;
+        }
+
+        //get a weapon by looking up its rank 
+        public Weapon weaponLookupByRank(int rank)
+        {
+            foreach(Weapon weapon in weaponList.Values)
+            {
+                if (weapon.Rank == rank)
+                {
+                    return weapon;
+                }
+            }
+            return new Weapon("Catch wLBR", false, 0);
+        }
+
+        //get a weapon by looking up its id
+        public Weapon weaponLookupByID(int id)
+        {
+            return weaponList[id];
+        }
+        
+        //adds a weapon to the list
+        public bool addWeapon(Weapon weapon) {
+            int er = 2;
+            Func<Weapon, int> deleg = x => IDGenerator(x) != -1 ? IDGenerator(weapon) : er;
+            if (deleg(weapon) == er) return false;
+            try
+            {
+                weaponList.Add(deleg(weapon), weapon);
+            }
+            catch (ArgumentException)
+            {
+                weaponList.Add(deleg(weapon) + 1, weapon);
+            }
+            return true;
+        }
+
+        public bool removeWeaponByRank(int rank)
+        {
+            return weaponList.Remove(IDLookup(weaponLookupByRank(rank)));
+        }
+
+        public bool removeWeaponByID(int id)
+        {
+            return weaponList.Remove(id);
+        }
+
+        public int weaponCount()
+        {
+            return weaponList.Count;
+        }
+
+        
+
+
+    }
+
+    
+
+
+    public class Class
+    {
+        private List<Category> categoryList = new();
+        private string classname;
+
+        public Category this[int index]
+        {
+            get
+            {
+                return categoryList[index];
+            }
+            set
+            {
+                categoryList[index] = value;
+            }
+        }
+
+        public Class(string name)
+        {
+            this.classname = name;
+        }
+
+        public void addCategory(Category category)
+        {
+            categoryList.Add(category);
+        }
+
+        public void removeCategory(Category category)
+        {
+            categoryList.Remove(category);
+        }
+
+        public bool hasCategory(Category category)
+        {
+            return categoryList.Contains(category);
+        }
+
+        public int categoryLength(Category category)
+        {
+            return categoryList.Count;
+        }
+
+    }
+
+
+
 
 }
 
