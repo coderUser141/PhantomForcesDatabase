@@ -820,42 +820,42 @@ namespace NETCoreWPF
         {
             if (hollowPoint)
             {
-                this.carriedAttributes = new Carried(gun.CarriedAttributes.LimbMultiplier, gun.CarriedAttributes.TorsoMultiplier / gun.CarriedAttributes.TorsoMultiplier, gun.CarriedAttributes.HeadMultiplier * (1 / 1.2), gun.CarriedAttributes.WalkSpeed);
-                this.rangedAttributes = new Ranged(10.5529 * Math.Log(gun.RangedAttributes.Range1, 2.61), gun.RangedAttributes.Range2 * 0.9, gun.RangedAttributes.Range1Damage * 1.2, gun.RangedAttributes.Range2Damage / 1.2);
-                penetration = gun.Penetration * 0.5;
-                suppression = gun.Suppression * 1.1;
+                this.carriedAttributes = new Carried(gun.DefaultCarriedAttributes.LimbMultiplier, gun.DefaultCarriedAttributes.TorsoMultiplier / gun.DefaultCarriedAttributes.TorsoMultiplier, gun.DefaultCarriedAttributes.HeadMultiplier * (1 / 1.2), gun.DefaultCarriedAttributes.WalkSpeed);
+                this.rangedAttributes = new Ranged(10.5529 * Math.Log(gun.DefaultRangedAttributes.Range1, 2.61), gun.DefaultRangedAttributes.Range2 * 0.9, gun.DefaultRangedAttributes.Range1Damage * 1.2, gun.DefaultRangedAttributes.Range2Damage / 1.2);
+                penetration = gun.DefaultPenetration * 0.5;
+                suppression = gun.DefaultSuppression * 1.1;
 
                 //pass through params
-                fireModes = gun.FireModes;
-                caliber = gun.Caliber;
-                aimingWalkspeed = gun.AimingWalkspeed;
+                fireModes = gun.DefaultFireModes;
+                caliber = gun.DefaultCaliber;
+                aimingWalkspeed = gun.DefaultAimingWalkspeed;
                 attachment = "Hollow Point";
                 conversionName = gun.Name + " Hollow Point";
-                emptyReloadSpeed = gun.EmptyReloadSpeed;
-                reloadSpeed = gun.ReloadSpeed;
-                muzzleVelocity = gun.MuzzleVelocity;
-                ammoCapacity = gun.AmmoCapacity;
-                magazineCapacity = gun.MagazineCapacity;
+                emptyReloadSpeed = gun.DefaultEmptyReloadSpeed;
+                reloadSpeed = gun.DefaultReloadSpeed;
+                muzzleVelocity = gun.DefaultMuzzleVelocity;
+                ammoCapacity = gun.DefaultAmmoCapacity;
+                magazineCapacity = gun.DefaultMagazineCapacity;
             }
             else if (armourPiercing)
             {
-                this.carriedAttributes = new Carried(gun.CarriedAttributes.LimbMultiplier, gun.CarriedAttributes.TorsoMultiplier, gun.CarriedAttributes.HeadMultiplier, gun.CarriedAttributes.WalkSpeed);
-                this.rangedAttributes = new Ranged(gun.RangedAttributes.Range1 * 0.5, gun.RangedAttributes.Range2, gun.RangedAttributes.Range1Damage, gun.RangedAttributes.Range2Damage);
-                penetration = gun.Penetration * 1.5;
-                suppression = gun.Suppression * 0.5;
+                this.carriedAttributes = new Carried(gun.DefaultCarriedAttributes.LimbMultiplier, gun.DefaultCarriedAttributes.TorsoMultiplier, gun.DefaultCarriedAttributes.HeadMultiplier, gun.DefaultCarriedAttributes.WalkSpeed);
+                this.rangedAttributes = new Ranged(gun.DefaultRangedAttributes.Range1 * 0.5, gun.DefaultRangedAttributes.Range2, gun.DefaultRangedAttributes.Range1Damage, gun.DefaultRangedAttributes.Range2Damage);
+                penetration = gun.DefaultPenetration * 1.5;
+                suppression = gun.DefaultSuppression * 0.5;
 
 
                 //pass through params
-                fireModes = gun.FireModes;
-                caliber = gun.Caliber;
-                aimingWalkspeed = gun.AimingWalkspeed;
+                fireModes = gun.DefaultFireModes;
+                caliber = gun.DefaultCaliber;
+                aimingWalkspeed = gun.DefaultAimingWalkspeed;
                 attachment = "Armour Piercing";
                 conversionName = gun.Name + " Armour Piercing";
-                emptyReloadSpeed = gun.EmptyReloadSpeed;
-                reloadSpeed = gun.ReloadSpeed;
-                muzzleVelocity = gun.MuzzleVelocity;
-                ammoCapacity = gun.AmmoCapacity;
-                magazineCapacity = gun.MagazineCapacity;
+                emptyReloadSpeed = gun.DefaultEmptyReloadSpeed;
+                reloadSpeed = gun.DefaultReloadSpeed;
+                muzzleVelocity = gun.DefaultMuzzleVelocity;
+                ammoCapacity = gun.DefaultAmmoCapacity;
+                magazineCapacity = gun.DefaultMagazineCapacity;
             }
         }
 
@@ -877,7 +877,8 @@ namespace NETCoreWPF
         /// <param name="reloadSpeed">The reload speed of the gun with the conversion.</param>
         /// <param name="emptyReloadSpeed">The empty reload speed of the gun with the conversion.</param>
         /// <param name="suppression">The suppression of the gun with the conversion.</param>
-        public Conversion(string name,string attachment, string conversionName, bool ammoConversion, string caliber, int ammoCapacity, int magazineCapacity, string[] firemodes, Carried carriedAttributes, Ranged rangedAttributes, double penetration, double muzzleVelocity, double reloadSpeed, double emptyReloadSpeed, double suppression)
+        /// <param name="aimingWalkspeed">The aiming walkspeed of the gun with the conversion.</param>
+        public Conversion(string name,string attachment, string conversionName, bool ammoConversion, string caliber, int ammoCapacity, int magazineCapacity, string[] firemodes, Carried carriedAttributes, Ranged rangedAttributes, double penetration, double muzzleVelocity, double reloadSpeed, double emptyReloadSpeed, double suppression, double aimingWalkspeed)
         { //new conversions
             this.attachment = attachment;
             this.ammoConversion = ammoConversion;
@@ -901,6 +902,8 @@ namespace NETCoreWPF
             this.reloadSpeed = reloadSpeed;
             this.emptyReloadSpeed = emptyReloadSpeed;
             this.suppression = suppression;
+            this.aimingWalkspeed = aimingWalkspeed;
+            
 
         }
 
@@ -922,7 +925,8 @@ namespace NETCoreWPF
         /// <param name="reloadSpeed">The reload speed of the gun with the conversion.</param>
         /// <param name="emptyReloadSpeed">The empty reload speed of the gun with the conversion.</param>
         /// <param name="suppression">The suppression of the gun with the conversion.</param>
-        public Conversion(string name, string attachment, string conversionName, bool ammoConversion, string caliber, int ammoCapacity, int magazineCapacity, FireModeList firemodes, Carried carriedAttributes, Ranged rangedAttributes, double penetration, double muzzleVelocity, double reloadSpeed, double emptyReloadSpeed, double suppression)
+        /// <param name="aimingWalkspeed">The aiming walkspeed of the gun with the conversion.</param>
+        public Conversion(string name, string attachment, string conversionName, bool ammoConversion, string caliber, int ammoCapacity, int magazineCapacity, FireModeList firemodes, Carried carriedAttributes, Ranged rangedAttributes, double penetration, double muzzleVelocity, double reloadSpeed, double emptyReloadSpeed, double suppression, double aimingWalkspeed)
         { //new conversions (with same firemodes)
             this.attachment = attachment;
             this.ammoConversion = ammoConversion;
@@ -946,23 +950,25 @@ namespace NETCoreWPF
             this.reloadSpeed = reloadSpeed;
             this.emptyReloadSpeed = emptyReloadSpeed;
             this.suppression = suppression;
+            this.aimingWalkspeed = aimingWalkspeed;
         }
 
         /// <summary>
         /// For adding the default conversion for a gun. 
         /// </summary>
-        /// <param name="caliber">The caliber of the gun with the conversion.</param>
-        /// <param name="ammoCapacity">The ammo capacity of the gun with the conversion.</param>
-        /// <param name="magazineCapacity">The magazine capacity of the gun with the conversion.</param>
-        /// <param name="firemodes">The firemodes of the gun with the conversion.</param>
-        /// <param name="carriedAttributes">The <see cref="Carried">carriedAttributes</see> of the gun with the conversion.</param>
-        /// <param name="rangedAttributes">The <see cref="Ranged">rangedAttributes</see> of the gun with the conversion.</param>
-        /// <param name="penetration">The penetration depth of the gun with the conversion.</param>
-        /// <param name="muzzleVelocity">The muzzle velocity of the gun with the conversion.</param>
-        /// <param name="reloadSpeed">The reload speed of the gun with the conversion.</param>
-        /// <param name="emptyReloadSpeed">The empty reload speed of the gun with the conversion.</param>
-        /// <param name="suppression">The suppression of the gun with the conversion.</param>
-        public Conversion(string caliber, int ammoCapacity, int magazineCapacity, string[] firemodes, Carried carriedAttributes, Ranged rangedAttributes, double penetration, double muzzleVelocity, double reloadSpeed, double emptyReloadSpeed, double suppression)
+        /// <param name="caliber">The caliber of the gun with the default conversion.</param>
+        /// <param name="ammoCapacity">The ammo capacity of the gun with the default conversion.</param>
+        /// <param name="magazineCapacity">The magazine capacity of the gun with the default conversion.</param>
+        /// <param name="firemodes">The firemodes of the gun with the default conversion.</param>
+        /// <param name="carriedAttributes">The <see cref="Carried">carriedAttributes</see> of the gun with the default conversion.</param>
+        /// <param name="rangedAttributes">The <see cref="Ranged">rangedAttributes</see> of the gun with the default conversion.</param>
+        /// <param name="penetration">The penetration depth of the gun with the default conversion.</param>
+        /// <param name="muzzleVelocity">The muzzle velocity of the gun with the default conversion.</param>
+        /// <param name="reloadSpeed">The reload speed of the gun with the default conversion.</param>
+        /// <param name="emptyReloadSpeed">The empty reload speed of the gun with the default conversion.</param>
+        /// <param name="suppression">The suppression of the gun with the default conversion.</param>
+        /// <param name="aimingWalkspeed">The aiming walkspeed of the gun with the default conversion.</param>
+        public Conversion(string caliber, int ammoCapacity, int magazineCapacity, string[] firemodes, Carried carriedAttributes, Ranged rangedAttributes, double penetration, double muzzleVelocity, double reloadSpeed, double emptyReloadSpeed, double suppression, double aimingWalkspeed)
         { //default
 
             this.caliber = caliber;
@@ -976,82 +982,83 @@ namespace NETCoreWPF
             this.reloadSpeed = reloadSpeed;
             this.emptyReloadSpeed = emptyReloadSpeed;
             this.suppression = suppression;
+            this.aimingWalkspeed = aimingWalkspeed;
 
         }
 
         /// <summary>
-        /// Attachment getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double)"/>
+        /// Attachment getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
         public string Attachment { get { return attachment; } set { attachment = value; } }
 
         /// <summary>
-        /// ConversionName getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double)"/>
+        /// ConversionName getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
         public string ConversionName { get { return conversionName; } set { conversionName = value; } }
 
         /// <summary>
-        /// AmmoConversion getter/setter.  See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double)"/>
+        /// AmmoConversion getter/setter.  See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
         public bool AmmoConversion { get { return ammoConversion; } set { ammoConversion = value; } }
 
 
         /// <summary>
-        /// FireModes getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double)"/>
+        /// FireModes getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
         public FireModeList FireModes { get { return fireModes; } set { fireModes = value; } }
 
         /// <summary>
-        /// CarriedAttributes getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double)"/>
+        /// CarriedAttributes getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
         public Carried CarriedAttributes { get { return carriedAttributes; } set { carriedAttributes = value; } }
 
         /// <summary>
-        /// RangedAttributes getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double)"/>
+        /// RangedAttributes getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
         public Ranged RangedAttributes { get { return rangedAttributes; } set { rangedAttributes = value; } }
 
         /// <summary>
-        /// Caliber getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double)"/>
+        /// Caliber getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
         public string Caliber { get { return caliber; } set { caliber = value; } }
 
         /// <summary>
-        /// AmmoCapacity getter/setter. See<see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double)"/>
+        /// AmmoCapacity getter/setter. See<see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
         public int AmmoCapacity { get { return ammoCapacity; } set { ammoCapacity = value; } }
 
         /// <summary>
-        /// MagazineCapacity getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double)"/>
+        /// MagazineCapacity getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
         public int MagazineCapacity { get { return magazineCapacity; } set { magazineCapacity = value; } }
 
         /// <summary>
-        /// Penetration getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double)"/>
+        /// Penetration getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
         public double Penetration { get { return penetration; } set { penetration = value; } }
 
         /// <summary>
-        /// MuzzleVelocity getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double)"/>
+        /// MuzzleVelocity getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
         public double MuzzleVelocity { get { return muzzleVelocity; } set { muzzleVelocity = value; } }
 
         /// <summary>
-        /// AimingWalkspeed getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double)"/>
+        /// AimingWalkspeed getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
         public double AimingWalkspeed { get { return aimingWalkspeed; } set { aimingWalkspeed = value; } }
 
         /// <summary>
-        /// ReloadSpeed getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double)"/>
+        /// ReloadSpeed getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
         public double ReloadSpeed { get { return reloadSpeed; } set { reloadSpeed = value; } }
 
         /// <summary>
-        /// EmptyReloadSpeed getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double)"/>
+        /// EmptyReloadSpeed getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
         public double EmptyReloadSpeed { get { return emptyReloadSpeed; } set { emptyReloadSpeed = value; } }
 
         /// <summary>
-        /// Suppression getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double)"/>
+        /// Suppression getter/setter. See <see cref="Conversion.Conversion(string, string, string, bool, string, int, int, FireModeList, Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
         public double Suppression { get { return suppression; } set { suppression = value; } }
     }
@@ -1064,18 +1071,18 @@ namespace NETCoreWPF
 
         private ConversionList conversions;
 
-        private FireModeList fireModes;
-        private Carried carriedAttributes;
-        private Ranged rangedAttributes;
-        private string caliber;
-        private int ammoCapacity;
-        private int magazineCapacity;
-        private double penetration;
-        private double muzzleVelocity;
+        private FireModeList defaultFireModes;
+        private Carried defaultCarriedAttributes;
+        private Ranged defaultRangedAttributes;
+        private string defaultCaliber;
+        private int defaultAmmoCapacity;
+        private int defaultMagazineCapacity;
+        private double defaultPenetration;
+        private double defaultMuzzleVelocity;
         private double aimingWalkspeed;
-        private double reloadSpeed;
-        private double emptyReloadSpeed;
-        private double suppression;
+        private double defaultReloadSpeed;
+        private double defaultEmptyReloadSpeed;
+        private double defaultSuppression;
 
         /// <summary>
         /// Constructor.
@@ -1083,25 +1090,25 @@ namespace NETCoreWPF
         /// <param name="name">The name of the gun.</param>
         /// <param name="hasRank">If the gun has a rank.</param>
         /// <param name="rank">The rank of the gun.</param>
-        /// <param name="defaultGun">The <c>Conversion</c> object defining the default gun. <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double)"></see></param>
+        /// <param name="defaultGun">The <c>Conversion</c> object defining the default gun. <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double, double)"></see></param>
         /// <param name="aimingWalkspeed">The aiming walkspeed of the gun.</param>
         /// <param name="hasArmourPiercing">If the gun supports armour piercing rounds.</param>
         /// <param name="hasHollowPoint">If the gun supports hollow point rounds</param>
-        public Gun(string name, bool hasRank, int rank, Conversion defaultGun, double aimingWalkspeed, bool hasArmourPiercing, bool hasHollowPoint) : base(name, hasRank, rank)
+        public Gun(string name, bool hasRank, int rank, Conversion defaultGun, bool hasArmourPiercing, bool hasHollowPoint) : base(name, hasRank, rank)
         {
 
-            caliber = defaultGun.Caliber;
-            ammoCapacity = defaultGun.AmmoCapacity;
-            magazineCapacity = defaultGun.MagazineCapacity;
-            fireModes = defaultGun.FireModes;
-            carriedAttributes = defaultGun.CarriedAttributes;
-            rangedAttributes = defaultGun.RangedAttributes;
-            penetration = defaultGun.Penetration;
-            muzzleVelocity = defaultGun.MuzzleVelocity;
-            reloadSpeed = defaultGun.ReloadSpeed;
-            emptyReloadSpeed = defaultGun.EmptyReloadSpeed;
-            suppression = defaultGun.Suppression;
-            this.aimingWalkspeed = aimingWalkspeed;
+            defaultCaliber = defaultGun.Caliber;
+            defaultAmmoCapacity = defaultGun.AmmoCapacity;
+            defaultMagazineCapacity = defaultGun.MagazineCapacity;
+            defaultFireModes = defaultGun.FireModes;
+            defaultCarriedAttributes = defaultGun.CarriedAttributes;
+            defaultRangedAttributes = defaultGun.RangedAttributes;
+            defaultPenetration = defaultGun.Penetration;
+            defaultMuzzleVelocity = defaultGun.MuzzleVelocity;
+            defaultReloadSpeed = defaultGun.ReloadSpeed;
+            defaultEmptyReloadSpeed = defaultGun.EmptyReloadSpeed;
+            defaultSuppression = defaultGun.Suppression;
+            aimingWalkspeed = aimingWalkspeed;
 
             conversions = addNewConversionList(defaultGun);
             if (hasArmourPiercing)
@@ -1133,64 +1140,64 @@ namespace NETCoreWPF
 
 
         /// <summary>
-        /// FireModes getter/setter. See <see cref="Gun.Gun(string, bool, int, Conversion, double, bool, bool)"/> and <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double)"/>
+        /// FireModes getter/setter. See <see cref="Gun.Gun(string, bool, int, Conversion, bool, bool)"/> and <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
-        public FireModeList FireModes { get { return fireModes; } set { fireModes = value; } }
+        public FireModeList DefaultFireModes { get { return defaultFireModes; } set { defaultFireModes = value; } }
 
         /// <summary>
-        /// CarriedAttributes getter/setter. See <see cref="Gun.Gun(string, bool, int, Conversion, double, bool, bool)"/> and <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double)"/>
+        /// CarriedAttributes getter/setter. See <see cref="Gun.Gun(string, bool, int, Conversion, bool, bool)"/> and <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
-        public Carried CarriedAttributes { get { return carriedAttributes; } set { carriedAttributes = value; } }
+        public Carried DefaultCarriedAttributes { get { return defaultCarriedAttributes; } set { defaultCarriedAttributes = value; } }
 
         /// <summary>
-        /// RangedAttributes getter/setter. See <see cref="Gun.Gun(string, bool, int, Conversion, double, bool, bool)"/> and <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double)"/>
+        /// RangedAttributes getter/setter. See <see cref="Gun.Gun(string, bool, int, Conversion, bool, bool)"/> and <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
-        public Ranged RangedAttributes { get { return rangedAttributes; } set { rangedAttributes = value; } }
+        public Ranged DefaultRangedAttributes { get { return defaultRangedAttributes; } set { defaultRangedAttributes = value; } }
 
         /// <summary>
-        /// Caliber getter/setter. See <see cref="Gun.Gun(string, bool, int, Conversion, double, bool, bool)"/> and <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double)"/>
+        /// Caliber getter/setter. See <see cref="Gun.Gun(string, bool, int, Conversion, bool, bool)"/> and <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
-        public string Caliber { get { return caliber; } set { caliber = value; } }
+        public string DefaultCaliber { get { return defaultCaliber; } set { defaultCaliber = value; } }
 
         /// <summary>
-        /// AmmoCapacity getter/setter. See <see cref="Gun.Gun(string, bool, int, Conversion, double, bool, bool)"/> and <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double)"/> 
+        /// AmmoCapacity getter/setter. See <see cref="Gun.Gun(string, bool, int, Conversion, bool, bool)"/> and <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double, double)"/> 
         /// </summary>
-        public int AmmoCapacity { get { return ammoCapacity; } set { ammoCapacity = value; } }
+        public int DefaultAmmoCapacity { get { return defaultAmmoCapacity; } set { defaultAmmoCapacity = value; } }
 
         /// <summary>
-        /// MagazineCapacity getter/setter. See <see cref="Gun.Gun(string, bool, int, Conversion, double, bool, bool)"/> and <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double)"/>
+        /// MagazineCapacity getter/setter. See <see cref="Gun.Gun(string, bool, int, Conversion, bool, bool)"/> and <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
-        public int MagazineCapacity { get { return magazineCapacity; } set { magazineCapacity = value; } }
+        public int DefaultMagazineCapacity { get { return defaultMagazineCapacity; } set { defaultMagazineCapacity = value; } }
 
         /// <summary>
-        /// Penetration getter/setter. See <see cref="Gun.Gun(string, bool, int, Conversion, double, bool, bool)"/> and <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double)"/>
+        /// Penetration getter/setter. See <see cref="Gun.Gun(string, bool, int, Conversion, bool, bool)"/> and <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
-        public double Penetration { get { return penetration; } set { penetration = value; } }
+        public double DefaultPenetration { get { return defaultPenetration; } set { defaultPenetration = value; } }
 
         /// <summary>
-        /// MuzzleVelocity getter/setter. See <see cref="Gun.Gun(string, bool, int, Conversion, double, bool, bool)"/> and <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double)"/>
+        /// MuzzleVelocity getter/setter. See <see cref="Gun.Gun(string, bool, int, Conversion, bool, bool)"/> and <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
-        public double MuzzleVelocity { get { return muzzleVelocity; } set { muzzleVelocity = value; } }
+        public double DefaultMuzzleVelocity { get { return defaultMuzzleVelocity; } set { defaultMuzzleVelocity = value; } }
 
         /// <summary>
-        /// AimingWalkspeed getter/setter. See <see cref="Gun.Gun(string, bool, int, Conversion, double, bool, bool)"/> and <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double)"/>
+        /// AimingWalkspeed getter/setter. See <see cref="Gun.Gun(string, bool, int, Conversion, bool, bool)"/> and <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
-        public double AimingWalkspeed { get { return aimingWalkspeed; } set { aimingWalkspeed = value; } }
+        public double DefaultAimingWalkspeed { get { return aimingWalkspeed; } set { aimingWalkspeed = value; } }
 
         /// <summary>
-        /// ReloadSpeed getter/setter. See <see cref="Gun.Gun(string, bool, int, Conversion, double, bool, bool)"/> and <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double)"/>
+        /// ReloadSpeed getter/setter. See <see cref="Gun.Gun(string, bool, int, Conversion, bool, bool)"/> and <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
-        public double ReloadSpeed { get { return reloadSpeed; } set { reloadSpeed = value; } }
+        public double DefaultReloadSpeed { get { return defaultReloadSpeed; } set { defaultReloadSpeed = value; } }
 
         /// <summary>
-        /// EmptyReloadSpeed getter/setter. See <see cref="Gun.Gun(string, bool, int, Conversion, double, bool, bool)"/> and <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double)"/>
+        /// EmptyReloadSpeed getter/setter. See <see cref="Gun.Gun(string, bool, int, Conversion, bool, bool)"/> and <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
-        public double EmptyReloadSpeed { get { return emptyReloadSpeed; } set { emptyReloadSpeed = value; } }
+        public double DefaultEmptyReloadSpeed { get { return defaultEmptyReloadSpeed; } set { defaultEmptyReloadSpeed = value; } }
 
         /// <summary>
-        /// Suppression getter/setter. See <see cref="Gun.Gun(string, bool, int, Conversion, double, bool, bool)"/> and <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double)"/>
+        /// Suppression getter/setter. See <see cref="Gun.Gun(string, bool, int, Conversion, bool, bool)"/> and <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double, double)"/>
         /// </summary>
-        public double Suppression { get { return suppression; } set { suppression = value; } }
+        public double DefaultSuppression { get { return defaultSuppression; } set { defaultSuppression = value; } }
 
 
         

@@ -13,7 +13,9 @@ using System.Threading.Tasks;
 namespace NETCoreWPF
 {
     public class SQLiteDataAccess
-    {
+    { 
+        //TODO: needs to be fleshed out for all of the classes from WeaponClasses.cs
+        //Class, Category, Weapon, Gun, Grenade, Melee, Conversions, FireModes, etc.
         public static List<Class> loadClass()
         {
             using (IDbConnection cnn = new SQLiteConnection(loadConnectionString())) {
