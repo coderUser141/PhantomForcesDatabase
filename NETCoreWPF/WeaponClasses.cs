@@ -71,48 +71,7 @@ namespace NETCoreWPF
         /// </summary>
         public bool HasRank { get { return hasRank; } set { hasRank = value; } }
 
-        /// <summary>
-        /// General calculator for how many hits it takes to kill an enemy.
-        /// </summary>
-        /// <param name="rangedAttributes">The <see cref="Ranged.Ranged(double, double, double, double)">rangedAttributes</see> of the weapon.</param>
-        /// <param name="multiplier">The multiplier associated with the weapon.</param>
-        /// <param name="range">The distance to the target.</param>
-        /// <returns></returns>
-        public static int lethalityCalculatorGeneral(Ranged rangedAttributes, double multiplier, double range)
-        {
-            if (rangedAttributes.Range2Damage > 0 && range >= 0)
-            {
-                for (int i = 0; i < 50; i++)
-                {
-                    double outt = Ranged.damageFunction(rangedAttributes, range) * multiplier * i;
-                    if (outt >= 100)
-                    {
-                        return i;
-                    }
-
-                    if (i > 25) return -2;
-
-                }
-            }
-
-            return -1;
-
-        }
-
-        /// <summary>
-        /// Gun calculator for how many shots it takes to kill an enemy.
-        /// </summary>
-        /// <param name="conversion">The <c>Conversion</c> object to be used for the calculations.</param>
-        /// <param name="range">The distance to the target.</param>
-        /// <returns></returns>
-        public static Tuple<int, int, int> lethalityCalculator(Conversion conversion, double range)
-        {
-            int limb = lethalityCalculatorGeneral(conversion.RangedAttributes, conversion.CarriedAttributes.LimbMultiplier, range);
-            int torso = lethalityCalculatorGeneral(conversion.RangedAttributes, conversion.CarriedAttributes.TorsoMultiplier, range);
-            int head = lethalityCalculatorGeneral(conversion.RangedAttributes, conversion.CarriedAttributes.HeadMultiplier, range);
-            return Tuple.Create(limb, torso, head);
-        }
-
+        
     }
 
     /// <summary>
@@ -188,7 +147,7 @@ namespace NETCoreWPF
         /// </summary>
         /// <param name="weapon">The weapon to be used for calculations.</param>
         /// <param name="range">The distance to the target.</param>
-        /// <returns></returns>
+        /// <returns>The damage at a given range.</returns>
         public static double damageFunction(Ranged weapon, double range)
         {
             double range1 = weapon.Range1;
@@ -196,7 +155,7 @@ namespace NETCoreWPF
             double range1damage = weapon.Range1Damage;
             double range2damage = weapon.Range2Damage;
 
-            if (range <= range1)
+            if (range <= range1 && range >= 0)
             {
                 return range1damage;
             }
@@ -212,10 +171,105 @@ namespace NETCoreWPF
             }
             else
             {
-                return -1;
+                //range was below 0; impossible case
+                throw new ArgumentException("Range cannot be a negative value.", nameof(range));
             }
             //gun.RangedAttributes.Range1Damage
         }
+
+        /// <summary>
+        /// General calculator for how many hits it takes to kill an enemy from full health.
+        /// </summary>
+        /// <param name="rangedAttributes">The <see cref="Ranged.Ranged(double, double, double, double)">rangedAttributes</see> of the weapon.</param>
+        /// <param name="multiplier">The multiplier associated with the weapon.</param>
+        /// <param name="range">The distance to the target.</param>
+        /// <returns>The number of hits that kills an enemy from full health.</returns>
+        /// <exception cref="OutOfMemoryException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        public static int lethalityCalculatorGeneral(Ranged rangedAttributes, double multiplier, double range)
+        {
+            if (rangedAttributes.Range2Damage > 0 && range >= 0 && multiplier > 0)
+            {
+
+                for (int i = 0; i < 50; i++)
+                {
+                    double outt = Ranged.damageFunction(rangedAttributes, range) * multiplier * i;
+                    if (outt >= 100)
+                    {
+                        return i;
+                    }
+
+                    if (i > 25) break; //to break the loop
+
+                }
+                throw new OutOfMemoryException("A value passed prevented the loop from returning a value (This might also happen if something takes more than 25 hits to kill, in which case, contact me and I'll fix the code.)");
+
+            }
+            throw new ArgumentException("No value can be equal to zero.", "Either multiplier or a value in the Ranged object passed.");
+
+        }
+
+        /// <summary>
+        /// General calculator for how many hits it takes to kill an enemy from full health.
+        /// </summary>
+        /// <param name="multiplier">The multiplier associated with the weapon.</param>
+        /// <param name="range">The distance to the target.</param>
+        /// <returns>The number of hits that kills an enemy from full health.</returns>
+        /// <exception cref="OutOfMemoryException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        public int lethalityCalculatorGeneral(double multiplier, double range)
+        {
+            if (range2Damage > 0 && range >= 0 && multiplier > 0)
+            {
+
+                for (int i = 0; i < 50; i++)
+                {
+                    double outt = Ranged.damageFunction(this, range) * multiplier * i;
+                    if (outt >= 100)
+                    {
+                        return i;
+                    }
+
+                    if (i > 25) break; //to break the loop
+
+                }
+                throw new OutOfMemoryException("A value passed prevented the loop from returning a value (This might also happen if something takes more than 25 hits to kill, in which case, contact me and I'll fix the code.)");
+
+            }
+            throw new ArgumentException("No value can be equal to zero.", "Either multiplier or a value in the Ranged object passed.");
+
+        }
+
+        /// <summary>
+        /// Gun calculator for how many shots it takes to kill an enemy.
+        /// </summary>
+        /// <param name="conversion">The <c>Conversion</c> object to be used for the calculations.</param>
+        /// <param name="range">The distance to the target.</param>
+        /// <returns>A Tuple containing the shots required to kill for limb, torso and head hits respectively.</returns>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="OutOfMemoryException"></exception>
+        public static Tuple<int, int, int> lethalityCalculator(Conversion conversion, double range)
+        {
+            int limb = 0;
+            int torso = 0;
+            int head = 0;
+            try
+            {
+                limb = lethalityCalculatorGeneral(conversion.RangedAttributes, conversion.CarriedAttributes.LimbMultiplier, range);
+                torso = lethalityCalculatorGeneral(conversion.RangedAttributes, conversion.CarriedAttributes.TorsoMultiplier, range);
+                head = lethalityCalculatorGeneral(conversion.RangedAttributes, conversion.CarriedAttributes.HeadMultiplier, range);
+            }
+            catch (ArgumentException e)
+            {
+                throw new ArgumentException(e.Message, e);
+            }
+            catch (OutOfMemoryException f)
+            {
+                throw new OutOfMemoryException(f.Message, f);
+            }
+            return Tuple.Create(limb, torso, head);
+        }
+
 
         /// <summary>
         /// Range1 getter/setter.
@@ -277,12 +331,12 @@ namespace NETCoreWPF
         /// Code formatting: mode,firerate(rpm),special modes,pellets(for shotguns)
         /// <code>
         /// mode = (a|auto|automatic), (s|semi|semiautomatic), (b|burst)
-        /// firerate = any integer
-        /// special modes = for burst: (b = InstantBurst,bb = DoubleBurst,bbb = TripleBurst); 
-        ///                 for semiautomatic: (la|lever|leveraction = LeverAction, 
+        /// firerate = Any integer. Non-negative.
+        /// special modes = For burst: (b = InstantBurst,bb = DoubleBurst,bbb = TripleBurst); 
+        ///                 For semiautomatic: (la|lever|leveraction = LeverAction, 
         ///                                     ps|pump|pumpshotgun = PumpShotgun,
         ///                                     sh|shotgun = Shotgun)
-        /// pellets = any integer, but required to include and can be set to 0
+        /// pellets = Any integer, but required to include and can be set to 0. Non-negative.
         /// </code>
         /// </example>
         /// </summary>
@@ -290,6 +344,7 @@ namespace NETCoreWPF
         /// <returns><c>FireMode</c> object referring to Automatic, Semiautomatic</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="NullReferenceException"></exception>
+        /// <exception cref="ArgumentException"></exception>
         public static FireMode ParseFireModeString(string firemodes)
         {
             
@@ -375,13 +430,13 @@ namespace NETCoreWPF
                 firerate = (resultInt[0].Length != 0) ? Convert.ToInt32(resultInt[0]) : 0;
                 mode = (resultString[0].Length != 0) ? resultString[0] : "";
             }
-            catch (NullReferenceException)
+            catch (NullReferenceException e)
             {
-                return new FireMode(-1, "NullReferenceException", false, "Null", false, "String cannot be null", 0);
+                throw new NullReferenceException("String cannot be null", e);
             }
             catch (ArgumentOutOfRangeException)
             {
-                return new FireMode(-2, "ArgumentOutOfRangeException", false, "Null", false, "String must have both numbers and letters", 0);
+                throw new ArgumentOutOfRangeException(nameof(firemodes), firemodes, "String must have both numbers and letters, no spaces.");
             }
 
 
@@ -462,14 +517,14 @@ namespace NETCoreWPF
 
 
             }
-
-            return new FireMode(5, "", false, resultString[1], false, "", 0);
+            throw new ArgumentException("The value provided did not meet the criteria specified.", nameof(firemodes));
         }
 
         /// <summary>
         /// Iterates through the string array of firemodes.
         /// </summary>
         /// <param name="firemodes">An array of strings as specified in the <c>ParseFireModeString</c> method as <see cref="ParseFireModeString(string)">seen here</see>.</param>
+        /// <exception cref="NullReferenceException"></exception>
         public void ParseFireModeStringIterator(string[] firemodes)
         {
             try {
@@ -479,9 +534,9 @@ namespace NETCoreWPF
 
                 }
             }
-            catch (NullReferenceException)
+            catch (NullReferenceException e)
             {
-                modes.Add(new FireMode(-3, "NullReferenceException", false, "Null", false, "Cannot pass null as string array", 0));
+                throw new NullReferenceException("firemodes cannot be null.", e);
             }
         }
 
@@ -502,7 +557,6 @@ namespace NETCoreWPF
                 return false;
             }
         }
-
 
 
         /// <summary>
@@ -544,15 +598,17 @@ namespace NETCoreWPF
             modes.Insert(0, firemode);
         }
 
+
         /// <summary>
         /// Searches through the list of <c>FireMode</c> objects for a specific property.
         /// </summary>
         /// <param name="mode">String of the mode desired. Modes include: <code>Automatic SemiAutomatic Burst | BoltAction LeverAction PumpShotgun Shotgun TripleBurst DoubleBurst InstantBurst</code></param>
-        /// <param name="firerate">Firerate of the mode desired.</param>
-        /// <param name="pellets">Pellets of the mode desired.</param>
-        /// <returns></returns>
+        /// <param name="firerate">Firerate of the mode desired. Non-negative.</param>
+        /// <param name="pellets">Pellets of the mode desired. Non-negative.</param>
+        /// <returns>If the list has the specified properties</returns>
         public bool searchListProperties(string mode, int firerate, int pellets)
         {
+            if (firerate < 0 || pellets < 0) throw new ArgumentException("Neither integer parameter can be negative.");
             //Automatic SemiAutomatic Burst | BoltAction LeverAction PumpShotgun Shotgun TripleBurst DoubleBurst InstantBurst
             foreach(FireMode firemode in modes)
             {
@@ -588,8 +644,9 @@ namespace NETCoreWPF
         /// <summary>
         /// Deletes a range of <c>FireMode</c> objects.
         /// </summary>
-        /// <param name="index"></param>
-        /// <param name="count"></param>
+        /// <param name="index">The starting index of the range to delete. Non-negative, non-zero.</param>
+        /// <param name="count">The count of items to delete. Non-negative, non-zero.</param>
+        /// <exception cref="ArgumentException"></exception>
         public void deleteFireModeRange(int index, int count)
         {
             if (index != 0 && index > 0 && count != 0 && count > 0)
@@ -597,9 +654,34 @@ namespace NETCoreWPF
                 modes.RemoveRange(index, count);
 
             }
+            else if (index <= 0)
+            {
+                throw new ArgumentException("Cannot be negative.", nameof(index));
+            }
+            else
+            {
+                throw new ArgumentException("Cannot be negative.", nameof(count));
+            }
         }
 
-        
+        /// <summary>
+        /// Gets the count of <c>FireMode</c> objects.
+        /// </summary>
+        /// <returns>The count of <c>FireMode</c> objects.</returns>
+        public int FireModeCount()
+        {
+            return modes.Count;
+        }
+
+
+        /// <summary>
+        /// Returns a list of <c>FireMode</c> objects.
+        /// </summary>
+        /// <returns>List of <c>FireMode</c> objects contained in <c>FireModeList</c>.</returns>
+        public List<FireMode> getFireModes()
+        {
+            return modes;
+        }
 
     }
 
@@ -728,7 +810,13 @@ namespace NETCoreWPF
         /// <param name="index">The index of the list to be removed.</param>
         public void removeConversion(int index)
         {
-            conversions.RemoveAt(index);
+            try
+            {
+                conversions.RemoveAt(index);
+            }catch(ArgumentOutOfRangeException e)
+            {
+                throw new ArgumentOutOfRangeException(e.Message, e);
+            }
         }
         
         /// <summary>
@@ -745,21 +833,31 @@ namespace NETCoreWPF
         /// Gets the length of the list.
         /// </summary>
         /// <returns>The count of elements in the list.</returns>
-        public int getLength()
+        public int conversionsCount()
         {
             return conversions.Count;
             
         }
 
         /// <summary>
+        /// Gets the list of <c>Converison</c> objects.
+        /// </summary>
+        /// <returns>The list of the conversions.</returns>
+        public List<Conversion> getConversions()
+        {
+            return conversions;
+        }
+
+        /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="defaultConversion">The default <c>Conversion</c> object of the gun. See <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double)"/></param>
+        /// <param name="defaultConversion">The default <c>Conversion</c> object of the gun. See <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double, double)"/></param>
         public ConversionList(Conversion defaultConversion)
         {
             addConversion(defaultConversion);
 
         }
+
     }
 
     /// <summary>
@@ -816,8 +914,30 @@ namespace NETCoreWPF
         /// <param name="armourPiercing">If the gun has armour piercing rounds. Mutually exclusive with <c>hollowPoint</c>.</param>
         /// <param name="hollowPoint">If the gun has hollow point rounds. Mutually exclusive with <c>armourPiercing</c>.</param>
         /// <param name="gun"><c>Gun</c> object to pass through.</param>
+        /// <exception cref="ArgumentException"></exception>
         public Conversion(bool armourPiercing, bool hollowPoint, Gun gun)
         {
+
+            if (gun.DefaultAmmoCapacity <= 0)
+            {
+                throw new ArgumentException("Cannot be null.", nameof(ammoCapacity));
+            }
+            else if (gun.DefaultMagazineCapacity <= 0)
+            {
+                throw new ArgumentException("Cannot be null.", nameof(magazineCapacity));
+            }
+            else if (gun.DefaultReloadSpeed <= 0)
+            {
+                throw new ArgumentException("Cannot be null.", nameof(reloadSpeed));
+            }
+            else if (gun.DefaultEmptyReloadSpeed <= 0)
+            {
+                throw new ArgumentException("Cannot be null.", nameof(emptyReloadSpeed));
+            }
+            else if (gun.DefaultAimingWalkspeed <= 0)
+            {
+                throw new ArgumentException("Cannot be null.", nameof(aimingWalkspeed));
+            }
             if (hollowPoint)
             {
                 this.carriedAttributes = new Carried(gun.DefaultCarriedAttributes.LimbMultiplier, gun.DefaultCarriedAttributes.TorsoMultiplier / gun.DefaultCarriedAttributes.TorsoMultiplier, gun.DefaultCarriedAttributes.HeadMultiplier * (1 / 1.2), gun.DefaultCarriedAttributes.WalkSpeed);
@@ -878,6 +998,7 @@ namespace NETCoreWPF
         /// <param name="emptyReloadSpeed">The empty reload speed of the gun with the conversion.</param>
         /// <param name="suppression">The suppression of the gun with the conversion.</param>
         /// <param name="aimingWalkspeed">The aiming walkspeed of the gun with the conversion.</param>
+        /// <exception cref="ArgumentException"></exception>
         public Conversion(string name,string attachment, string conversionName, bool ammoConversion, string caliber, int ammoCapacity, int magazineCapacity, string[] firemodes, Carried carriedAttributes, Ranged rangedAttributes, double penetration, double muzzleVelocity, double reloadSpeed, double emptyReloadSpeed, double suppression, double aimingWalkspeed)
         { //new conversions
             this.attachment = attachment;
@@ -903,8 +1024,28 @@ namespace NETCoreWPF
             this.emptyReloadSpeed = emptyReloadSpeed;
             this.suppression = suppression;
             this.aimingWalkspeed = aimingWalkspeed;
-            
 
+
+            if (ammoCapacity <= 0)
+            {
+                throw new ArgumentException("Cannot be null.", nameof(ammoCapacity));
+            }
+            else if (magazineCapacity <= 0)
+            {
+                throw new ArgumentException("Cannot be null.", nameof(magazineCapacity));
+            }
+            else if (reloadSpeed <= 0)
+            {
+                throw new ArgumentException("Cannot be null.", nameof(reloadSpeed));
+            }
+            else if (emptyReloadSpeed <= 0)
+            {
+                throw new ArgumentException("Cannot be null.", nameof(emptyReloadSpeed));
+            }
+            else if (aimingWalkspeed <= 0)
+            {
+                throw new ArgumentException("Cannot be null.", nameof(aimingWalkspeed));
+            }
         }
 
         /// <summary>
@@ -926,6 +1067,7 @@ namespace NETCoreWPF
         /// <param name="emptyReloadSpeed">The empty reload speed of the gun with the conversion.</param>
         /// <param name="suppression">The suppression of the gun with the conversion.</param>
         /// <param name="aimingWalkspeed">The aiming walkspeed of the gun with the conversion.</param>
+        /// <exception cref="ArgumentException"></exception>
         public Conversion(string name, string attachment, string conversionName, bool ammoConversion, string caliber, int ammoCapacity, int magazineCapacity, FireModeList firemodes, Carried carriedAttributes, Ranged rangedAttributes, double penetration, double muzzleVelocity, double reloadSpeed, double emptyReloadSpeed, double suppression, double aimingWalkspeed)
         { //new conversions (with same firemodes)
             this.attachment = attachment;
@@ -951,6 +1093,27 @@ namespace NETCoreWPF
             this.emptyReloadSpeed = emptyReloadSpeed;
             this.suppression = suppression;
             this.aimingWalkspeed = aimingWalkspeed;
+
+            if (ammoCapacity <= 0)
+            {
+                throw new ArgumentException("Cannot be null.", nameof(ammoCapacity));
+            }
+            else if (magazineCapacity <= 0)
+            {
+                throw new ArgumentException("Cannot be null.", nameof(magazineCapacity));
+            }
+            else if (reloadSpeed <= 0)
+            {
+                throw new ArgumentException("Cannot be null.", nameof(reloadSpeed));
+            }
+            else if (emptyReloadSpeed <= 0)
+            {
+                throw new ArgumentException("Cannot be null.", nameof(emptyReloadSpeed));
+            }
+            else if (aimingWalkspeed <= 0)
+            {
+                throw new ArgumentException("Cannot be null.", nameof(aimingWalkspeed));
+            }
         }
 
         /// <summary>
@@ -968,6 +1131,7 @@ namespace NETCoreWPF
         /// <param name="emptyReloadSpeed">The empty reload speed of the gun with the default conversion.</param>
         /// <param name="suppression">The suppression of the gun with the default conversion.</param>
         /// <param name="aimingWalkspeed">The aiming walkspeed of the gun with the default conversion.</param>
+        /// <exception cref="ArgumentException"></exception>
         public Conversion(string caliber, int ammoCapacity, int magazineCapacity, string[] firemodes, Carried carriedAttributes, Ranged rangedAttributes, double penetration, double muzzleVelocity, double reloadSpeed, double emptyReloadSpeed, double suppression, double aimingWalkspeed)
         { //default
 
@@ -983,6 +1147,25 @@ namespace NETCoreWPF
             this.emptyReloadSpeed = emptyReloadSpeed;
             this.suppression = suppression;
             this.aimingWalkspeed = aimingWalkspeed;
+
+            if (ammoCapacity <= 0) {
+                throw new ArgumentException("Cannot be null.", nameof(ammoCapacity));
+            } 
+            else if (magazineCapacity <= 0)
+            {
+                throw new ArgumentException("Cannot be null.", nameof(magazineCapacity));
+            }
+            else if (reloadSpeed <= 0)
+            {
+                throw new ArgumentException("Cannot be null.", nameof(reloadSpeed));
+            }
+            else if (emptyReloadSpeed <= 0)
+            {
+                throw new ArgumentException("Cannot be null.", nameof(emptyReloadSpeed));
+            }
+            else if (aimingWalkspeed <= 0) {
+                throw new ArgumentException("Cannot be null.", nameof(aimingWalkspeed));
+            }
 
         }
 
@@ -1091,7 +1274,6 @@ namespace NETCoreWPF
         /// <param name="hasRank">If the gun has a rank.</param>
         /// <param name="rank">The rank of the gun.</param>
         /// <param name="defaultGun">The <c>Conversion</c> object defining the default gun. <see cref="Conversion.Conversion(string, int, int, string[], Carried, Ranged, double, double, double, double, double, double)"></see></param>
-        /// <param name="aimingWalkspeed">The aiming walkspeed of the gun.</param>
         /// <param name="hasArmourPiercing">If the gun supports armour piercing rounds.</param>
         /// <param name="hasHollowPoint">If the gun supports hollow point rounds</param>
         public Gun(string name, bool hasRank, int rank, Conversion defaultGun, bool hasArmourPiercing, bool hasHollowPoint) : base(name, hasRank, rank)
@@ -1108,7 +1290,7 @@ namespace NETCoreWPF
             defaultReloadSpeed = defaultGun.ReloadSpeed;
             defaultEmptyReloadSpeed = defaultGun.EmptyReloadSpeed;
             defaultSuppression = defaultGun.Suppression;
-            aimingWalkspeed = aimingWalkspeed;
+            aimingWalkspeed = defaultGun.AimingWalkspeed;
 
             conversions = addNewConversionList(defaultGun);
             if (hasArmourPiercing)
@@ -1337,16 +1519,13 @@ namespace NETCoreWPF
 
     }
 
-    /*
-    public interface ICategory
-    {
-        ICategory LCategory { get; set; }
-    }
-    */
-
+    /// <summary>
+    /// Defines a category containing a list of <c>Weapon</c> objects. Example: Battle Rifles, PDWs, Pistols, etc.
+    /// </summary>
     public class Category//<Weapon> //: ICategory
     {
         private Dictionary<int,Weapon> weaponList = new();
+        private string categoryName;
         /*
         public Category(ICategory lCategory = null)
         {
@@ -1355,6 +1534,11 @@ namespace NETCoreWPF
         public ICategory LCategory { get; set; }
         */
 
+        /// <summary>
+        /// Indexer for the list.
+        /// </summary>
+        /// <param name="index">The index to access.</param>
+        /// <returns>The value of the specified index of the list.</returns>
         public Weapon this[int index]
         {
             get
@@ -1367,23 +1551,49 @@ namespace NETCoreWPF
             }
         }
 
-        public Category(Weapon weapon)
+        /// <summary>
+        /// Name of the category.
+        /// </summary>
+        public string CategoryName { get { return categoryName; } set { categoryName = value; } }
+
+#nullable enable
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="weapon">First <c>Weapon</c> object to be added, if any.</param>
+        /// <param name="categoryName">Name of the list.</param>
+        public Category(Weapon? weapon, string categoryName)
         {
             if (weapon != null) addWeapon(weapon);
+            this.categoryName = categoryName;
         }
+#nullable disable
 
         //generates id from weapon rank
-        private static int IDGenerator(Weapon weapon)
+        /// <summary>
+        /// Generates an ID for a <c>Weapon</c>.
+        /// </summary>
+        /// <param name="weapon"><c>Weapon</c> to process.</param>
+        /// <returns>ID generated.</returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static int IDGenerator(Weapon weapon)
         {
-            if(weapon.Rank > 10000)
+            if(weapon.Rank < 0)
             {
-                return -1;
+                throw new ArgumentException("Rank cannot be negative.",nameof(weapon));
             }
+            // TODO handle melees with no ranks
 
             return weapon.Rank * 10;
         }
 
         //matches a key and value pair (give a key, get a value; give a value, get a key)
+        /// <summary>
+        /// Matches a key and value.
+        /// </summary>
+        /// <param name="key">Key that returns its matched value. If not passed, passes the key of the value searched.</param>
+        /// <param name="value">Value that returns its matched key. If not passed, passes the value of the key searched.</param>
+        /// <returns>True if a match is found, false otherwise.</returns>
         public bool matchKeyValue(ref int key, ref Weapon value)
         {
             if (weaponList.ContainsKey(key))
@@ -1410,6 +1620,11 @@ namespace NETCoreWPF
         }
 
         //if the list has a key
+        /// <summary>
+        /// Determines if the list has a desired key.
+        /// </summary>
+        /// <param name="key">The key to be searched.</param>
+        /// <returns>If the list has the desired key.</returns>
         public bool hasKey(int key)
         {
             foreach(int r in weaponList.Keys)
@@ -1420,6 +1635,11 @@ namespace NETCoreWPF
         }
 
         //if the list has a weapon
+        /// <summary>
+        /// Determines if the list has a desired <c>Weapon</c>.
+        /// </summary>
+        /// <param name="weapon">The <c>Weapon</c> to be searched.</param>
+        /// <returns>If the list has the desired <c>Weapon</c>.</returns>
         public bool hasWeapon(Weapon weapon)
         {
             foreach(Weapon weapon1 in weaponList.Values)
@@ -1430,6 +1650,11 @@ namespace NETCoreWPF
         }
 
         //give a weapon, get its id
+        /// <summary>
+        /// Searches for an <c>Weapon</c>'s ID in the keys of the list.
+        /// </summary>
+        /// <param name="weapon">The <c>Weapon</c> to search with.</param>
+        /// <returns>ID of the <c>Weapon</c> in the list, if it exists. Returns -1 otherwise.</returns>
         public int IDLookup(Weapon weapon)
         {
             foreach(int id in weaponList.Keys)
@@ -1443,6 +1668,12 @@ namespace NETCoreWPF
         }
 
         //get a weapon by looking up its rank 
+        /// <summary>
+        /// Searches for a weapon by looking up its rank.
+        /// </summary>
+        /// <param name="rank">The rank to search with.</param>
+        /// <returns>The <c>Weapon</c>, if found. Throws an exception otherwise.</returns>
+        /// <exception cref="Exception"></exception>
         public Weapon weaponLookupByRank(int rank)
         {
             foreach(Weapon weapon in weaponList.Values)
@@ -1452,16 +1683,36 @@ namespace NETCoreWPF
                     return weapon;
                 }
             }
-            return new Weapon("Catch wLBR", false, 0);
+            throw new Exception("Weapon not found.");
         }
 
         //get a weapon by looking up its id
+        /// <summary>
+        /// Searches for a <c>Weapon</c> by passing its ID.
+        /// </summary>
+        /// <param name="id">The ID to search with.</param>
+        /// <returns>The <c>Weapon</c>, if found.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public Weapon weaponLookupByID(int id)
         {
-            return weaponList[id];
+            Weapon output;
+            if (id < 0) throw new ArgumentException("ID cannot be negative.", nameof(id));
+            try { 
+                output = weaponList[id];
+               
+            }catch(ArgumentOutOfRangeException e)
+            {
+                throw new ArgumentOutOfRangeException(nameof(id), e.Message);
+            }
+            return output;
         }
-        
+
         //adds a weapon to the list
+        /// <summary>
+        /// Adds a new <c>Weapon</c> to the list.
+        /// </summary>
+        /// <param name="weapon">The <c>Weapon</c> object to be added.</param>
+        /// <returns>True if succeeded, false otherwise.</returns>
         public bool addWeapon(Weapon weapon) {
             int er = 2;
             Func<Weapon, int> deleg = x => IDGenerator(x) != -1 ? IDGenerator(weapon) : er;
@@ -1477,34 +1728,79 @@ namespace NETCoreWPF
             return true;
         }
 
+        /// <summary>
+        /// Removes <c>Weapon</c> object from the list by its rank.
+        /// </summary>
+        /// <param name="rank">The rank of the weapon to remove. Non-negative.</param>
+        /// <returns>True if succeeded, false otherwise.</returns>
+        /// <exception cref="ArgumentException"></exception>
         public bool removeWeaponByRank(int rank)
         {
+            if (rank < 0) throw new ArgumentException("Cannot be negative.", nameof(rank));
             return weaponList.Remove(IDLookup(weaponLookupByRank(rank)));
         }
 
+        /// <summary>
+        /// Removes <c>Weapon</c> object from the list by its ID.
+        /// </summary>
+        /// <param name="id">The ID of the weapon to remove. Non-negative.</param>
+        /// <returns>True if succeeded, false otherwise.</returns>
+        /// <exception cref="ArgumentException"></exception>
         public bool removeWeaponByID(int id)
         {
+            if (id < 0) throw new ArgumentException("Cannot be negative.", nameof(id));
             return weaponList.Remove(id);
         }
 
+        /// <summary>
+        /// Gets the amount of <c>Weapon</c> objects in the list.
+        /// </summary>
+        /// <returns>The count of <c>Weapon</c> objects.</returns>
         public int weaponCount()
         {
             return weaponList.Count;
         }
 
+        /// <summary>
+        /// Returns the Dictionary list.
+        /// </summary>
+        /// <returns>The Dictionary list.</returns>
+        public Dictionary<int, Weapon> getKeyValuePairs()
+        {
+            return weaponList;
+        }
+
+        /// <summary>
+        /// Returns a <c>Weapon</c> list
+        /// </summary>
+        /// <returns>A list containing the <c>Weapon</c> objects in the list.</returns>
+        public List<Weapon> getWeapons()
+        {
+            List<Weapon> output = new();
+            foreach(Weapon weapon in weaponList.Values) {
+                output.Add(weapon);
+            }
+            return output;
+        }
         
 
 
     }
-
     
 
-
+    /// <summary>
+    /// Defines a list of <c>Category</c> objects.
+    /// </summary>
     public class Class
     {
         private List<Category> categoryList = new();
         private string classname;
 
+        /// <summary>
+        /// Indexer for the list.
+        /// </summary>
+        /// <param name="index">The index to be accessed.</param>
+        /// <returns>The <c>Category</c> object at the index.</returns>
         public Category this[int index]
         {
             get
@@ -1517,27 +1813,58 @@ namespace NETCoreWPF
             }
         }
 
-        public Class(string name)
+
+        /// <summary>
+        /// Name of the category.
+        /// </summary>
+        public string ClassName { get { return classname; } set { classname = value; } }
+
+#nullable enable
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="firstCategory">The first category to be added to the list, if any.</param>
+        /// <param name="name">Name of the list.</param>
+        public Class(Category? firstCategory, string name)
         {
+            if (firstCategory != null) addCategory(firstCategory);
             this.classname = name;
         }
+#nullable disable
 
+        /// <summary>
+        /// Adds a <c>Category</c> object to the list.
+        /// </summary>
+        /// <param name="category"><c>Category</c> object to be added.</param>
         public void addCategory(Category category)
         {
             categoryList.Add(category);
         }
 
+        /// <summary>
+        /// Removes a <c>Category</c> object to the list.
+        /// </summary>
+        /// <param name="category"><c>Category</c> object to be removed.</param>
         public void removeCategory(Category category)
         {
             categoryList.Remove(category);
         }
 
+        /// <summary>
+        /// Determines if the list has a <c>Category</c> object.
+        /// </summary>
+        /// <param name="category"><c>Category</c> object to search.</param>
+        /// <returns>True if found, false otherwise.</returns>
         public bool hasCategory(Category category)
         {
             return categoryList.Contains(category);
         }
 
-        public int categoryLength(Category category)
+        /// <summary>
+        /// Gets the length of th
+        /// </summary>
+        /// <returns></returns>
+        public int categoryCount()
         {
             return categoryList.Count;
         }

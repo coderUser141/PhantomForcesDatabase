@@ -36,6 +36,7 @@
 
             <ListView Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Carrieds}"></ListView>
             <ListView Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Rangeds}"></ListView>
+            <ListView Grid.Row="1" Grid.Column="2" ItemsSource="{Binding Conversions}"></ListView>
         </Grid>
         <TextBlock Grid.Row="0" FontSize="30" Text="Phantom Forces Database"></TextBlock>
         <Button Grid.Row="0" Grid.Column="0" Name="btnAdd" Click="btnAdd_Click" Content="Click Me!"></Button>

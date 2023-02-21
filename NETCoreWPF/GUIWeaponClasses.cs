@@ -20,6 +20,14 @@ namespace NETCoreWPF
             set { rangeds = value; }
         }
 
+        private ObservableCollection<string> conversions;
+
+        public ObservableCollection<string> Conversions
+        {
+            get { return conversions; }
+            set { conversions = value; }
+        }
+
 
         private ObservableCollection<string> carrieds;
 
@@ -61,6 +69,13 @@ namespace NETCoreWPF
             stringBuilder.Append(ranged.Range2Damage.ToString());
             return stringBuilder.ToString();
 
+        }
+
+        public static string conversionGUI(Conversion conversion)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            //stringBuilder.Append()
+            return stringBuilder.ToString();
         }
 
 
