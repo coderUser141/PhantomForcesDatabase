@@ -295,7 +295,7 @@ namespace NETCoreWPF
     /// </summary>
     public class FireModeList
     {
-        private List<FireMode> modes = new List<FireMode>();
+        private List<FireMode> modes = new();
 
         /// <summary>
         /// <c>FireModeList</c> indexer
@@ -771,7 +771,7 @@ namespace NETCoreWPF
     public class ConversionList
     {
 
-        private List<Conversion> conversions = new List<Conversion>();
+        private List<Conversion> conversions = new();
 
         /// <summary>
         /// Indexer for the list.
@@ -945,12 +945,15 @@ namespace NETCoreWPF
                 penetration = gun.DefaultPenetration * 0.5;
                 suppression = gun.DefaultSuppression * 1.1;
 
+
+                attachment = "Hollow Point";
+                ammoConversion = true;
+                conversionName = gun.Name + " Hollow Point";
+
                 //pass through params
                 fireModes = gun.DefaultFireModes;
                 caliber = gun.DefaultCaliber;
                 aimingWalkspeed = gun.DefaultAimingWalkspeed;
-                attachment = "Hollow Point";
-                conversionName = gun.Name + " Hollow Point";
                 emptyReloadSpeed = gun.DefaultEmptyReloadSpeed;
                 reloadSpeed = gun.DefaultReloadSpeed;
                 muzzleVelocity = gun.DefaultMuzzleVelocity;
@@ -964,13 +967,14 @@ namespace NETCoreWPF
                 penetration = gun.DefaultPenetration * 1.5;
                 suppression = gun.DefaultSuppression * 0.5;
 
+                attachment = "Armour Piercing";
+                ammoConversion = true;
+                conversionName = gun.Name + " Armour Piercing";
 
                 //pass through params
                 fireModes = gun.DefaultFireModes;
                 caliber = gun.DefaultCaliber;
                 aimingWalkspeed = gun.DefaultAimingWalkspeed;
-                attachment = "Armour Piercing";
-                conversionName = gun.Name + " Armour Piercing";
                 emptyReloadSpeed = gun.DefaultEmptyReloadSpeed;
                 reloadSpeed = gun.DefaultReloadSpeed;
                 muzzleVelocity = gun.DefaultMuzzleVelocity;

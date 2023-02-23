@@ -66,9 +66,9 @@ namespace NETCoreWPF
             Rangeds.Add(GUIWeaponClass.rangedGUI(G36.Conversions[1].RangedAttributes));
             Rangeds.Add(GUIWeaponClass.rangedGUI(G36.Conversions[2].RangedAttributes));
 
-            Conversions.Add(GUIWeaponClass.conversionGUI(G36.Conversions.DefaultConversion));
-            Conversions.Add(GUIWeaponClass.conversionGUI(G36.Conversions[1]));
-            Conversions.Add(GUIWeaponClass.conversionGUI(G36.Conversions[2]));
+            Conversions.Add(GUIWeaponClass.conversionGUI(G36.Conversions.DefaultConversion, true));
+            Conversions.Add(GUIWeaponClass.conversionGUI(G36.Conversions[1], false));
+            Conversions.Add(GUIWeaponClass.conversionGUI(G36.Conversions[2], false));
         }
     }
 }
