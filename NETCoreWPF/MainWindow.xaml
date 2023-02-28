@@ -4,11 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NETCoreWPF"
+        xmlns:userControls="clr-namespace:NETCoreWPF.User_Controls"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="10*">
+            <RowDefinition Height="30">
                 
                 
             </RowDefinition>
@@ -34,9 +35,10 @@
             </Grid.ColumnDefinitions>
 
 
-            <ListView Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Carrieds}"></ListView>
-            <ListView Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Rangeds}"></ListView>
-            <ListView Grid.Row="1" Grid.Column="2" ItemsSource="{Binding Conversions}"></ListView>
+            <ListView Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Guns}" SelectionMode="Single" MouseDoubleClick="ListView_MouseDoubleClick" Name="GunList"></ListView>
+            <userControls:Stats Grid.Row="1" Grid.Column="2" x:Name="MainDisplay"></userControls:Stats>
+            <!--<ListView Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Rangeds}"></ListView>
+            <ListView Grid.Row="1" Grid.Column="2" ItemsSource="{Binding Conversions}"></ListView>-->
         </Grid>
         <TextBlock Grid.Row="0" FontSize="30" Text="Phantom Forces Database"></TextBlock>
         <Button Grid.Row="0" Grid.Column="0" Name="btnAdd" Click="btnAdd_Click" Content="Click Me!"></Button>
