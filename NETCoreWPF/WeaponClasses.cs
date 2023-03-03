@@ -44,7 +44,7 @@ namespace NETCoreWPF
         /// </summary>
         /// <param name="name">Name of the weapon.</param>
         /// <param name="hasRank">If the weapon has a rank.</param>
-        /// <param name="rank">If the previous parameter is true, the rank of the weapon.</param>
+        /// <param name="rank">If the previous parameter is true, the rank of the weapon. Otherwise, the rank is 0.</param>
         public Weapon(string name, bool hasRank, int rank)
         {
             this.name = name;

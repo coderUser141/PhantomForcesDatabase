@@ -28,19 +28,27 @@ namespace NETCoreWPF.User_Controls
         public void passText(Gun gun)
         {
             Name.Text = gun.Name;
-            Rank.Text = gun.Rank.ToString();
+            Rank.Text = "Rank " + gun.Rank.ToString();
             Firemodes.Text = GUIWeaponClass.firemodelistJoiner(GUIWeaponClass.firemodeGUI(gun.Conversions.DefaultConversion.FireModes));
-            limbMultiplier.Text = gun.DefaultCarriedAttributes.LimbMultiplier.ToString();
-            headMultiplier.Text = gun.DefaultCarriedAttributes.HeadMultiplier.ToString();
-            torsoMultiplier.Text = gun.DefaultCarriedAttributes.TorsoMultiplier.ToString();
+            limbMultiplier.Text = gun.DefaultCarriedAttributes.LimbMultiplier.ToString() + "x";
+            headMultiplier.Text = gun.DefaultCarriedAttributes.HeadMultiplier.ToString() + "x";
+            torsoMultiplier.Text = gun.DefaultCarriedAttributes.TorsoMultiplier.ToString() + "x";
             walkspeed.Text = gun.DefaultCarriedAttributes.WalkSpeed.ToString();
-            Range1.Text = gun.DefaultRangedAttributes.Range1.ToString();
-            Range2.Text = gun.DefaultRangedAttributes.Range2.ToString();
+            Range1.Text = gun.DefaultRangedAttributes.Range1.ToString() + " studs";
+            Range2.Text = gun.DefaultRangedAttributes.Range2.ToString() + " studs";
             Range1Damage.Text = gun.DefaultRangedAttributes.Range1Damage.ToString();
             Range2Damage.Text = gun.DefaultRangedAttributes.Range2Damage.ToString();
+
+            Penetration.Text = gun.DefaultPenetration == 1?gun.DefaultPenetration.ToString() + " stud":gun.DefaultPenetration.ToString() + " studs";
+            MuzzleVelocity.Text = gun.DefaultMuzzleVelocity.ToString() + " studs/s";
+            ReloadSpeed.Text = gun.DefaultReloadSpeed.ToString() + " seconds";
+            EmptyReloadSpeed.Text = gun.DefaultEmptyReloadSpeed.ToString() + " seconds";
+            Suppression.Text = gun.DefaultSuppression.ToString();
+            AimingWalkspeeed.Text = gun.DefaultAimingWalkspeed.ToString();
+            Caliber.Text = gun.DefaultCaliber.ToString();
+            TotalAmmo.Text = gun.DefaultAmmoCapacity.ToString();
+            MagazineCapacity.Text = gun.DefaultMagazineCapacity.ToString();
             
-
-
         }
     }
 }

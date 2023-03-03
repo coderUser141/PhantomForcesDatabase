@@ -38,6 +38,8 @@ namespace NETCoreWPF
             set { carrieds = value; }
         }
         */
+        private ObservableCollection<string> categories;
+        private ObservableCollection<Category> categoryObjects;
         private ObservableCollection<string> guns;
         private ObservableCollection<Gun> gunObjects;
 
@@ -57,6 +59,18 @@ namespace NETCoreWPF
         {
             get { return guns; }
             set { guns = value; }
+        }
+
+        public ObservableCollection<Category> CategoryObjects
+        {
+            get { return categoryObjects; }
+            set { categoryObjects = value; }
+        }
+
+        public ObservableCollection<string> Categories
+        {
+            get { return categories; }
+            set { categories = value; }
         }
 
 
