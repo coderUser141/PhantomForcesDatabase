@@ -1,27 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Data.SQLite;
-//using System.Data.SqlClient;
-//using FirebirdSql.Data.FirebirdClient;
-//using FirebirdSql.Data.Isql;
-//using SQLite;
-//using SQLitePCL;
-using Microsoft.Data.Sqlite;
-using System.IO;
+using System.ComponentModel;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Data;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Collections.ObjectModel;
-using PFDB.User_Controls;
+using WeaponClasses;
+//using FileReader;
 
 namespace PFDB
 {
@@ -30,21 +18,37 @@ namespace PFDB
     /// </summary>
     public partial class MainWindow : Window
     {
-
+        
         private Gun G36, M16A4, AS_VAL;
         private Category AssaultRifles;
 
         private Gun L2A3, MP5SD;
         private Category PersonalDefenseWeapons;
 
-        private void ListView_MouseDoubleClick_1(object sender, MouseButtonEventArgs e)
+        
+
+        private void GunList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            gunList(CategoryObjects[CategoryList.SelectedIndex]);
+            if (GunList.SelectedIndex < 0)
+            {
+                //do nothing
+            }
+            else
+            {
+                MainDisplay.passText(GunObjects[GunList.SelectedIndex]);
+            }
         }
 
-        private void ListView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void CategoryList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            MainDisplay.passText(GunObjects[GunList.SelectedIndex]);
+            if (CategoryList.SelectedIndex < 0)
+            {
+                //do nothing
+            }
+            else
+            {
+                gunList(CategoryObjects[CategoryList.SelectedIndex]);
+            }
         }
 
         /// <summary>
@@ -89,6 +93,42 @@ namespace PFDB
 
 
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Assault_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Scout_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Support_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Recon_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Melees_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Grenades_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
 
         //adds the guns in the category to the gunlist
         private void gunList(Category category)

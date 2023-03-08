@@ -1,24 +1,5 @@
-﻿using Azure.Core;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Transactions;
-using System.Windows.Input;
-using System.Windows.Media.Media3D;
-using System.Xml.Linq;
-using System.Data.SqlClient;
-//using System.Data.SQLite;
-//using System.Data.SQLite;
-
-
-namespace PFDB
+﻿namespace WeaponClasses
 {
-    
 
 
     /// <summary>
@@ -51,7 +32,8 @@ namespace PFDB
             if (hasRank && rank > 0)
             {
                 this.rank = rank;
-            } else
+            }
+            else
             {
                 this.rank = 0;
             }
@@ -71,7 +53,7 @@ namespace PFDB
         /// </summary>
         public bool HasRank { get { return hasRank; } set { hasRank = value; } }
 
-        
+
     }
 
     /// <summary>
@@ -121,7 +103,7 @@ namespace PFDB
     /// <summary>
     /// Creates objects for defining ranged weapons' attributes (grenades, guns).
     /// </summary>
-    public class Ranged 
+    public class Ranged
     {
         private double range1,
                         range2,
@@ -190,7 +172,7 @@ namespace PFDB
         {
             if (rangedAttributes.Range2Damage > 0 && range >= 0 && multiplier > 0)
             {
-                
+
                 for (int i = 0; i < 50; i++)
                 {
                     double outt = Ranged.damageFunction(rangedAttributes, range) * multiplier * i;
@@ -347,7 +329,7 @@ namespace PFDB
         /// <exception cref="ArgumentException"></exception>
         public static FireMode ParseFireModeString(string firemodes)
         {
-            
+
 
             string str = firemodes;
 
@@ -366,7 +348,7 @@ namespace PFDB
                 //iterates through the individual string and parses
                 for (int i = 0; i < str.Length; i++)
                 {
-                    output = (count+", "+count1+", "+i+" ");
+                    output = (count + ", " + count1 + ", " + i + " ");
                     File.AppendAllText("test.log", output);
 
                     if (Convert.ToInt32(str[i]) > 64 && Convert.ToInt32(str[i]) < 91)
@@ -497,12 +479,13 @@ namespace PFDB
             }
             else if ((mode.Contains("burst") || firstCharacterMode == 'b'))
             {
-                
+
                 if (specialFlags.Contains("bbb"))
                 {
                     return new FireMode(firerate, "Burst", true, "III", true, "TripleBurst", 0);
                     //modes.Add(TripleBurst);
-                }else if (specialFlags.Contains("bb"))
+                }
+                else if (specialFlags.Contains("bb"))
                 {
 
                     return new FireMode(firerate, "Burst", true, "II", true, "DoubleBurst", 0);
@@ -527,8 +510,9 @@ namespace PFDB
         /// <exception cref="NullReferenceException"></exception>
         public void ParseFireModeStringIterator(string[] firemodes)
         {
-            try {
-                foreach(string str in firemodes)
+            try
+            {
+                foreach (string str in firemodes)
                 {
                     modes.Add(ParseFireModeString(str));
 
@@ -610,17 +594,19 @@ namespace PFDB
         {
             if (firerate < 0 || pellets < 0) throw new ArgumentException("Neither integer parameter can be negative.");
             //Automatic SemiAutomatic Burst | BoltAction LeverAction PumpShotgun Shotgun TripleBurst DoubleBurst InstantBurst
-            foreach(FireMode firemode in modes)
+            foreach (FireMode firemode in modes)
             {
                 if (mode.ToLower() == firemode.Mode.ToLower() || (mode.ToLower().Contains("semi") && firemode.Mode.ToLower() == "semiautomatic") || firemode.Pellets == pellets || firemode.Firerate == firerate)
                 {
                     return true;
-                } else
+                }
+                else
                 {
-                    if(mode.ToLower() == firemode.SpecialMode.ToLower() && firemode.Special)
+                    if (mode.ToLower() == firemode.SpecialMode.ToLower() && firemode.Special)
                     {
                         return true;
-                    } else
+                    }
+                    else
                     {
                         return false;
                     }
@@ -635,10 +621,10 @@ namespace PFDB
         /// <param name="index">Index must be not equal to 0, and must also be greater than 0.</param>
         public void deleteFireMode(int index)
         {
-            if(index != 0 && index > 0)
+            if (index != 0 && index > 0)
             {
                 modes.RemoveAt(index);
-            } 
+            }
         }
 
         /// <summary>
@@ -688,9 +674,10 @@ namespace PFDB
     /// <summary>
     /// Class that defines firemodes for guns.
     /// </summary>
-    public class FireMode{
+    public class FireMode
+    {
 
-        
+
         private double firerate;
         private string mode;
         private bool burst;
@@ -716,7 +703,8 @@ namespace PFDB
             if (burst)
             {
                 this.burstMode = burstMode;
-            } else
+            }
+            else
             {
                 this.burstMode = "";
             }
@@ -724,7 +712,8 @@ namespace PFDB
             if (special)
             {
                 this.specialMode = specialMode;
-            } else
+            }
+            else
             {
                 this.specialMode = "";
             }
@@ -740,7 +729,7 @@ namespace PFDB
         /// <summary>
         /// Mode getter/setter.
         /// </summary>
-        public string Mode { get { return mode; } set{ mode = value; } }
+        public string Mode { get { return mode; } set { mode = value; } }
         /// <summary>
         /// Burst getter/setter.
         /// </summary>
@@ -748,7 +737,7 @@ namespace PFDB
         /// <summary>
         /// BurstMode getter/setter.
         /// </summary>
-        public string BurstMode { get { return burstMode;} set { burstMode = value; } }
+        public string BurstMode { get { return burstMode; } set { burstMode = value; } }
         /// <summary>
         /// Special getter/setter.
         /// </summary>
@@ -756,7 +745,7 @@ namespace PFDB
         /// <summary>
         /// SpecialMode getter/setter.
         /// </summary>
-        public string SpecialMode { get { return specialMode;} set { specialMode = value; } }
+        public string SpecialMode { get { return specialMode; } set { specialMode = value; } }
         /// <summary>
         /// Pellets getter/setter.
         /// </summary>
@@ -783,7 +772,7 @@ namespace PFDB
             get
             {
                 return conversions[index];
-            }                           
+            }
             set
             {
                 conversions[index] = value;
@@ -813,18 +802,19 @@ namespace PFDB
             try
             {
                 conversions.RemoveAt(index);
-            }catch(ArgumentOutOfRangeException e)
+            }
+            catch (ArgumentOutOfRangeException e)
             {
                 throw new ArgumentOutOfRangeException(e.Message, e);
             }
         }
-        
+
         /// <summary>
         /// Inserts a new <c>Conversion</c> object.
         /// </summary>
         /// <param name="index">Index of the intended <c>Conversion</c> object insertion.</param>
         /// <param name="conversion">The <c>Conversion</c> object to be inserted.</param>
-        public void insertConversion( Conversion conversion, int index)
+        public void insertConversion(Conversion conversion, int index)
         {
             conversions.Insert(index, conversion);
         }
@@ -836,7 +826,7 @@ namespace PFDB
         public int conversionsCount()
         {
             return conversions.Count;
-            
+
         }
 
         /// <summary>
@@ -894,12 +884,14 @@ namespace PFDB
         /// <param name="suppression"></param>
         public Conversion(bool armourPiercing, bool hollowPoint, Carried carriedAttributes, Ranged rangedAttributes, double penetration, double suppression)
         {
-            if (hollowPoint) {
+            if (hollowPoint)
+            {
                 this.carriedAttributes = new Carried(carriedAttributes.LimbMultiplier, carriedAttributes.TorsoMultiplier / carriedAttributes.TorsoMultiplier, carriedAttributes.HeadMultiplier * (1 / 1.2), carriedAttributes.WalkSpeed);
                 this.rangedAttributes = new Ranged(10.5529 * Math.Log(rangedAttributes.Range1, 2.61), rangedAttributes.Range2 * 0.9, rangedAttributes.Range1Damage * 1.2, rangedAttributes.Range2Damage / 1.2);
                 this.penetration = penetration * 0.5;
                 this.suppression = suppression * 1.1;
-            } else if (armourPiercing)
+            }
+            else if (armourPiercing)
             {
                 this.carriedAttributes = new Carried(carriedAttributes.LimbMultiplier, carriedAttributes.TorsoMultiplier, carriedAttributes.HeadMultiplier, carriedAttributes.WalkSpeed);
                 this.rangedAttributes = new Ranged(rangedAttributes.Range1 * 0.5, rangedAttributes.Range2, rangedAttributes.Range1Damage, rangedAttributes.Range2Damage);
@@ -920,23 +912,23 @@ namespace PFDB
 
             if (gun.DefaultAmmoCapacity <= 0)
             {
-                throw new ArgumentException("Cannot be null.", nameof(ammoCapacity));
+                throw new ArgumentException("Cannot be zero nor negative.", nameof(ammoCapacity));
             }
             else if (gun.DefaultMagazineCapacity <= 0)
             {
-                throw new ArgumentException("Cannot be null.", nameof(magazineCapacity));
+                throw new ArgumentException("Cannot be zero nor negative.", nameof(magazineCapacity));
             }
             else if (gun.DefaultReloadSpeed <= 0)
             {
-                throw new ArgumentException("Cannot be null.", nameof(reloadSpeed));
+                throw new ArgumentException("Cannot be zero nor negative.", nameof(reloadSpeed));
             }
             else if (gun.DefaultEmptyReloadSpeed <= 0)
             {
-                throw new ArgumentException("Cannot be null.", nameof(emptyReloadSpeed));
+                throw new ArgumentException("Cannot be zero nor negative.", nameof(emptyReloadSpeed));
             }
             else if (gun.DefaultAimingWalkspeed <= 0)
             {
-                throw new ArgumentException("Cannot be null.", nameof(aimingWalkspeed));
+                throw new ArgumentException("Cannot be zero nor negative.", nameof(aimingWalkspeed));
             }
             if (hollowPoint)
             {
@@ -1003,14 +995,15 @@ namespace PFDB
         /// <param name="suppression">The suppression of the gun with the conversion.</param>
         /// <param name="aimingWalkspeed">The aiming walkspeed of the gun with the conversion.</param>
         /// <exception cref="ArgumentException"></exception>
-        public Conversion(string name,string attachment, string conversionName, bool ammoConversion, string caliber, int ammoCapacity, int magazineCapacity, string[] firemodes, Carried carriedAttributes, Ranged rangedAttributes, double penetration, double muzzleVelocity, double reloadSpeed, double emptyReloadSpeed, double suppression, double aimingWalkspeed)
+        public Conversion(string name, string attachment, string conversionName, bool ammoConversion, string caliber, int ammoCapacity, int magazineCapacity, string[] firemodes, Carried carriedAttributes, Ranged rangedAttributes, double penetration, double muzzleVelocity, double reloadSpeed, double emptyReloadSpeed, double suppression, double aimingWalkspeed)
         { //new conversions
             this.attachment = attachment;
             this.ammoConversion = ammoConversion;
-            if(conversionName == "")
+            if (conversionName == "")
             {
                 this.conversionName = name + " " + attachment;
-            } else
+            }
+            else
             {
                 this.conversionName = conversionName;
             }
@@ -1152,9 +1145,10 @@ namespace PFDB
             this.suppression = suppression;
             this.aimingWalkspeed = aimingWalkspeed;
 
-            if (ammoCapacity <= 0) {
+            if (ammoCapacity <= 0)
+            {
                 throw new ArgumentException("Cannot be null.", nameof(ammoCapacity));
-            } 
+            }
             else if (magazineCapacity <= 0)
             {
                 throw new ArgumentException("Cannot be null.", nameof(magazineCapacity));
@@ -1167,7 +1161,8 @@ namespace PFDB
             {
                 throw new ArgumentException("Cannot be null.", nameof(emptyReloadSpeed));
             }
-            else if (aimingWalkspeed <= 0) {
+            else if (aimingWalkspeed <= 0)
+            {
                 throw new ArgumentException("Cannot be null.", nameof(aimingWalkspeed));
             }
 
@@ -1315,9 +1310,9 @@ namespace PFDB
             return new ConversionList(defaultConversion);
         }
 
-        
 
-        
+
+
         //public 
         /// <summary>
         /// Conversions getter/setter.
@@ -1386,7 +1381,7 @@ namespace PFDB
         public double DefaultSuppression { get { return defaultSuppression; } set { defaultSuppression = value; } }
 
 
-        
+
 
     }
 
@@ -1436,7 +1431,7 @@ namespace PFDB
         /// <summary>
         /// CarriedAttributes getter/setter. See <see cref="Melee.Melee(string, bool, int, double, double, double, Carried)"/>
         /// </summary>
-        public Carried CarriedAttributes { get { return carriedAttributes; } set { carriedAttributes = value; } } 
+        public Carried CarriedAttributes { get { return carriedAttributes; } set { carriedAttributes = value; } }
 
 
     }
@@ -1476,7 +1471,7 @@ namespace PFDB
             this.special = special;
             this.specialMode = specialMode;
             this.storedCapacity = storedCapacity;
-            this.blastRadius = blastRadius; 
+            this.blastRadius = blastRadius;
             this.killRadius = killRadius;
             this.rangedAttributes = rangedAttributes;
         }
@@ -1484,7 +1479,7 @@ namespace PFDB
         /// <summary>
         /// Fuse getter/setter. See <see cref="Grenade.Grenade(string, bool, int, bool, double, bool, string, int, double, double, Ranged)"></see>
         /// </summary>
-        public bool Fuse { get { return fuse; } set { fuse = value;} }
+        public bool Fuse { get { return fuse; } set { fuse = value; } }
 
         /// <summary>
         /// FuseTime getter/setter. See <see cref="Grenade.Grenade(string, bool, int, bool, double, bool, string, int, double, double, Ranged)"></see>
@@ -1494,12 +1489,12 @@ namespace PFDB
         /// <summary>
         /// Special getter/setter. See <see cref="Grenade.Grenade(string, bool, int, bool, double, bool, string, int, double, double, Ranged)"></see>
         /// </summary>
-        public bool Special { get { return special; } set { special = value;} }
+        public bool Special { get { return special; } set { special = value; } }
 
         /// <summary>
         /// SpecialMode getter/setter. See <see cref="Grenade.Grenade(string, bool, int, bool, double, bool, string, int, double, double, Ranged)"></see>
         /// </summary>
-        public string SpecialMode { get { return specialMode; } set { specialMode = value;} }
+        public string SpecialMode { get { return specialMode; } set { specialMode = value; } }
 
         /// <summary>
         /// StoredCapacity getter/setter. See <see cref="Grenade.Grenade(string, bool, int, bool, double, bool, string, int, double, double, Ranged)"></see>
@@ -1509,7 +1504,7 @@ namespace PFDB
         /// <summary>
         /// BlastRadius getter/setter. See <see cref="Grenade.Grenade(string, bool, int, bool, double, bool, string, int, double, double, Ranged)"></see>
         /// </summary>
-        public double BlastRadius {  get { return blastRadius; } set { blastRadius = value; } }
+        public double BlastRadius { get { return blastRadius; } set { blastRadius = value; } }
 
         /// <summary>
         /// KillRadius getter/setter. See <see cref="Grenade.Grenade(string, bool, int, bool, double, bool, string, int, double, double, Ranged)"></see>
@@ -1528,7 +1523,7 @@ namespace PFDB
     /// </summary>
     public class Category//<Weapon> //: ICategory
     {
-        private Dictionary<int,Weapon> weaponList = new();
+        private Dictionary<int, Weapon> weaponList = new();
         private string categoryName;
         /*
         public Category(ICategory lCategory = null)
@@ -1582,9 +1577,9 @@ namespace PFDB
         /// <exception cref="ArgumentException"></exception>
         public static int IDGenerator(Weapon weapon)
         {
-            if(weapon.Rank < 0)
+            if (weapon.Rank < 0)
             {
-                throw new ArgumentException("Rank cannot be negative.",nameof(weapon));
+                throw new ArgumentException("Rank cannot be negative.", nameof(weapon));
             }
             // TODO handle melees with no ranks
 
@@ -1607,8 +1602,9 @@ namespace PFDB
             }
             else if (weaponList.ContainsValue(value))
             {
-                for(int t = 0; t < weaponList.Count; t++){
-                    if(weaponList[t] == value)
+                for (int t = 0; t < weaponList.Count; t++)
+                {
+                    if (weaponList[t] == value)
                     {
                         value = weaponList[t];
                         return true;
@@ -1631,7 +1627,7 @@ namespace PFDB
         /// <returns>If the list has the desired key.</returns>
         public bool hasKey(int key)
         {
-            foreach(int r in weaponList.Keys)
+            foreach (int r in weaponList.Keys)
             {
                 if (r == key) return true;
             }
@@ -1646,7 +1642,7 @@ namespace PFDB
         /// <returns>If the list has the desired <c>Weapon</c>.</returns>
         public bool hasWeapon(Weapon weapon)
         {
-            foreach(Weapon weapon1 in weaponList.Values)
+            foreach (Weapon weapon1 in weaponList.Values)
             {
                 if (weapon1 == weapon) return true;
             }
@@ -1661,7 +1657,7 @@ namespace PFDB
         /// <returns>ID of the <c>Weapon</c> in the list, if it exists. Returns -1 otherwise.</returns>
         public int IDLookup(Weapon weapon)
         {
-            foreach(int id in weaponList.Keys)
+            foreach (int id in weaponList.Keys)
             {
                 if (weaponList[id] == weapon)
                 {
@@ -1680,7 +1676,7 @@ namespace PFDB
         /// <exception cref="Exception"></exception>
         public Weapon weaponLookupByRank(int rank)
         {
-            foreach(Weapon weapon in weaponList.Values)
+            foreach (Weapon weapon in weaponList.Values)
             {
                 if (weapon.Rank == rank)
                 {
@@ -1701,10 +1697,12 @@ namespace PFDB
         {
             Weapon output;
             if (id < 0) throw new ArgumentException("ID cannot be negative.", nameof(id));
-            try { 
+            try
+            {
                 output = weaponList[id];
-               
-            }catch(ArgumentOutOfRangeException e)
+
+            }
+            catch (ArgumentOutOfRangeException e)
             {
                 throw new ArgumentOutOfRangeException(nameof(id), e.Message);
             }
@@ -1717,7 +1715,8 @@ namespace PFDB
         /// </summary>
         /// <param name="weapon">The <c>Weapon</c> object to be added.</param>
         /// <returns>True if succeeded, false otherwise.</returns>
-        public bool addWeapon(Weapon weapon) {
+        public bool addWeapon(Weapon weapon)
+        {
             int er = 2;
             Func<Weapon, int> deleg = x => IDGenerator(x) != -1 ? IDGenerator(weapon) : er;
             if (deleg(weapon) == er) return false;
@@ -1781,16 +1780,17 @@ namespace PFDB
         public List<Weapon> getWeapons()
         {
             List<Weapon> output = new();
-            foreach(Weapon weapon in weaponList.Values) {
+            foreach (Weapon weapon in weaponList.Values)
+            {
                 output.Add(weapon);
             }
             return output;
         }
-        
+
 
 
     }
-    
+
 
     /// <summary>
     /// Defines a list of <c>Category</c> objects.
@@ -1875,116 +1875,4 @@ namespace PFDB
 
     }
 
-
-
-
 }
-
-
-
-/*
-weapons:
-    gun
-    grenade
-    melee
-
-class Weapon{
-    protected string name;
-    protected int rank;
-}
-
-class Carried{
-    protected double limbMultipler, 
-                        torsoMultiplier, 
-                        headMultiplier, 
-                        walkspeed;
-}
-
-class Ranged{
-    protected double range1, 
-                    range2,
-                    damageRange1,
-                    damageRange2;
-}
-
-class Gun : Weapon, Carried, Ranged {
-    public string caliber;
-    public double firerate;
-    public int ammoCapacity;
-    public int magazineCapacity;
-    public string[ ] firemodes = new string[5];
-    public double penetration;
-    public double muzzleVelocity;
-    public double aimingWalkspeed;
-    public double reloadSpeed;
-    public double emptyReloadSpeed;
-
-    public class Conversion{
-        public string attachment;
-        public string conversionName;
-
-        public bool ammoConversion; 
-        public string ammoType; //depends on above bool
-    }
-}
-
-class Melee : Weapon, Carried {
-    public double frontStabDamage;
-    public double backStabDamage;
-    public double bladeLength;
-
-
-}
-
-class Grenade : Weapon, Ranged {
-    public bool fuse;
-    public double fuseTime; //depends on above bool
-    
-    public int storedCapacity;
-
-}
-
-carried class (for gun, melee):
-    limb multiplier
-    torso multiplier
-    head multiplier
-    walkspeed
-    
-ranged weapon (for gun, grenade):
-    range 1
-    range 2
-    damage range 1
-    damage range 2
-
-weapon general properties
-    name
-    rank
-
-gun properties
-    caliber
-    firerate
-    ammo capacity
-    mag capacity
-    fire modes
-    penetration
-    muzzle velocity
-    aiming walkspeed
-    reload time
-    empty reload time
-
-    special attachments
-    special conversions 
-    conversion names
-
-melee properties
-    front stab damage
-    back stab damage
-    blade length
- 
-grenade
-    fuse? (true/false)
-    fuse time
-    stored capacity
-    
-
- */

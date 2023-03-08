@@ -1,8 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using System.IO;
-using System;
-using System.Diagnostics;
-using System.Collections.Generic;
+using WeaponClasses;
 
 string weaponName = "m107";
 
@@ -12,7 +9,7 @@ string? filepath2 = weaponName.ToUpper() + "2.txt";
 
 //string walkSpeed;
 
-
+/*
 string headMultipler, torsoMultiplier, limbMultiplier, walkSpeed, muzzleVelocity, penetration, aimingWalkspeed;
 List<string> suppression, ammoType , damage, damageRange, ammoCapacity, firemodes, firerate;
 try
@@ -182,9 +179,14 @@ foreach (string m in firemodes)
 foreach (string n in firerate)
 {
     Console.WriteLine("firerate " + n);
+}*/
+
+public class FileList
+{
+
 }
 
-class bruh
+public class FileReading
 {
     public enum statisticInFile
     {
