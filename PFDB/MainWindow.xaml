@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PFDB"
         xmlns:userControls="clr-namespace:PFDB.User_Controls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="650" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
@@ -32,7 +32,6 @@
         </Grid>
 
 
-        <TextBlock Grid.Row="0" FontSize="30" Text="Phantom Forces Database"></TextBlock>
         <Grid Grid.Column="0" Grid.Row="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
@@ -47,12 +46,12 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="0" Grid.Row="1" Content="Assault" Name="Assault" Click="Assault_Click"/>
-            <Button Grid.Column="1" Grid.Row="1" Content="Scout" Name="Scout" Click="Scout_Click"/>
-            <Button Grid.Column="2" Grid.Row="1" Content="Support" Name="Support" Click="Support_Click"/>
-            <Button Grid.Column="3" Grid.Row="1" Content="Recon" Name="Recon" Click="Recon_Click"/>
-            <Button Grid.Column="4" Grid.Row="1" Content="Melees" Name="Melees" Click="Melees_Click"/>
-            <Button Grid.Column="5" Grid.Row="1" Content="Grenades" Name="Grenades" Click="Grenades_Click"/>
+            <Button Grid.Column="0" Grid.Row="1" Content="Assault" Click="Assault_Click"/>
+            <Button Grid.Column="1" Grid.Row="1" Content="Scout" Click="Scout_Click"/>
+            <Button Grid.Column="2" Grid.Row="1" Content="Support" Click="Support_Click"/>
+            <Button Grid.Column="3" Grid.Row="1" Content="Recon" Click="Recon_Click"/>
+            <Button Grid.Column="4" Grid.Row="1" Content="Melees" Click="Melees_Click"/>
+            <Button Grid.Column="5" Grid.Row="1" Content="Grenades" Click="Grenades_Click"/>
             <TextBlock Text="Phantom Forces Database" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4" FontSize="18"/>
 
         </Grid>

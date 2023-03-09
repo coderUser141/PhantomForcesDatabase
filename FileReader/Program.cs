@@ -1,11 +1,13 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using WeaponClasses;
+using System.Diagnostics;
 
-string weaponName = "m107";
+string weaponName = "g36k";
 
 Console.WriteLine("Hello, World!");
-string? filepath = weaponName.ToUpper() + "1.txt";
-string? filepath2 = weaponName.ToUpper() + "2.txt";
+string? filepath = weaponName.ToUpper() + "1.png";
+string? filepath2 = weaponName.ToUpper() + "2.png";
+FileReadList fileReadList = new(new List<string> { filepath });
 
 //string walkSpeed;
 
@@ -181,12 +183,57 @@ foreach (string n in firerate)
     Console.WriteLine("firerate " + n);
 }*/
 
-public class FileList
+public class FileRead
 {
+
+    public FileRead(string filepath)
+    {
+        this.filepath = filepath;
+        callPythonScript(@"C:\Users\peter\source\repos\Phantom Forces Database\ImageParser\ImageParser.exe", /*"""C:\Users\peter\source\repos\Phantom Forces Database\ImageParser\"""+*/@"..\..\..\..\ImageParser\"+filepath, @"..\..\..\..\ImageParser\");
+    }
+
+    private string filepath;
+    private string fileOutput;
+
+    public void callPythonScript(string cmd, string path, string tessbindata)
+    {
+        ProcessStartInfo start = new(cmd, string.Format("{0} {1}", path, tessbindata));
+        //start.FileName = cmd;
+        //start.Arguments = string.Format("{ 0}", path);
+        Process.Start(start);
+    }
+
+    public string Filepath
+    {
+        get { return filepath; }
+        set { filepath = value; }
+    }
+
+
+    public string FileOutput
+    {
+        get { return fileOutput; }
+        set { fileOutput = value; }
+    }
+
 
 }
 
-public class FileReading
+public class FileReadList
+{
+
+    private Dictionary<int, FileRead> files;
+    public FileReadList(List<string> filepaths)
+    {
+        files = new Dictionary<int, FileRead>();
+        for(int i = 0; i < filepaths.Count; i++)
+        {
+            files.Add(i, new FileRead(filepaths[i]));
+        }
+    }
+}
+
+public class FileParsing
 {
     public enum statisticInFile
     {

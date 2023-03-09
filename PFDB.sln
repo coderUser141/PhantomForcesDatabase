@@ -22,6 +22,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeaponClasses", "WeaponClas
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "ImageParser", "ImageParser\ImageParser.pyproj", "{7E00D9F2-98F9-4269-A5F1-1092300D4421}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{54D4142C-68E6-47A2-95A3-F13832E03252}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

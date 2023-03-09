@@ -1,8 +1,11 @@
+import sys
+sys.path.append('C:\\Users\\peter\\AppData\\Local\\Packages\\pythonsoftwarefoundation.python.3.9_qbz5n2kfra8p0\\localcache\\local-packages\\python39\\site-packages')
+
 import cv2
 import pytesseract
 import os
 
-TESS_PATH = "tessbin"
+TESS_PATH = sys.argv[2] + "tessbin"
 os.environ["TESSDATA_PREFIX"] = TESS_PATH + "\\tessdata\\"
 pytesseract.pytesseract.tesseract_cmd = TESS_PATH + "\\tesseract"
 
@@ -16,6 +19,8 @@ class ImageParser:
             print("=" * 5, crop[0], "=" * 5)
             data = self.text_from_image(crop[1])
             print(data + "\n")
+            file1 = open(r"dataOut.txt","w")
+            file1.write(data)
     
     def crop_fullscreen(self, fullscreen_image):
         if type(fullscreen_image) is str:
@@ -34,7 +39,7 @@ class ImageParser:
         data = pytesseract.image_to_string(resize, config="--psm 6")
         return data
 
+print("hi im python")
+print(sys.argv[1])
 parser = ImageParser()
-parser.parse_screenshot("RobloxScreenShot20230302_200920013.png")
-f = input()
-print(f)
+parser.parse_screenshot(sys.argv[1])

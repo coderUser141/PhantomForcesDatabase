@@ -1524,7 +1524,7 @@
     public class Category//<Weapon> //: ICategory
     {
         private Dictionary<int, Weapon> weaponList = new();
-        private string categoryName;
+        private string name;
         /*
         public Category(ICategory lCategory = null)
         {
@@ -1553,7 +1553,7 @@
         /// <summary>
         /// Name of the category.
         /// </summary>
-        public string CategoryName { get { return categoryName; } set { categoryName = value; } }
+        public string Name { get { return name; } set { name = value; } }
 
 #nullable enable
         /// <summary>
@@ -1564,7 +1564,7 @@
         public Category(Weapon? weapon, string categoryName)
         {
             if (weapon != null) addWeapon(weapon);
-            this.categoryName = categoryName;
+            this.name = categoryName;
         }
 #nullable disable
 
@@ -1798,7 +1798,7 @@
     public class Class
     {
         private List<Category> categoryList = new();
-        private string classname;
+        private string name;
 
         /// <summary>
         /// Indexer for the list.
@@ -1821,7 +1821,7 @@
         /// <summary>
         /// Name of the category.
         /// </summary>
-        public string ClassName { get { return classname; } set { classname = value; } }
+        public string Name { get { return name; } set { name = value; } }
 
 #nullable enable
         /// <summary>
@@ -1832,9 +1832,18 @@
         public Class(Category? firstCategory, string name)
         {
             if (firstCategory != null) addCategory(firstCategory);
-            this.classname = name;
+            this.name = name;
         }
 #nullable disable
+
+        /// <summary>
+        /// Returns the list of <c>Category</c> objects.
+        /// </summary>
+        /// <returns>List of <c>Category</c> objects.</returns>
+        public List<Category> getCategoryList()
+        {
+            return categoryList;
+        }
 
         /// <summary>
         /// Adds a <c>Category</c> object to the list.

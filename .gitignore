@@ -339,3 +339,4 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 /ImageParser/tessbin
+/ImageParser/build/ImageParser
