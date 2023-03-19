@@ -6,7 +6,7 @@ block_cipher = None
 
 a = Analysis(
     ['ImageParser.py'],
-    pathex=['C:\\Users\\peter\\AppData\\Local\\Packages\\pythonsoftwarefoundation.python.3.9_qbz5n2kfra8p0\\localcache\\local-packages\\python39\\site-packages'],
+    pathex=[],
     binaries=[],
     datas=[],
     hiddenimports=[],

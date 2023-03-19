@@ -2,12 +2,17 @@
 using WeaponClasses;
 using System.Diagnostics;
 
-string weaponName = "g36k";
 
 Console.WriteLine("Hello, World!");
-string? filepath = weaponName.ToUpper() + "1.png";
-string? filepath2 = weaponName.ToUpper() + "2.png";
-FileReadList fileReadList = new(new List<string> { filepath });
+Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:fff"));
+//string? filepath = weaponName.ToUpper() + "1.png";
+//string? filepath2 = weaponName.ToUpper() + "2.png";
+//FileReadList fileReadList = new(new List<string> { filepath });
+int choice = (Convert.ToInt32(Console.ReadLine()) < 13 && Convert.ToInt32(Console.ReadLine()) > -1 )? Convert.ToInt32(Console.ReadLine()) : 0;
+FileReadList n = new()
+Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:fff"));
+
+
 
 //string walkSpeed;
 
@@ -183,24 +188,514 @@ foreach (string n in firerate)
     Console.WriteLine("firerate " + n);
 }*/
 
+public class FilePathsList
+{
+    public enum BuildOptions
+    {
+        None,
+        AssaultRifles,
+        PersonalDefenseWeapons,
+        LightMachineGuns,
+        SniperRifles,
+        DesignatedMarksmanRifles,
+        BattleRifles,
+        Carbines,
+        Shotguns,
+        Pistols,
+        MachinePistols,
+        Revolvers,
+        Other,
+        All
+    }
+
+    private List<string> weaponNames;
+
+    public FilePathsList(BuildOptions buildOptions = BuildOptions.None) {
+        weaponNames = new();
+        switch (buildOptions) {
+            case BuildOptions.None:
+                {
+
+                    break;
+                }
+                case BuildOptions.AssaultRifles:
+                {
+                    addWeapon("ak12");
+                    addWeapon("an94");
+                    addWeapon("as-val");
+                    addWeapon("scar-l");
+                    addWeapon("aug-a1");
+                    addWeapon("m16a4");
+                    addWeapon("g36");
+                    addWeapon("m16a1");
+                    addWeapon("m16a3");
+                    addWeapon("type-20");
+                    addWeapon("aug-a2");
+                    addWeapon("k2");
+                    addWeapon("famas-f1");
+                    addWeapon("ak47");
+                    addWeapon("aug-a3");
+                    addWeapon("l85a2");
+                    addWeapon("hk416");
+                    addWeapon("ak74");
+                    addWeapon("akm");
+                    addWeapon("ak103");
+                    addWeapon("tar-21");
+                    addWeapon("type-88");
+                    addWeapon("m231");
+                    addWeapon("c7a2");
+                    addWeapon("stg-44");
+                    addWeapon("g11k2");
+                    break;
+                }
+            case BuildOptions.PersonalDefenseWeapons:
+                {
+                    addWeapon("mp5k");
+                    addWeapon("ump45");
+                    addWeapon("g36c");
+                    addWeapon("mp7");
+                    addWeapon("mac10");
+                    addWeapon("p90");
+                    addWeapon("colt-mars");
+                    addWeapon("mp5");
+                    addWeapon("colt-smg-633");
+                    addWeapon("l2a3");
+                    addWeapon("mp5sd");
+                    addWeapon("mp10");
+                    addWeapon("m3a1");
+                    addWeapon("mp510");
+                    addWeapon("uzi");
+                    addWeapon("aug-a3-para-xs");
+                    addWeapon("k7");
+                    addWeapon("ak74u");
+                    addWeapon("ppsh-41");
+                    addWeapon("fal-para-shorty");
+                    addWeapon("kriss-vector");
+                    addWeapon("pp-19-bizon");
+                    addWeapon("mp40");
+                    addWeapon("x95-smg");
+                    addWeapon("tommy-gun");
+                    addWeapon("rama-1130");
+                    break;
+                }
+            case BuildOptions.LightMachineGuns:
+                {
+                    addWeapon("colt-lmg");
+                    addWeapon("m60");
+                    addWeapon("aug-hbar");
+                    addWeapon("mg36");
+                    addWeapon("rpk12");
+                    addWeapon("l86-lsw");
+                    addWeapon("rpk");
+                    addWeapon("hk21e");
+                    addWeapon("hamr-iar");
+                    addWeapon("rpk74");
+                    addWeapon("mg3kws");
+                    break;
+                }
+            case BuildOptions.SniperRifles:
+                {
+                    addWeapon("intervention");
+                    addWeapon("model-700");
+                    addWeapon("dragunov-svu");
+                    addWeapon("aws");
+                    addWeapon("bfg-50");
+                    addWeapon("awm");
+                    addWeapon("trg-42");
+                    addWeapon("mosin-nagant");
+                    addWeapon("dragunov-svds");
+                    addWeapon("m1903");
+                    addWeapon("k14");
+                    addWeapon("hecate-ii");
+                    addWeapon("ft300");
+                    addWeapon("m107");
+                    addWeapon("steyr-scout");
+                    addWeapon("wa2000");
+                    addWeapon("ntw-20");
+                    break;
+                }
+            case BuildOptions.DesignatedMarksmanRifles:
+                {
+                    addWeapon("mk11");
+                    addWeapon("sks");
+                    addWeapon("sl-8");
+                    addWeapon("vss-vintorez");
+                    addWeapon("msg90");
+                    addWeapon("m21");
+                    addWeapon("beowulf-tcr");
+                    addWeapon("sa58-spr");
+                    addWeapon("scar-ssr");
+                    break;
+                }
+            case BuildOptions.Carbines:
+                {
+                    addWeapon("m4a1");
+                    addWeapon("g36k");
+                    addWeapon("m4");
+                    addWeapon("l22");
+                    addWeapon("scar-pdw");
+                    addWeapon("aku12");
+                    addWeapon("groza-1");
+                    addWeapon("ots-126");
+                    addWeapon("ak12c");
+                    addWeapon("honey-badger");
+                    addWeapon("k1a");
+                    addWeapon("sr-3m");
+                    addWeapon("groza-4");
+                    addWeapon("mc51");
+                    addWeapon("fal-5063-para");
+                    addWeapon("1858-carbine");
+                    addWeapon("ak105");
+                    addWeapon("jury");
+                    addWeapon("kac-srr");
+                    addWeapon("gyrojet-carbine");
+                    addWeapon("c8a2");
+                    addWeapon("x95r");
+                    addWeapon("hk51b");
+                    addWeapon("can-cannon");
+                    break;
+                }
+            case BuildOptions.BattleRifles:
+                {
+                    addWeapon("m14");
+                    addWeapon("beowulf-ecr");
+                    addWeapon("scar-h");
+                    addWeapon("ak12br");
+                    addWeapon("g3a3");
+                    addWeapon("ag-3");
+                    addWeapon("hk417");
+                    addWeapon("henry-45-70");
+                    addWeapon("fal-5000");
+                    break;
+                }
+            case BuildOptions.Shotguns:
+                {
+                    addWeapon("ksg-12");
+                    addWeapon("model-870");
+                    addWeapon("dbv12");
+                    addWeapon("ks-23m");
+                    addWeapon("saiga-12");
+                    addWeapon("stevens-db");
+                    addWeapon("e-gun");
+                    addWeapon("aa-12");
+                    addWeapon("spas-12");
+                    addWeapon("dt11");
+                    addWeapon("usas-12");
+                    break;
+                }
+            case BuildOptions.Pistols:
+                {
+                    addWeapon("g17");
+                    addWeapon("m9");
+                    addWeapon("m1911a1");
+                    addWeapon("desert-eagle-l5");
+                    addWeapon("g21");
+                    addWeapon("g23");
+                    addWeapon("m45a1");
+                    addWeapon("g40");
+                    addWeapon("kg-99");
+                    addWeapon("g50");
+                    addWeapon("five-seven");
+                    addWeapon("zip-22");
+                    addWeapon("gi-m1");
+                    addWeapon("hardballer");
+                    addWeapon("izhevsk-pb");
+                    addWeapon("makarov-pm");
+                    addWeapon("gb-22");
+                    addWeapon("desert-eagle-xix");
+                    addWeapon("automag-iii");
+                    addWeapon("gyrojet-mark-i");
+                    addWeapon("gsp");
+                    addWeapon("grizzly");
+                    addWeapon("m2011");
+                    addWeapon("alien");
+                    addWeapon("af2011-a1");
+                    break;
+                }
+            case BuildOptions.MachinePistols:
+                {
+                    addWeapon("g18c");
+                    addWeapon("93r");
+                    addWeapon("pp-2000");
+                    addWeapon("tec-9");
+                    addWeapon("micro-uzi");
+                    addWeapon("skorpion-vz61");
+                    addWeapon("asmi");
+                    addWeapon("mp1911");
+                    addWeapon("arm-pistol");
+                    break;
+                }
+            case BuildOptions.Revolvers:
+                {
+                    addWeapon("mp412-rex");
+                    addWeapon("mateba-6");
+                    addWeapon("1858-new-army");
+                    addWeapon("redhawk-44");
+                    addWeapon("judge");
+                    addWeapon("executioner");
+                    break;
+                }
+            case BuildOptions.Other:
+                {
+                    addWeapon("super-shorty");
+                    addWeapon("sfg-50");
+                    addWeapon("m79-thumper");
+                    addWeapon("advanced-coilgun");
+                    addWeapon("sawed-off");
+                    addWeapon("saiga-12u");
+                    addWeapon("obrez");
+                    addWeapon("sass-308");
+                    break;
+                }
+            case BuildOptions.All:
+                {
+                    addWeapon("ak12");
+                    addWeapon("an94");
+                    addWeapon("as-val");
+                    addWeapon("scar-l");
+                    addWeapon("aug-a1");
+                    addWeapon("m16a4");
+                    addWeapon("g36");
+                    addWeapon("m16a1");
+                    addWeapon("m16a3");
+                    addWeapon("type-20");
+                    addWeapon("aug-a2");
+                    addWeapon("k2");
+                    addWeapon("famas-f1");
+                    addWeapon("ak47");
+                    addWeapon("aug-a3");
+                    addWeapon("l85a2");
+                    addWeapon("hk416");
+                    addWeapon("ak74");
+                    addWeapon("akm");
+                    addWeapon("ak103");
+                    addWeapon("tar-21");
+                    addWeapon("type-88");
+                    addWeapon("m231");
+                    addWeapon("c7a2");
+                    addWeapon("stg-44");
+                    addWeapon("g11k2");
+                    addWeapon("mp5k");
+                    addWeapon("ump45");
+                    addWeapon("g36c");
+                    addWeapon("mp7");
+                    addWeapon("mac10");
+                    addWeapon("p90");
+                    addWeapon("colt-mars");
+                    addWeapon("mp5");
+                    addWeapon("colt-smg-633");
+                    addWeapon("l2a3");
+                    addWeapon("mp5sd");
+                    addWeapon("mp10");
+                    addWeapon("m3a1");
+                    addWeapon("mp510");
+                    addWeapon("uzi");
+                    addWeapon("aug-a3-para-xs");
+                    addWeapon("k7");
+                    addWeapon("ak74u");
+                    addWeapon("ppsh-41");
+                    addWeapon("fal-para-shorty");
+                    addWeapon("kriss-vector");
+                    addWeapon("pp-19-bizon");
+                    addWeapon("mp40");
+                    addWeapon("x95-smg");
+                    addWeapon("tommy-gun");
+                    addWeapon("rama-1130");
+                    addWeapon("colt-lmg");
+                    addWeapon("m60");
+                    addWeapon("aug-hbar");
+                    addWeapon("mg36");
+                    addWeapon("rpk12");
+                    addWeapon("l86-lsw");
+                    addWeapon("rpk");
+                    addWeapon("hk21e");
+                    addWeapon("hamr-iar");
+                    addWeapon("rpk74");
+                    addWeapon("mg3kws");
+                    addWeapon("intervention");
+                    addWeapon("model-700");
+                    addWeapon("dragunov-svu");
+                    addWeapon("aws");
+                    addWeapon("bfg-50");
+                    addWeapon("awm");
+                    addWeapon("trg-42");
+                    addWeapon("mosin-nagant");
+                    addWeapon("dragunov-svds");
+                    addWeapon("m1903");
+                    addWeapon("k14");
+                    addWeapon("hecate-ii");
+                    addWeapon("ft300");
+                    addWeapon("m107");
+                    addWeapon("steyr-scout");
+                    addWeapon("wa2000");
+                    addWeapon("ntw-20");
+                    addWeapon("mk11");
+                    addWeapon("sks");
+                    addWeapon("sl-8");
+                    addWeapon("vss-vintorez");
+                    addWeapon("msg90");
+                    addWeapon("m21");
+                    addWeapon("beowulf-tcr");
+                    addWeapon("sa58-spr");
+                    addWeapon("scar-ssr");
+                    addWeapon("m4a1");
+                    addWeapon("g36k");
+                    addWeapon("m4");
+                    addWeapon("l22");
+                    addWeapon("scar-pdw");
+                    addWeapon("aku12");
+                    addWeapon("groza-1");
+                    addWeapon("ots-126");
+                    addWeapon("ak12c");
+                    addWeapon("honey-badger");
+                    addWeapon("k1a");
+                    addWeapon("sr-3m");
+                    addWeapon("groza-4");
+                    addWeapon("mc51");
+                    addWeapon("fal-5063-para");
+                    addWeapon("1858-carbine");
+                    addWeapon("ak105");
+                    addWeapon("jury");
+                    addWeapon("kac-srr");
+                    addWeapon("gyrojet-carbine");
+                    addWeapon("c8a2");
+                    addWeapon("x95r");
+                    addWeapon("hk51b");
+                    addWeapon("can-cannon");
+                    addWeapon("m14");
+                    addWeapon("beowulf-ecr");
+                    addWeapon("scar-h");
+                    addWeapon("ak12br");
+                    addWeapon("g3a3");
+                    addWeapon("ag-3");
+                    addWeapon("hk417");
+                    addWeapon("henry-45-70");
+                    addWeapon("fal-5000");
+                    addWeapon("ksg-12");
+                    addWeapon("model-870");
+                    addWeapon("dbv12");
+                    addWeapon("ks-23m");
+                    addWeapon("saiga-12");
+                    addWeapon("stevens-db");
+                    addWeapon("e-gun");
+                    addWeapon("aa-12");
+                    addWeapon("spas-12");
+                    addWeapon("dt11");
+                    addWeapon("usas-12");
+                    addWeapon("g17");
+                    addWeapon("m9");
+                    addWeapon("m1911a1");
+                    addWeapon("desert-eagle-l5");
+                    addWeapon("g21");
+                    addWeapon("g23");
+                    addWeapon("m45a1");
+                    addWeapon("g40");
+                    addWeapon("kg-99");
+                    addWeapon("g50");
+                    addWeapon("five-seven");
+                    addWeapon("zip-22");
+                    addWeapon("gi-m1");
+                    addWeapon("hardballer");
+                    addWeapon("izhevsk-pb");
+                    addWeapon("makarov-pm");
+                    addWeapon("gb-22");
+                    addWeapon("desert-eagle-xix");
+                    addWeapon("automag-iii");
+                    addWeapon("gyrojet-mark-i");
+                    addWeapon("gsp");
+                    addWeapon("grizzly");
+                    addWeapon("m2011");
+                    addWeapon("alien");
+                    addWeapon("af2011-a1");
+                    addWeapon("g18c");
+                    addWeapon("93r");
+                    addWeapon("pp-2000");
+                    addWeapon("tec-9");
+                    addWeapon("micro-uzi");
+                    addWeapon("skorpion-vz61");
+                    addWeapon("asmi");
+                    addWeapon("mp1911");
+                    addWeapon("arm-pistol");
+                    addWeapon("mp412-rex");
+                    addWeapon("mateba-6");
+                    addWeapon("1858-new-army");
+                    addWeapon("redhawk-44");
+                    addWeapon("judge");
+                    addWeapon("executioner");
+                    addWeapon("super-shorty");
+                    addWeapon("sfg-50");
+                    addWeapon("m79-thumper");
+                    addWeapon("advanced-coilgun");
+                    addWeapon("sawed-off");
+                    addWeapon("saiga-12u");
+                    addWeapon("obrez");
+                    addWeapon("sass-308");
+                    break;
+                }
+    }
+        filepaths();
+    }
+
+    public void filepaths()
+    {
+        List<string> br = new();
+        foreach(string str in weaponNames)
+        {
+            br.Add(str + "1.png");
+            br.Add(str + "2.png");
+        }
+        FileReadList list = new(br);
+    }
+
+    public void addWeapon(string weaponName)
+    {
+        weaponNames.Add(weaponName.ToUpper());
+    }
+
+}
+
 public class FileRead
 {
-
+    //constructor
     public FileRead(string filepath)
     {
         this.filepath = filepath;
-        callPythonScript(@"C:\Users\peter\source\repos\Phantom Forces Database\ImageParser\ImageParser.exe", /*"""C:\Users\peter\source\repos\Phantom Forces Database\ImageParser\"""+*/@"..\..\..\..\ImageParser\"+filepath, @"..\..\..\..\ImageParser\");
+        this.fileOutput = callPythonScript(@"C:\Users\peter\source\repos\Phantom Forces Database\ImageParser\dist\ImageParser.exe", /*"""C:\Users\peter\source\repos\Phantom Forces Database\ImageParser\"""+*/@"..\..\..\..\ImageParser\Weapons\"+filepath, @"..\..\..\..\ImageParser\");
     }
 
     private string filepath;
     private string fileOutput;
 
-    public void callPythonScript(string cmd, string path, string tessbindata)
+    //reads
+    public string callPythonScript(string cmd, string path, string tessbindata)
     {
+
+        Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:fff") + " started");
         ProcessStartInfo start = new(cmd, string.Format("{0} {1}", path, tessbindata));
         //start.FileName = cmd;
         //start.Arguments = string.Format("{ 0}", path);
-        Process.Start(start);
+
+        start.UseShellExecute = false;
+        start.RedirectStandardOutput = true;
+        if (start != null)
+        {
+            using (Process process = Process.Start(start) ?? Process.Start(new ProcessStartInfo(cmd, string.Format("{0} {1}", path, tessbindata))))
+            {
+                if (process != null)
+                {
+                    using (StreamReader reader = process.StandardOutput)
+                    {
+                        string result = reader.ReadToEnd();
+                        Console.Write(result);
+                        File.AppendAllText("output.txt", result);
+                        File.AppendAllText("output.txt",DateTime.Now.ToString("HH:mm:ss:fff") + " finished");
+                        return result;
+                    }
+                }
+            }
+        }
+        return "failed";
+        //Process.Start(start);
     }
 
     public string Filepath
@@ -219,18 +714,29 @@ public class FileRead
 
 }
 
+//maybe simplify?
 public class FileReadList
 {
 
     private Dictionary<int, FileRead> files;
+
+
     public FileReadList(List<string> filepaths)
     {
         files = new Dictionary<int, FileRead>();
         for(int i = 0; i < filepaths.Count; i++)
         {
             files.Add(i, new FileRead(filepaths[i]));
+            File.AppendAllText("output__" + filepaths[i] + ".txt", files[i].FileOutput);
         }
     }
+
+    public Dictionary<int, FileRead> Files
+    {
+        get { return files; }
+        set { files = value; }
+    }
+
 }
 
 public class FileParsing
