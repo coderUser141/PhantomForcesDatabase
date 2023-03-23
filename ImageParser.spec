@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['ImageParser.py'],
+    ['ImageParser\\ImageParser.py'],
     pathex=[],
     binaries=[],
     datas=[],
