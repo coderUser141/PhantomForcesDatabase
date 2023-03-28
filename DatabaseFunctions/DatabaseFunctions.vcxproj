@@ -156,6 +156,11 @@
   <ItemGroup>
     <None Include="cpp.hint" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WeaponClasses\WeaponClasses.csproj">
+      <Project>{03c90c4a-cfa9-4e53-a52e-fab113c4ca0e}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

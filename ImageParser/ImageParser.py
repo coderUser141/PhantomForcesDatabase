@@ -8,6 +8,7 @@ import pytesseract
 import os
 
 
+
 # 1560, 300  \ 1840, 630
 #   -> 300:330, 1560:280 
 # 1260, 400  \  1540, 765
@@ -51,8 +52,8 @@ class ImageParser:
             data = self.text_from_image(crop[1], "false", melee)
 
             print(data + "\n")
-            file1 = open(r"dataOut.txt","w")
-            file1.write(data)
+            #file1 = open(r"dataOut.txt","w")
+            #file1.write(data)
     
     def crop_fullscreen(self, fullscreen_image, primary, melee):
         if type(fullscreen_image) is str:
@@ -160,9 +161,9 @@ class ImageParser:
         sharpened_img = cv2.bilateralFilter(process2,9,75,75)
         thresh, im_bw = cv2.threshold(sharpened_img, 130, 255, cv2.THRESH_BINARY )
         eroded = thin_font(im_bw)
-        cv2.imwrite("outputsharpened.png", sharpened_img)
-        cv2.imwrite("outputbinaryfilter.png", im_bw)
-        cv2.imwrite("outputeroded.png",eroded)
+        #cv2.imwrite("outputsharpened.png", sharpened_img)
+        #cv2.imwrite("outputbinaryfilter.png", im_bw)
+        #cv2.imwrite("outputeroded.png",eroded)
         data = ""
         if general2 == "true" or not melee=="True" or not melee=="False": #or melee=="False"
             data = pytesseract.image_to_string(eroded, config="--psm 6")
