@@ -8,6 +8,8 @@ using FileProcessingParsingReading;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using WeaponClasses;
+using System.Runtime.CompilerServices;
+using System.Net.Security;
 
 Console.WriteLine("Hello, World!");
 Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:fff"));
@@ -19,7 +21,7 @@ Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:fff"));
 string filepath = "output__rgn-udzs.png.txt";
 string filepath2 = "output__rgn-udzs.png.txt";
 Console.WriteLine(FileProcessing.Filenames.convertFileNameToGunName(filepath));
-FileReading reading = new(FileReading.BuildOptions.NONE, true, null, null);
+FileReading reading = new(FileReading.BuildOptions.RES, false, true, false);
 /*
 List<Dictionary<int, FileProcessing.WeaponOutputs>> valuePairs = new(FileReading.thread1Async().Result);
 foreach(Dictionary<int, FileProcessing.WeaponOutputs> pair in valuePairs)
@@ -494,8 +496,16 @@ namespace FileProcessingParsingReading
 
             public WeaponOutputs(string filename, bool? primaryOrSecondary, bool? meleeOrGrenade)
             {
+                
                 this.filename = filename;
                 this.fileOutput = executePython(@"C:\Users\peter\source\repos\Phantom Forces Database\ImageParser\dist\ImageParser.exe", @"..\..\..\..\ImageParser\Weapons\" + filename, @"..\..\..\..\ImageParser\", filename, primaryOrSecondary, meleeOrGrenade);
+                
+            }
+
+            public static async Task<WeaponOutputs> GetStringAsync(string filename, bool? primaryOrSecondary, bool? meleeOrGrenade) {
+                Task<string> fileOutputl = executePythonAsync(@"C:\Users\peter\source\repos\Phantom Forces Database\ImageParser\dist\ImageParser.exe", @"..\..\..\..\ImageParser\Weapons\" + filename, @"..\..\..\..\ImageParser\", filename, primaryOrSecondary, meleeOrGrenade);
+                return new WeaponOutputs(filename, fileOutputl.Result);
+                
             }
 
             public WeaponOutputs(string filename, string fileOutput)
@@ -590,7 +600,7 @@ namespace FileProcessingParsingReading
                     };
 
 
-
+                    /*
                     foreach(List<string> category in strings)
                     {
                         foreach(string str in category)
@@ -600,7 +610,19 @@ namespace FileProcessingParsingReading
                                 Console.WriteLine(category.ToString() + " needs to be rebuilt. Missing " + gunName);
                             }
                         }
+                    }*/
+
+                    for(int j = 0; j < strings.Count; j++)
+                    {
+                        for(int k = 0; k < strings[j].Count; k++)
+                        {
+                            if (gunName == strings[j][k])
+                            {
+                                Console.WriteLine(strings[j] + " needs to be rebuilt. Missing " + gunName);
+                            }
+                        }
                     }
+
                 }
                 output.Filename = filepath;
                 return output;
@@ -800,6 +822,38 @@ namespace FileProcessingParsingReading
             //Process.Start(start);
         }
 
+        public static async Task<string> executePythonAsync(string cmd, string path, string tessbindata, string name, bool? primaryOrSecondary, bool? meleeOrGrenade)
+        {
+            string startTime = DateTime.Now.ToString("HH:mm:ss:fff");
+            var watch = sd.Stopwatch.StartNew();
+            string POS = primaryOrSecondary?.ToString() ?? "k";
+            string MOG = meleeOrGrenade?.ToString() ?? "k";
+
+            ProcessStartInfo start = new(cmd, string.Format("{0} {1} {2} {3}", path, tessbindata, POS, MOG));
+
+            start.UseShellExecute = false;
+            start.RedirectStandardOutput = true;
+            if (start != null)
+            {
+                using (Process process = Process.Start(start) ?? Process.Start(new ProcessStartInfo(cmd, string.Format("{0} {1}", path, tessbindata))))
+                {
+                    if (process != null)
+                    {
+                        using (StreamReader reader = process.StandardOutput)
+                        {
+                            Task<string> result = reader.ReadToEndAsync();
+                            string finishTime = DateTime.Now.ToString("HH:mm:ss:fff");
+                            string finalOutput = "VERSION:" + VERSION + "\nStarted at " + startTime + "\n" + result.Result + "\n" + "Finished at " + finishTime + "\nTime elapsed: " + watch.ElapsedMilliseconds.ToString() + "\n" + @"C:\Users\peter\source\repos\Phantom Forces Database\ImageParser\Weapons\" + name;
+                            Console.WriteLine(name);
+                            return finalOutput;
+                        }
+                    }
+                }
+            }
+            return ("Failed. Time = " + DateTime.Now.ToString("HH:mm:ss:fff") + ".");
+            //Process.Start(start);
+        }
+
         public static List<string> imagePaths(List<string> strings, bool? meleeOrGrenades)
         {
             List<string> result = new();
@@ -926,7 +980,8 @@ namespace FileProcessingParsingReading
             Dictionary<int, WeaponOutputs> outputs = outDictionary;
             for (int i = 0; i < threadBuilds.Count; i++)
             {
-                outputs.Add(i, new WeaponOutputs(threadBuilds[i], primaryOrSecondary, meleeOrGrenade));
+                Task<WeaponOutputs> result = WeaponOutputs.GetStringAsync(threadBuilds[i], primaryOrSecondary, meleeOrGrenade);
+                outputs.Add(i, result.Result);
             }
             //calls readfilelist(), which initializes the weaponoutputs objects, each of which have a constructro that calls executepython()
             //string logfileoutput = "";
@@ -935,6 +990,95 @@ namespace FileProcessingParsingReading
                 Filenames filenames = new(outputs[j]);
                 filenames.SetFilenames(outputOptions, logfilepath, true);
             }
+            FileReading.BuildOptions options = FileReading.BuildOptions.NONE;
+            for(int i = 0; i < strings.Count; i++)
+            {
+                if (AllWeaponStrings.AssaultRiflesStrings.Contains(strings[i]))
+                {
+                    options |= FileReading.BuildOptions.ARS;
+                }
+                if (AllWeaponStrings.PersonalDefenseWeaponsStrings.Contains(strings[i]))
+                {
+                    options |= FileReading.BuildOptions.PDWS;
+                }
+                if (AllWeaponStrings.LightMachineGunsStrings.Contains(strings[i]))
+                {
+                    options |= FileReading.BuildOptions.LMGS;
+                }
+                if (AllWeaponStrings.SniperRiflesStrings.Contains(strings[i]))
+                {
+                    options |= FileReading.BuildOptions.SRS;
+                }
+
+                if (AllWeaponStrings.DesignatedMarksmanRiflesStrings.Contains(strings[i]))
+                {
+                    options |= FileReading.BuildOptions.DMRS;
+                }
+                if (AllWeaponStrings.BattleRiflesStrings.Contains(strings[i]))
+                {
+                    options |= FileReading.BuildOptions.BRS;
+                }
+                if (AllWeaponStrings.CarbineStrings.Contains(strings[i]))
+                {
+                    options |= FileReading.BuildOptions.CAS;
+                }
+                if (AllWeaponStrings.ShotgunsStrings.Contains(strings[i]))
+                {
+                    options |= FileReading.BuildOptions.SHS;
+                }
+
+                if (AllWeaponStrings.PistolsStrings.Contains(strings[i]))
+                {
+                    options |= FileReading.BuildOptions.PS;
+                }
+                if (AllWeaponStrings.MachinePistolsStrings.Contains(strings[i]))
+                {
+                    options |= FileReading.BuildOptions.MPS;
+                }
+                if (AllWeaponStrings.RevolversStrings.Contains(strings[i]))
+                {
+                    options |= FileReading.BuildOptions.RES;
+                }
+                if (AllWeaponStrings.OthersStrings.Contains(strings[i]))
+                {
+                    options |= FileReading.BuildOptions.OTH;
+                }
+
+                if (AllWeaponStrings.FragmentationGrenadesStrings.Contains(strings[i]))
+                {
+                    options |= FileReading.BuildOptions.FGS;
+                }
+                if (AllWeaponStrings.ImpactGrenadesStrings.Contains(strings[i]))
+                {
+                    options |= FileReading.BuildOptions.IGS;
+                }
+                if (AllWeaponStrings.HighExplosiveGrenadesStrings.Contains(strings[i]))
+                {
+                    options |= FileReading.BuildOptions.HEGS;
+                }
+
+                if (AllWeaponStrings.OneHandBladeMelees.Contains(strings[i]))
+                {
+                    options |= FileReading.BuildOptions.OHBE;
+                }
+                if (AllWeaponStrings.OneHandBluntMelees.Contains(strings[i]))
+                {
+                    options |= FileReading.BuildOptions.OHBT;
+                }
+                if (AllWeaponStrings.TwoHandBladeMelees.Contains(strings[i]))
+                {
+                    options |= FileReading.BuildOptions.THBE;
+                }
+                if (AllWeaponStrings.TwoHandBluntMelees.Contains(strings[i]))
+                {
+                    options |= FileReading.BuildOptions.THBT;
+                }
+
+            }
+            FileReading file = new(options, true, true, false);
+            //check strings to determine which category has been just processed
+            //call filereading class ctor to read the now built files
+            
             return outputs;
         }
 
@@ -1345,7 +1489,6 @@ namespace FileProcessingParsingReading
 
     public class FileReading
     {
-        private Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> result = new();
 
 
         public enum BuildOptions
@@ -1374,6 +1517,7 @@ namespace FileProcessingParsingReading
 
         }
 
+        private Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> result = new();
         public Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> Result { get { return result; } }
 
 
@@ -1480,11 +1624,17 @@ namespace FileProcessingParsingReading
                         awaiter = await Build(options);
                     }
                 }
+
+                //awaiter = result;
+
             }
             else
             {
                 throw new ArgumentException("\"read\" cannot be false while \"optimizedBuild\" and \"fullBuild\" are both null");
             }
+
+            //TaskAwaiter<Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>>> taskAwaiter = await awaiter;
+
 
             Proofread(awaiter);
 
@@ -1492,11 +1642,23 @@ namespace FileProcessingParsingReading
 
         public void Proofread(Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> keyValuePairs)
         {
+            foreach (BuildOptions options in keyValuePairs.Keys)
+            {
+                switch (options)
+                {
+                    case BuildOptions.ARS or BuildOptions.PDWS or BuildOptions.LMGS or BuildOptions.SRS or BuildOptions.BRS or BuildOptions.DMRS or BuildOptions.CAS or BuildOptions.SHS
+                        or BuildOptions.PS or BuildOptions.MPS or BuildOptions.RES or BuildOptions.OTH:
+                        {
+                            //keyValuePairs[options]
 
+                            break;
+                        }
+                }
+            }
         }
 
 
-        public BuildOptions BuildOptionsConvert(FileProcessing.BuildOptions options)
+        public BuildOptions BuildOptionsConvert (FileProcessing.BuildOptions options)
         {
             BuildOptions result = 0;
             switch (options)
@@ -1611,7 +1773,7 @@ namespace FileProcessingParsingReading
 
             Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> result = new();
 
-            Action<FileProcessing.BuildOptions, FileProcessing.StreamOptions, bool, bool, bool, string, bool?, bool?, Dictionary<BuildOptions,Dictionary<int, FileProcessing.WeaponOutputs>>> builders = (option, stream, consoleLogging, largeFileLogging, individualFileLogging, largeFileLogName, primaryOrSecondary, meleeOrGrenade, res) => {res.Add(BuildOptionsConvert(option),FileProcessing.multithreadedReadFileList(stream, new FileProcessing.AllWeaponStrings(option).GetStrings(), Tuple.Create(consoleLogging, largeFileLogging, individualFileLogging), largeFileLogName, primaryOrSecondary, meleeOrGrenade)); };
+            Action<FileProcessing.BuildOptions, FileProcessing.StreamOptions, bool, bool, bool, string, bool?, bool?, Dictionary<BuildOptions,Dictionary<int, FileProcessing.WeaponOutputs>>> builders = (option, stream, consoleLogging, largeFileLogging, individualFileLogging, largeFileLogName, primaryOrSecondary, meleeOrGrenade, res) => {res.Add(BuildOptionsConvert(option),FileProcessing.multithreadedReadFileListAsync(stream, new FileProcessing.AllWeaponStrings(option).GetStrings(), Tuple.Create(consoleLogging, largeFileLogging, individualFileLogging), largeFileLogName, primaryOrSecondary, meleeOrGrenade, new Dictionary<int, FileProcessing.WeaponOutputs>()).Result); };
 
 
             //TODO: add build options
@@ -1648,7 +1810,27 @@ namespace FileProcessingParsingReading
              
              
              */
+            ARS.Name = nameof(ARS);
+            PDWS.Name = nameof(PDWS);
+            LMGS.Name = nameof(LMGS);
+            SRS.Name = nameof(SRS);
+            CAS.Name = nameof(CAS);
+            DMRS.Name = nameof(DMRS);
+            BRS.Name = nameof(BRS);
+            SHS.Name = nameof(SHS);
+            PS.Name = nameof(PS);
+            MPS.Name = nameof(MPS);
+            RES.Name = nameof(RES);
+            OTH.Name = nameof(OTH);
 
+            FGS.Name = nameof(FGS);
+            HEGS.Name = nameof(HEGS);
+            IGS.Name = nameof(IGS);
+
+            OHBT.Name = nameof(OHBT);
+            OHBE.Name = nameof(OHBE);
+            THBT.Name = nameof(THBT);
+            THBE.Name = nameof(THBE);
 
             //List<Thread> threads = new() { ARS, PDWS, LMGS, SRS, CAS, SHS, DMRS, BRS, PS, MPS, RES, OTH };
             /*foreach (Thread t in threads)
@@ -1689,6 +1871,11 @@ namespace FileProcessingParsingReading
 
         }
 
+        public async Task<Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>>> FullBuild()
+        {
+            return Build(BuildOptions.ARS | BuildOptions.PDWS | BuildOptions.LMGS | BuildOptions.SRS | BuildOptions.CAS | BuildOptions.DMRS | BuildOptions.BRS | BuildOptions.SHS | BuildOptions.PS | BuildOptions.MPS | BuildOptions.RES | BuildOptions.OTH | BuildOptions.FGS | BuildOptions.HEGS | BuildOptions.IGS | BuildOptions.OHBT | BuildOptions.OHBE | BuildOptions.THBT | BuildOptions.THBE).Result;
+        }
+
         public async Task<Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>>> OptimizedFullBuild()
         {
 
@@ -1715,6 +1902,8 @@ namespace FileProcessingParsingReading
         
         public async Task<Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>>> OptimizedBuild(BuildOptions options)
         {
+
+            Thread MainThread = Thread.CurrentThread;
 
             Func<BuildOptions, int, bool> decoder = (en, id) => ((int)en & id) != 0;
 
@@ -1749,6 +1938,7 @@ namespace FileProcessingParsingReading
             if (decoder(options, (int)BuildOptions.THBT)) THBT = true;
             if (decoder(options, (int)BuildOptions.THBE)) THBE = true;
 
+            //Func<bool, bool, bool, bool, Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>>> func3 = (OHBT, IGS, SRS, RES) => thread3Async(OHBT, IGS, SRS, RES).Result;
 
             Thread T1 = new(async () => await thread1Async(DMRS, LMGS, OHBE));
             Thread T2 = new(async () => await thread2Async(BRS, SHS, MPS, OTH, FGS, HEGS));
@@ -1757,21 +1947,27 @@ namespace FileProcessingParsingReading
             Thread T5 = new(async () => await thread5Async(ARS, PS));
             Thread T6 = new(async () => await thread6Async(THBT,THBE));
 
-            T1.Start();
-            T2.Start();
-            T3.Start();
-            T4.Start();
-            T5.Start();
-            T6.Start();
+            //ThreadStart start = new(async () => await thread3Async(OHBT, IGS, SRS, RES));
+            //Func<Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>>> t3A = start.Method.CreateDelegate<Func<Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>>>>(thread3Async(OHBT, IGS, SRS, RES).Result);
 
-            if(T1.IsAlive == false && T2.IsAlive == false && T3.IsAlive == false && T4.IsAlive == false && T5.IsAlive == false && T6.IsAlive == false)
-            {
-                return result;
-            }
-            else
-            {
-                return new Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>>();
-            }
+            T1.Name = nameof(T1);
+            T2.Name = nameof(T2);
+            T3.Name = nameof(T3);
+            T4.Name = nameof(T4);
+            T5.Name = nameof(T5);
+            T6.Name = nameof(T6);
+
+            if(DMRS || LMGS || OHBE)T1.Start();
+            if(BRS || SHS || MPS || OTH || FGS || HEGS)T2.Start();
+            if(OHBT || IGS || SRS || RES)T3.Start();
+            if(PDWS || CAS)T4.Start();
+            if(ARS || PS)T5.Start();
+            if(THBT || THBE)T6.Start();
+
+            Console.WriteLine("damnit");
+            return result;
+
+
             //) thread1Async().Start();
 
         }
@@ -1931,10 +2127,6 @@ namespace FileProcessingParsingReading
             return result;
         }
 
-        public async Task<Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>>> FullBuild()
-        {
-            return await Build(BuildOptions.ARS | BuildOptions.PDWS | BuildOptions.LMGS | BuildOptions.SRS | BuildOptions.CAS | BuildOptions.DMRS | BuildOptions.BRS | BuildOptions.SHS | BuildOptions.PS | BuildOptions.MPS | BuildOptions.RES | BuildOptions.OTH | BuildOptions.FGS | BuildOptions.HEGS | BuildOptions.IGS | BuildOptions.OHBT | BuildOptions.OHBE | BuildOptions.THBT | BuildOptions.THBE);
-        }
 
 
     }
