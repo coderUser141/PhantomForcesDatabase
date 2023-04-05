@@ -168,7 +168,7 @@ class ImageParser:
         if general2 == "true" or not melee=="True" or not melee=="False": #or melee=="False"
             data = pytesseract.image_to_string(eroded, config="--psm 6")
         else:
-            data = pytesseract.image_to_string(sharpened_img, config="--psm 6")
+            data = pytesseract.image_to_string(im_bw, config="--psm 6")
 
 
         return data
