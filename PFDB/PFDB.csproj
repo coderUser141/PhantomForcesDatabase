@@ -26,18 +26,7 @@
   <ItemGroup>
     <EditorConfigFiles Remove="C:\Users\peter\source\repos\Phantom Forces Database\PFDB\.editorconfig" />
   </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Kyra.db" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Kyra.db">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
+	<ItemGroup>
     <None Include="C:\Users\peter\source\repos\Phantom Forces Database\PFDB\.editorconfig" />
   </ItemGroup>
 

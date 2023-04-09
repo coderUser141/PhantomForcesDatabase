@@ -3,24 +3,26 @@ using System.IO;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using sd = System.Diagnostics;
-using FileProcessingParsingReading;
-using System.Threading.Tasks;
 using System.Diagnostics;
-using WeaponClasses;
-using System.Runtime.CompilerServices;
-using System.Net.Security;
+using System.Threading.Tasks;
+using sd = System.Diagnostics;
 using System.Text;
+using System.Data.SQLite;
+
+
+using FileProcessingParsingReading;
+using WeaponClasses;
 
 Console.WriteLine("Hello, World!");
 Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:fff"));
+Console.WriteLine("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 
 //FileReading r = new(FileReading.BuildOptions.IGS, true, false);
 
 //Console.WriteLine(FileProcessing.WeaponOutputs.directPythonExecute("SCAR-L2.png", true, null));
 
-//string filepath = "output__rgn-udzs.png.txt";
-//string filepath2 = "output__rgn-udzs.png.txt";
+string filepath = @"limited\boxy-buster1.txt";
+string filepath2 = @"limited\boxy-buster2.txt";
 //Console.WriteLine(FileProcessing.Filenames.convertFileNameToGunName(filepath));
 //FileReading reading = new(FileReading.BuildOptions.NONE, false, true, true);
 /*
@@ -32,45 +34,111 @@ foreach(Dictionary<int, FileProcessing.WeaponOutputs> pair in valuePairs)
         Console.WriteLine(pair[j].Filename);
     }
 }
-*/
-/*
-FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.DamageRange);
-FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.AmmoCapacity);
-FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.HeadMultiplier);
-FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.TorsoMultiplier);
-FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.LimbMultiplier);
+*
 
-FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.MuzzleVelocity);
-FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.PenetrationDepth);
+FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.DamageRange, true);
+FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.AmmoCapacity, true);
+FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.HeadMultiplier, true);
+FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.TorsoMultiplier, true);
+FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.LimbMultiplier, true);
 
-FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.ReloadTime);
-FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.EmptyReloadTime);
+FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.MuzzleVelocity, true);
+FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.PenetrationDepth, true);
 
-FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.AimingWalkspeed);
-FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.WeaponWalkspeed);
+FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.ReloadTime, true);
+FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.EmptyReloadTime, true);
 
-FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.AmmoType);
-FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.FireModes);
-FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.FireModes);
+FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.AimingWalkspeed, true);
+FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.WeaponWalkspeed, true);
+
+FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.AmmoType, true);
+FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.FireModes, true);
+FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.FireModes, true);
 
 
-FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.Damage); //only __1.png files have the correct suppression
-FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.Rank);
-FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.Rank);
-FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.Firerate);
-FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.Firerate);*/
-string? inputa = Console.ReadLine() ?? "";
-if (inputa == "@")
+FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.Damage, true); //only __1.png files have the correct suppression
+FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.Rank, true);
+FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.Rank, true);
+FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.Firerate, true);
+FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.Firerate, true);*/
+
+string nl = Environment.NewLine;
+Console.WriteLine("Hello and welcome to FileReader! This program handles building, " + nl +
+    "OCR reading, and proofreading. If you would like to build the files needed, first ensure that the directory " + nl +
+    @"'..\..\..\..\ImageParser\Weapons\' exists. This directory needs to have all the images used for " + nl +
+    "reading. If it exists, the files need to have to use the correct format. Would you like to check " + nl +
+    "if your files have the correct format? y / n");
+string? format = Console.ReadLine();
+if(format == "y")
 {
-    FileReading file = new(FileReading.BuildOptions.NONE, false, true, true);
+    FileProcessing.AllWeaponStrings strings = new(FileProcessing.BuildOptions.All);
+    foreach(string r in strings.GetStrings())
+    {
+        Action<List<string>> check = (weaponstrings) => { 
+            if(weaponstrings.Contains(r))
+                Console.WriteLine(FileProcessing.Filenames.convertGunNameToImageNames(r).Item2 + "\t\t and \t\t" + FileProcessing.Filenames.convertGunNameToImageNames(r).Item3);
+        }; 
+        Action<List<string>> check2 = (weaponstrings) => {
+            if (weaponstrings.Contains(r))
+                Console.WriteLine(FileProcessing.Filenames.convertGunNameToImageNames(r).Item1);
+        };
+
+        check(FileProcessing.AllWeaponStrings.AssaultRiflesStrings);
+        check(FileProcessing.AllWeaponStrings.PersonalDefenseWeaponsStrings);
+        check(FileProcessing.AllWeaponStrings.LightMachineGunsStrings);
+        check(FileProcessing.AllWeaponStrings.SniperRiflesStrings);
+
+        check(FileProcessing.AllWeaponStrings.BattleRiflesStrings);
+        check(FileProcessing.AllWeaponStrings.CarbineStrings);
+        check(FileProcessing.AllWeaponStrings.DesignatedMarksmanRiflesStrings);
+        check(FileProcessing.AllWeaponStrings.ShotgunsStrings);
+
+        check(FileProcessing.AllWeaponStrings.PistolsStrings);
+        check(FileProcessing.AllWeaponStrings.MachinePistolsStrings);
+        check(FileProcessing.AllWeaponStrings.RevolversStrings);
+        check(FileProcessing.AllWeaponStrings.OthersStrings);
+
+        check2(FileProcessing.AllWeaponStrings.FragmentationGrenadesStrings);
+        check2(FileProcessing.AllWeaponStrings.HighExplosiveGrenadesStrings);
+        check2(FileProcessing.AllWeaponStrings.ImpactGrenadesStrings);
+
+        check2(FileProcessing.AllWeaponStrings.OneHandBladeMelees);
+        check2(FileProcessing.AllWeaponStrings.OneHandBluntMelees);
+        check2(FileProcessing.AllWeaponStrings.TwoHandBladeMelees);
+        check2(FileProcessing.AllWeaponStrings.TwoHandBluntMelees);
+
+    }
 }
 
-Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:fff"));
+Console.WriteLine("Once you have ensured that the above image files exist, " + nl +
+    "you can proceed to build the weapons. If you would like " + nl +
+    "to build the text files to be used, please ensure that the " + nl +
+    "folder '" + Global.BuildFolder + "' exists. Would you " + nl +
+    "like to build? If so, enter in '@'. Ensure that you see" + nl +
+    "CAN CANNON or AF2011 at the very end (they're usually "+ nl +
+    "the last ones to build). Then, hit any key to continue.");
+Console.WriteLine("Note, it may take up to 2 hours for the build to complete.");
 
-string? input = Console.ReadLine() ?? "";
-if(input == "$")
+var stopwatch = sd.Stopwatch.StartNew();
+
+string? build = Console.ReadLine() ?? "";
+if (build == "@")
 {
-    FileReading file = new(FileReading.BuildOptions.NONE, true, true, true);
+    FileReading file = new(FileReading.BuildOptions.NONE, false, true, true, false);
+}
+
+Console.ReadKey();
+Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:fff"));
+Console.WriteLine("Wow! It's been " + stopwatch.ElapsedMilliseconds.ToString() + " milliseconds since the build started." + nl +
+    "That means it has been " + ((stopwatch.ElapsedMilliseconds / 1000) / 60) + " minutes since it started.");
+Console.WriteLine("Would you like to proofread the values now? (Highly recommended as the OCR is not the best thing " + nl +
+    "thing on the planet. y / n");
+
+string? proofread = Console.ReadLine() ?? "";
+if(proofread == "y")
+{
+    FileReading.renameAllFiles(); //for cropped images, no other images are touched :)
+    FileReading file = new(FileReading.BuildOptions.NONE, false, true, false, true);
 }
 
 Console.ReadKey();
@@ -99,8 +167,8 @@ namespace FileProcessingParsingReading
         //version 1.00 = pf version 8.0.0
         //version 1.01 = pf version 8.0.1
         private static readonly string version = "1.00";
-        private static string buildFolder = @"all build options v4\";
-        private static string readFolder = @"all build options v4\";
+        private static string buildFolder = @"all build options v6\";
+        private static string readFolder = @"all build options v5\";
 
 
         public static string VERSION { get { return version; } }
@@ -119,7 +187,6 @@ namespace FileProcessingParsingReading
 
 
     }
-
 
     public class FileProcessing
     {
@@ -168,6 +235,7 @@ namespace FileProcessingParsingReading
                 "mp510","uzi","aug-a3-para-xs","k7","ak74u","ppsh-41","fal-para-shorty","kriss-vector","pp-19-bizon","mp40",
                 "x95-smg","tommy-gun","rama-1130"};
 
+                //rebuild LMGS (m601 and m602 were swapped)
             private static List<string> lightMachineGunsStrings = new() {
                 "colt-lmg","m60","aug-hbar","mg36","rpk12","l86-lsw","rpk","hk21e","hamr-iar","rpk74","mg3kws" };
 
@@ -194,6 +262,8 @@ namespace FileProcessingParsingReading
                 "hardballer","izhevsk-pb","makarov-pm","gb-22","desert-eagle-xix","automag-iii","gyrojet-mark-i","gsp",
                 "grizzly","m2011","alien","af2011-a1"};
 
+            //limited: boxy buster (pistol)
+
             private static List<string> machinePistolsStrings = new() {
                 "g18c","93r","pp-2000","tec-9","micro-uzi","skorpion-vz61","asmi","mp1911","arm-pistol"};
 
@@ -206,7 +276,6 @@ namespace FileProcessingParsingReading
             private static List<string> fragmentationGrenadesStrings = new() { 
                 "m67-frag", "mk-2-frag", "m24-stick", "m26-frag", "m560-mini", "v40-mini", "roly-hg"};
 
-
             private static List<string> highExplosiveGrenadeStrings = new() { 
                 "dynamite-3", "dynamite", "rgd-5-he","semtex", "pb-grenade", "bundle-charge"};
 
@@ -217,6 +286,15 @@ namespace FileProcessingParsingReading
                 "tanto", "entrencher", "ritual-sickle", "kama", "key", "ice-pick", "machete", "tomahawk", "pocket-knife",
                 "havoc-blade", "cutter", "jason", "bridal-brandisher", "darkheart", "streiter", "balisong", "kommando",
                 "linked-sword", "classic-knife", "jkey" };
+
+            /*
+             ohbt: flame of olympia, pacific fm, slay bells, sleigh bells, the countdown
+             ohbe: gospell blade, icemourne
+             thbt: scl-s3-drastic, warhammer, zircon-slamsickle
+             */
+
+            //special thanks to: Kanako#9096, Fork#2067, and シノン△#1231
+            //huge shoutout to hackurtoaster#7938
 
             private static List<string> twoHandBladeStrings = new() { 
                 "zircon-trident", "nordic-war-axe", "world-buster", "noobslayer", "hattori", "chosen-one", "reaper",
@@ -824,6 +902,20 @@ namespace FileProcessingParsingReading
             }
         }
 
+        /*
+        public static Bitmap cropAtRect(Bitmap b, Rectangle r)
+        {
+            using (var nb = new Bitmap(r.Width, r.Height))
+            {
+                using (Graphics g = Graphics.FromImage(nb))
+                {
+                    g.DrawImage(b, -r.X, -r.Y);
+                    return nb;
+                }
+            }
+        }
+        */
+
         public static string executePython(string cmd, string path, string tessbindata, string name, bool? primaryOrSecondary, bool? meleeOrGrenade)
         {
             string startTime = DateTime.Now.ToString("HH:mm:ss:fff");
@@ -831,7 +923,7 @@ namespace FileProcessingParsingReading
             string POS = primaryOrSecondary?.ToString() ?? "k";
             string MOG = meleeOrGrenade?.ToString() ?? "k";
             
-            ProcessStartInfo start = new(cmd, string.Format("{0} {1} {2} {3}", path, tessbindata, POS, MOG));
+            ProcessStartInfo start = new(cmd, string.Format("{0} {1} {2} {3} {4} {5}", path, tessbindata, POS, MOG,name, Global.VERSION));
 
             start.UseShellExecute = false;
             start.RedirectStandardOutput = true;
@@ -864,7 +956,7 @@ namespace FileProcessingParsingReading
             string POS = primaryOrSecondary?.ToString() ?? "k";
             string MOG = meleeOrGrenade?.ToString() ?? "k";
 
-            ProcessStartInfo start = new(cmd, string.Format("{0} {1} {2} {3}", path, tessbindata, POS, MOG));
+            ProcessStartInfo start = new(cmd, string.Format("{0} {1} {2} {3} {4} {5}", path, tessbindata, POS, MOG, name, Global.VERSION));
 
             start.UseShellExecute = false;
             start.RedirectStandardOutput = true;
@@ -897,15 +989,15 @@ namespace FileProcessingParsingReading
             {
                 foreach (string str in strings)
                 {
-                    result.Add(Filenames.convertGunNameToImageNames(str).Item2);
-                    result.Add(Filenames.convertGunNameToImageNames(str).Item3);
+                    result.Add(Filenames.convertGunNameToImageNames(str.ToUpperInvariant()).Item2);
+                    result.Add(Filenames.convertGunNameToImageNames(str.ToUpperInvariant()).Item3);
                 }
             }
             else
             {
                 foreach (string str in strings)
                 {
-                    result.Add(Filenames.convertGunNameToImageNames(str).Item1);
+                    result.Add(Filenames.convertGunNameToImageNames(str.ToUpperInvariant()).Item1);
                 }
             }
             return result;
@@ -931,16 +1023,16 @@ namespace FileProcessingParsingReading
             {
                 foreach (string str in filenames)
                 {
-                    stream1.Add(Filenames.convertGunNameToImageNames(str).Item2);
-                    stream2.Add(Filenames.convertGunNameToImageNames(str).Item3);
+                    stream1.Add(Filenames.convertGunNameToImageNames(str.ToUpperInvariant()).Item2);
+                    stream2.Add(Filenames.convertGunNameToImageNames(str.ToUpperInvariant()).Item3);
                 }
             }
             else
             {
                 foreach (string str in filenames)
                 {
-                    stream1.Add(Filenames.convertGunNameToImageNames(str).Item1);
-                    stream2.Add(Filenames.convertGunNameToImageNames(str).Item1);
+                    stream1.Add(Filenames.convertGunNameToImageNames(str.ToUpperInvariant()).Item1);
+                    stream2.Add(Filenames.convertGunNameToImageNames(str.ToUpperInvariant()).Item1);
                 }
             }
             return Tuple.Create(stream1, stream2);
@@ -1469,7 +1561,7 @@ namespace FileProcessingParsingReading
             else
             {
                 firstWordFirstCharLocations = indexFinder(filetext, inputWord1.ToString().ToUpperInvariant()[0]);
-                if(inputWord2 != null)secondWordFirstCharLocations = indexFinder(filetext, inputWord2[0]);
+                if(inputWord2 != null)secondWordFirstCharLocations = indexFinder(filetext, inputWord2.ToString().ToUpperInvariant()[0]);
 
                 Predicate<int> match = (i) => i > filetext.IndexOf("Time elapsed", StringComparison.CurrentCultureIgnoreCase);
                 firstWordFirstCharLocations.RemoveAll(match);
@@ -1498,7 +1590,7 @@ namespace FileProcessingParsingReading
                                 i++; //skips if space
                                 continue;
                             }
-                            string location = filetext.Substring(i, 100); //1423
+                            string location = filetext.Substring(i, 20); //1423
                             char testi = filetext[i];
                             char testj = tempInputWord1[j];
                             if (filetext[i].ToString().ToLower() == tempInputWord1[j].ToString().ToLower() || (filetext[i].ToString().ToLower() == "i" && tempInputWord1[j].ToString().ToLower() == "l") || (filetext[i].ToString().ToLower() == "l" && tempInputWord1[j].ToString().ToLower() == "i"))
@@ -1541,7 +1633,7 @@ namespace FileProcessingParsingReading
                                     i++; //skips if space
                                     continue;
                                 }
-                                string location = filetext.Substring(i, 100); //1423
+                                string location = filetext.Substring(i, 10); //1423
                                 char testi = filetext[i];
                                 char testj = tempInputWord2[j];
                                 if (filetext[i].ToString().ToLower() == tempInputWord2[j].ToString().ToLower() || (filetext[i].ToString().ToLower() == "i" && tempInputWord2[j].ToString().ToLower() == "l") || (filetext[i].ToString().ToLower() == "l" && tempInputWord2[j].ToString().ToLower() == "i"))
@@ -1835,12 +1927,24 @@ namespace FileProcessingParsingReading
 
         }
 
+        public enum Classes
+        {
+            Assault,
+            Scout,
+            Support,
+            Recon,
+            Secondary,
+            Grenades,
+            Melees
+
+        }
+
         private Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> result = new();
         public Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> Result { get { return result; } }
 
 
 
-        public FileReading(BuildOptions options, bool read, bool? optimizedBuild, bool? fullBuild)
+        public FileReading(BuildOptions options, bool read, bool? optimizedBuild, bool? fullBuild, bool proofread)
         {
             /*
              process the image -> parse the image -> return as a list of guns + categories
@@ -1857,7 +1961,7 @@ namespace FileProcessingParsingReading
 
 
             //Gun
-            ControlPath(options, read,  optimizedBuild, fullBuild);
+            ControlPath(options, read,  optimizedBuild, fullBuild, proofread);
 
             //Console.ReadKey();
         }
@@ -1882,11 +1986,11 @@ namespace FileProcessingParsingReading
             return output;
         }
 
-        public async void ControlPath(BuildOptions options, bool read, bool? optimizedBuild, bool? fullBuild)
+        public async void ControlPath(BuildOptions options, bool read, bool? optimizedBuild, bool? fullBuild, bool proofread)
         {
             Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> awaiter = new();
             
-            if (read)
+            if (read || proofread)
             {
                 
                     
@@ -1958,13 +2062,378 @@ namespace FileProcessingParsingReading
 
             //TaskAwaiter<Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>>> taskAwaiter = await awaiter;
 
+            BuildOptions build1 = 
+                (fullBuild ?? false) ? BuildOptions.ARS | BuildOptions.PDWS | BuildOptions.LMGS | BuildOptions.SRS | BuildOptions.CAS | BuildOptions.DMRS | BuildOptions.BRS | BuildOptions.SHS | BuildOptions.PS | BuildOptions.MPS | BuildOptions.RES | BuildOptions.OTH | BuildOptions.FGS | BuildOptions.HEGS | BuildOptions.IGS | BuildOptions.OHBT | BuildOptions.OHBE | BuildOptions.THBT | BuildOptions.THBE : options;
+
             //Thread.BeginCriticalRegion();
-            string r = await Proofread(awaiter, (fullBuild ?? false)?BuildOptions.ARS | BuildOptions.PDWS | BuildOptions.LMGS | BuildOptions.SRS | BuildOptions.CAS | BuildOptions.DMRS | BuildOptions.BRS | BuildOptions.SHS | BuildOptions.PS | BuildOptions.MPS | BuildOptions.RES | BuildOptions.OTH | BuildOptions.FGS | BuildOptions.HEGS | BuildOptions.IGS | BuildOptions.OHBT | BuildOptions.OHBE | BuildOptions.THBT | BuildOptions.THBE:options);
+            Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> r = proofread?Proofread(awaiter, build1):awaiter;
             //Thread.EndCriticalRegion();
+
+            Action<BuildOptions, Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>>> adder = (opt, res) => res.Add(opt, awaiter[opt]);
+
+            Func<Classes, Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>>> task = (opt) => {
+                Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> result = new();
+                switch (opt)
+                {
+                    case Classes.Assault: 
+                        {
+                            adder(BuildOptions.ARS, result);
+                            adder(BuildOptions.BRS, result);
+                            adder(BuildOptions.CAS, result);
+                            adder(BuildOptions.SHS, result);
+                            break;
+                        }
+                    case Classes.Scout:
+                        {
+                            adder(BuildOptions.PDWS, result);
+                            adder(BuildOptions.DMRS, result);
+                            adder(BuildOptions.CAS, result);
+                            adder(BuildOptions.SHS, result);
+                            break;
+                        }
+                    case Classes.Support:
+                        {
+                            adder(BuildOptions.LMGS, result);
+                            adder(BuildOptions.BRS, result);
+                            adder(BuildOptions.CAS, result);
+                            adder(BuildOptions.SHS, result);
+                            break;
+                        }
+                    case Classes.Recon:
+                        {
+                            adder(BuildOptions.SRS, result);
+                            adder(BuildOptions.BRS, result);
+                            adder(BuildOptions.CAS, result);
+                            adder(BuildOptions.SHS, result);
+                            break;
+                        }
+                    case Classes.Secondary:
+                        {
+                            adder(BuildOptions.PS, result);
+                            adder(BuildOptions.MPS, result);
+                            adder(BuildOptions.RES, result);
+                            adder(BuildOptions.OTH, result);
+                            break;
+                        }
+                    case Classes.Grenades:
+                        {
+                            adder(BuildOptions.FGS, result);
+                            adder(BuildOptions.HEGS, result);
+                            adder(BuildOptions.IGS, result);
+                            break;
+                        }
+                    case Classes.Melees:
+                        {
+                            adder(BuildOptions.OHBE, result);
+                            adder(BuildOptions.OHBT, result);
+                            adder(BuildOptions.THBE, result);
+                            adder(BuildOptions.THBT, result);
+                            break;
+                        }
+                }
+                return result;
+
+            };
+
+            Class assault = ClassDataBuilder(task(Classes.Assault), Classes.Assault);
+            Class scout = ClassDataBuilder(task(Classes.Scout), Classes.Scout);
+            Class support = ClassDataBuilder(task(Classes.Support), Classes.Support);
+            Class recon = ClassDataBuilder(task(Classes.Recon), Classes.Recon);
+            Class secondary = ClassDataBuilder(task(Classes.Secondary), Classes.Secondary);
+            Class grenades = ClassDataBuilder(task(Classes.Grenades), Classes.Grenades);
+            Class melees = ClassDataBuilder(task(Classes.Melees), Classes.Melees);
+
+
+            SQLConnectionHandling handler = new();
+            //handler.InsertSQLGunRecord();
+            //add to sqlite database
 
         }
 
-        public Task<string> Proofread(Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> keyValuePairs, BuildOptions options)
+        public Weapon WeaponDataBuilder(FileProcessing.WeaponOutputs outputs, BuildOptions category, string weaponName)
+        {
+            Weapon init = new(weaponName, false, 0);
+            FileProcessing.AllWeaponStrings strings = new(BuildOptionsConvert(category));
+            Console.WriteLine(weaponName);
+
+           
+            if (category == BuildOptions.THBE || category == BuildOptions.THBT || category == BuildOptions.OHBT || category == BuildOptions.OHBE)
+            {
+                string filepath = Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item1;
+                double bladeLength = Convert.ToDouble(FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.BladeLength, true).Trim()); 
+                double frontStabDamage = Convert.ToDouble(FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.FrontStabDamage, true).Trim());
+                double backStabDamage = Convert.ToDouble(FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.BackStabDamage, true).Trim());
+                double walkspeed = Convert.ToDouble(FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.Walkspeed, true).Trim());
+
+
+                double limbM = Convert.ToDouble(FileParsing.findStatisticInFile(Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item1, FileParsing.SearchTargets.LimbMultiplier, true).Trim());
+                double headM = Convert.ToDouble(FileParsing.findStatisticInFile(Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item1, FileParsing.SearchTargets.HeadMultiplier, true).Trim());
+                double torsoM = Convert.ToDouble(FileParsing.findStatisticInFile(Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item1, FileParsing.SearchTargets.TorsoMultiplier, true).Trim());
+
+                int rank = 0; bool hasRank = true;
+                try
+                {
+                    rank = Convert.ToInt32(FileParsing.findStatisticInFile(Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item1, FileParsing.SearchTargets.Rank, true).Trim());
+                }
+                catch (FormatException)
+                {
+                    rank = 262144;
+                    hasRank = false;
+                }
+                init = new Melee(weaponName, hasRank, rank, frontStabDamage, backStabDamage, bladeLength, new Carried(limbM, torsoM, headM, walkspeed));
+            }
+            else if (category == BuildOptions.FGS || category == BuildOptions.IGS || category == BuildOptions.HEGS)
+            {
+
+                string filepath = Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item1;
+                string special = FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.SpecialEffects, true).Trim();
+                string triggerMechanism = FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.TriggerMechanism, true).Trim();
+                double fuseTime = 0;
+                if(triggerMechanism.Contains("fuse", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    string temp = "";
+                    foreach(char t in triggerMechanism)
+                    {
+                        if(t > 47 && t < 58 || t == 46)
+                        {
+                            temp += t;
+                        }
+                    }
+                    fuseTime = Convert.ToDouble(temp);
+                }
+
+                int storedCapacity = Convert.ToInt32(FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.StoredCapacity, true).Trim());
+                int maximumDamage = Convert.ToInt32(FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.MaximumDamage, true).Trim());
+                int killingRadius = Convert.ToInt32(FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.KillingRadius, true).Trim());
+                int blastRadius = Convert.ToInt32(FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.BlastRadius, true).Trim());
+                int rank = 0; bool hasRank = true;
+                try
+                {
+                    rank = Convert.ToInt32(FileParsing.findStatisticInFile(Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item1, FileParsing.SearchTargets.Rank, true).Trim());
+                }
+                catch (FormatException)
+                {
+                    rank = 262144;
+                    hasRank = false;
+                }
+                init = new Grenade(weaponName, hasRank, rank, 
+                    triggerMechanism.Contains("fuse", StringComparison.CurrentCultureIgnoreCase),
+                    fuseTime, !special.Contains("none", StringComparison.CurrentCultureIgnoreCase), (!special.Contains("none", StringComparison.CurrentCultureIgnoreCase)) ? special : "", storedCapacity, blastRadius, killingRadius, maximumDamage);
+            }
+            else
+            {
+                //double bladeLength = Convert.ToDouble(FileParsing.findStatisticInFile(Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item1, FileParsing.SearchTargets.BladeLength, true).Trim());
+
+                string filepath1 = Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item2;
+                string filepath2 = Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item3;
+
+
+                string damagetemp = FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.DamageRange, true);
+                string damage1str = "";
+                string damage2str = "";
+                bool damageindexflag = false;
+                for(int i = 0; i < damagetemp.Length; i++)
+                {
+                    string t1 = ""; string t2 = "";
+                    if ((damagetemp[i] > 47 || damagetemp[i] < 58 || damagetemp[i] == 46) && damageindexflag == false)
+                    {
+                        t1 += damagetemp[i];
+                        if (damagetemp[i + 1] > 57 || damagetemp[i+1] < 48 || damagetemp[i+1] != 46)
+                        {
+                            damage1str += t1;
+                            damageindexflag = true;
+                        }
+                    }else if((damagetemp[i] > 47 || damagetemp[i] < 58 || damagetemp[i] == 46) && damageindexflag == true)
+                    {
+                        t2 += damagetemp[i];
+                        if (damagetemp[i + 1] > 57 || damagetemp[i + 1] < 48 || damagetemp[i + 1] != 46)
+                        {
+                            damage2str += t2;
+                            damageindexflag = false;
+                        }
+                    }
+                }
+                double damage1 = Convert.ToDouble(damage1str.Trim());
+                double damage2 = Convert.ToDouble(damage2str.Trim());
+
+
+                string ammocapstr = FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.AmmoCapacity, true);
+                string ammomagstr = "";
+                string ammoresstr = "";
+                bool ammocapindexflag = false;
+                for (int i = 0; i < ammocapstr.Length; i++)
+                {
+                    string t1 = ""; string t2 = "";
+                    if ((ammocapstr[i] > 47 || ammocapstr[i] < 58) && ammocapindexflag == false)
+                    {
+                        t1 += ammocapstr[i];
+                        if (ammocapstr[i + 1] > 57 || ammocapstr[i + 1] < 48)
+                        {
+                            ammomagstr += t1;
+                            ammocapindexflag = true;
+                        }
+                    }
+                    else if ((ammocapstr[i] > 47 || ammocapstr[i] < 58) && ammocapindexflag == true)
+                    {
+                        t2 += ammocapstr[i];
+                        if (ammocapstr[i + 1] > 57 || ammocapstr[i + 1] < 48)
+                        {
+                            ammoresstr += t2;
+                            ammocapindexflag = false;
+                        }
+                    }
+                }
+                double magcap = Convert.ToDouble(ammomagstr.Trim());
+                double rescap = Convert.ToDouble(ammoresstr.Trim());
+
+                double limbM = Convert.ToDouble(FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.LimbMultiplier, true).Trim());
+                double headM = Convert.ToDouble(FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.HeadMultiplier, true).Trim());
+                double torsoM = Convert.ToDouble(FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.TorsoMultiplier, true).Trim());
+
+                string mvstr = FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.MuzzleVelocity, true);
+                string mvconvstr = "";
+                bool mvdotflag = false;
+                for (int i = 0; i < mvstr.Length; i++)
+                {
+                    string t1 = "";
+                    if ((mvstr[i] > 47 || mvstr[i] < 58 || mvstr[i] == 46) && mvdotflag == false)
+                    {
+                        t1 += mvstr[i];
+                        if (mvstr[i + 1] > 57 || mvstr[i + 1] < 48 || mvstr[i+1] != 46)
+                        {
+                            mvconvstr += t1;
+                            mvdotflag = true;
+                        }
+                    }
+                }
+                double mv = Convert.ToDouble(mvconvstr.Trim());
+
+                string pdstr = FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.PenetrationDepth, true); 
+                string pdconvstr = "";
+                bool pddotflag = false;
+                for (int i = 0; i < pdstr.Length; i++)
+                {
+                    string t1 = "";
+                    if ((pdstr[i] > 47 || pdstr[i] < 58 || pdstr[i] == 46) && pddotflag == false)
+                    {
+                        t1 += mvstr[i];
+                        if (pdstr[i + 1] > 57 || pdstr[i + 1] < 48 || pdstr[i + 1] != 46)
+                        {
+                            pdconvstr += t1;
+                            pddotflag = true;
+                        }
+                    }
+                }
+                double pd = Convert.ToDouble(pdconvstr.Trim());
+
+
+                string rtstr = FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.ReloadTime, true); 
+                string rtconvstr = "";
+                bool rtdotflag = false;
+                for (int i = 0; i < rtstr.Length; i++)
+                {
+                    string t1 = "";
+                    if ((rtstr[i] > 47 || rtstr[i] < 58 || rtstr[i] == 46) && rtdotflag == false)
+                    {
+                        t1 += rtstr[i];
+                        if (rtstr[i + 1] > 57 || rtstr[i + 1] < 48 || rtstr[i + 1] != 46)
+                        {
+                            rtconvstr += t1;
+                            rtdotflag = true;
+                        }
+                    }
+                }
+                double rt = Convert.ToDouble(rtconvstr.Trim());
+                string ertstr = FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.EmptyReloadTime, true);
+                string ertconvstr = "";
+                bool ertdotflag = false;
+                for (int i = 0; i < ertstr.Length; i++)
+                {
+                    string t1 = "";
+                    if ((ertstr[i] > 47 || ertstr[i] < 58 || ertstr[i] == 46) && ertdotflag == false)
+                    {
+                        t1 += ertstr[i];
+                        if (ertstr[i + 1] > 57 || ertstr[i + 1] < 48 || ertstr[i + 1] != 46)
+                        {
+                            ertconvstr += t1;
+                            ertdotflag = true;
+                        }
+                    }
+                }
+                double ert = Convert.ToDouble(ertconvstr.Trim());
+
+                double aw = Convert.ToDouble(FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.AimingWalkspeed, true));
+                double ww = Convert.ToDouble(FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.WeaponWalkspeed, true));
+
+                string ammotype = FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.AmmoType, true);
+                FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.FireModes, true);
+                FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.FireModes, true);
+
+
+                FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.Damage, true); //only __1.png files have the correct suppression
+                FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.Rank, true);
+                FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.Rank, true);
+                FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.Firerate, true);
+                FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.Firerate, true);
+
+                FileParsing.SearchTargets t;
+            }
+
+            return init;
+        }
+
+        //class is made
+        //the class has access to ALL data
+        //the class needs to tell the category builder which category it is
+        //the category builder needs to tell the weaponbuilder what TYPE of weapon and what CATEGORY
+
+        public Category CategoryDataBuilder(Dictionary<int, FileProcessing.WeaponOutputs> valuePairs, BuildOptions categoryOption)
+        {
+            string categoryName = SQLConnectionHandling.CategoryNames[categoryOption];
+            Category category = new(null, categoryName);
+            FileProcessing.AllWeaponStrings strings = new(BuildOptionsConvert(categoryOption));
+            List<string> strings1 = strings.GetStrings();
+            foreach (string s in strings1) //iterates through list of guns
+            {
+                foreach(int i in valuePairs.Keys) //for each FILE, not gun
+                {
+                    if (valuePairs[i].Filename.Contains(s))
+                    {
+                        //WeaponDataBuilder(valuePairs[i], categoryOption, s);
+                        category.addWeapon(WeaponDataBuilder(valuePairs[i], categoryOption, s));
+                        break;
+                    }
+                }
+            }
+            return category;
+        }
+
+        public Class ClassDataBuilder(Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> valuePairs, Classes classOption)
+        {
+            string className = "";
+            switch (classOption)
+            {
+                case Classes.Assault:   className = "Assault"; break;
+                case Classes.Scout:     className = "Scout"; break;
+                case Classes.Support:   className = "Support"; break;
+                case Classes.Recon:     className = "Recon"; break;
+                case Classes.Secondary: className = "Secondary"; break;
+                case Classes.Grenades:  className = "Grenades"; break;
+                case Classes.Melees:    className = "Melees"; break;
+            }
+            Class cl = new(null, className);
+
+            foreach (BuildOptions bo in valuePairs.Keys)
+            {
+                Category h = CategoryDataBuilder(valuePairs[bo], bo);
+                cl.addCategory(h);
+                //cl = new()
+            }
+            return null;
+        }
+
+
+        public Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> Proofread(Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> keyValuePairs, BuildOptions options)
         {
 
             Func<BuildOptions, int, bool> decoder = (en, id) => ((int)en & id) != 0;
@@ -2123,6 +2592,19 @@ namespace FileProcessingParsingReading
                                         }
                                         else
                                         {
+                                            int slashindex = temp.IndexOf(@"/");
+                                            if (slashindex < 0) invalid = true;
+                                            try
+                                            {
+                                                string ammocap = temp.Substring(slashindex != -1 ? slashindex + 1 : temp.LastIndexOf(' ')).Trim();
+                                                string magcap = temp[..^(slashindex != -1 ? slashindex + 1 : temp.IndexOf(' '))].Trim();
+                                                if (Convert.ToInt32(magcap.Trim()) < 10) invalid = true; //may flag snipers, but oh well
+                                                if (Convert.ToInt32(ammocap.Trim()) < 10) invalid = true;
+                                            }
+                                            catch
+                                            {
+                                                invalid = true;
+                                            }
                                             foreach (char t in temp)
                                             {
                                                 if ((t < 48 || t > 57) && t != 32 && t != 9 && t!= 47)
@@ -2153,6 +2635,14 @@ namespace FileProcessingParsingReading
                                         }
                                         else
                                         {
+                                            try
+                                            {
+                                                if (Convert.ToDouble(temp.Trim()) > 1.4) invalid = true; //will flag anything above 1.4, just to be sure
+                                            }
+                                            catch
+                                            {
+                                                invalid = true;
+                                            }
                                             foreach (char t in temp)
                                             {
                                                 if ((t < 48 || t > 57) && t != 32 && t != 9 && t!=46)
@@ -2170,7 +2660,7 @@ namespace FileProcessingParsingReading
                                             {
                                                 missing = true;
                                             }
-                                            if(dcount < 1)
+                                            if(dcount != 1)
                                             {
                                                 invalid = true;
                                             }
@@ -2184,6 +2674,14 @@ namespace FileProcessingParsingReading
                                         }
                                         else
                                         {
+                                            try
+                                            {
+                                                if (Convert.ToDouble(temp) > 1.1) invalid = true; //will flag anything above 1.1, just to be sure
+                                            }
+                                            catch
+                                            {
+                                                invalid = true;
+                                            }
                                             foreach (char t in temp)
                                             {
                                                 if ((t < 48 || t > 57) && t != 32 && t != 9 && t != 46)
@@ -2201,7 +2699,7 @@ namespace FileProcessingParsingReading
                                             {
                                                 missing = true;
                                             }
-                                            if (dcount < 1)
+                                            if (dcount != 1)
                                             {
                                                 invalid = true;
                                             }
@@ -2215,6 +2713,14 @@ namespace FileProcessingParsingReading
                                         }
                                         else
                                         {
+                                            try
+                                            {
+                                                if (Convert.ToDouble(temp) > 1.0) invalid = true; //will flag anything above 1.0, just to be sure
+                                            }
+                                            catch
+                                            {
+                                                invalid = true;
+                                            }
                                             foreach (char t in temp)
                                             {
                                                 if ((t < 48 || t > 57) && t != 32 && t != 9 && t != 46)
@@ -2232,13 +2738,14 @@ namespace FileProcessingParsingReading
                                             {
                                                 missing = true;
                                             }
-                                            if (dcount < 1)
+                                            if (dcount != 1)
                                             {
                                                 invalid = true;
                                             }
                                         }
                                         issues.Add(FileParsing.SearchTargets.LimbMultiplier, Tuple.Create(missing, invalid, temp));
                                         icount = 0; scount = 0; missing = false; invalid = false; dcount = 0;
+                                        
 
 
                                         //will be processed to get rid of "studs/s". must be <= 4000 (for default)
@@ -2250,6 +2757,31 @@ namespace FileProcessingParsingReading
                                         }
                                         else
                                         {
+                                            Func<string, string> muzzleNumber = (input) => {
+                                                string result = "";
+                                                string te = "";
+                                                for (int i = 0; i < input.Length; i++)
+                                                {
+                                                    if (temp[i] < 58 && temp[i] > 47 || temp[i] == 46)
+                                                    {
+                                                        te += temp[i];
+                                                        try
+                                                        {
+                                                            if ((!(temp[i + 1] < 58) || !(temp[i + 1] > 47)) && temp[i + 1] != 46)
+                                                            {
+                                                                result += te;
+                                                            }
+                                                        }
+                                                        catch
+                                                        {
+                                                            invalid = true;
+                                                        }
+                                                    }
+                                                }
+                                                return result;
+                                            };
+                                            int sIndex = temp.IndexOf('s');
+                                            temp = sIndex != -1 ? temp.Remove(sIndex) : muzzleNumber(temp);
                                             foreach (char t in temp)
                                             {
                                                 if ((t < 48 || t > 57) && (t < 97 || t > 122) && t != 32 && t != 9 && t != 46 && t!=47)
@@ -2267,7 +2799,7 @@ namespace FileProcessingParsingReading
                                             {
                                                 missing = true;
                                             }
-                                            if (dcount < 1)
+                                            if (dcount != 1)
                                             {
                                                 invalid = true;
                                             }
@@ -2284,6 +2816,44 @@ namespace FileProcessingParsingReading
                                         }
                                         else
                                         {
+                                            Func<string, string> penetrationNumber = (input) => {
+                                                string result = "";
+                                                string te = "";
+                                                for (int i = 0; i < input.Length; i++)
+                                                {
+                                                    if (temp[i] < 58 && temp[i] > 47 || temp[i] == 46)
+                                                    {
+                                                        te += temp[i];
+                                                        try
+                                                        {
+                                                            if ((!(temp[i + 1] < 58) || !(temp[i + 1] > 47)) && temp[i + 1] != 46)
+                                                            {
+                                                                result += te;
+                                                            }
+                                                        }catch
+                                                        {
+                                                            invalid = true;
+                                                        }
+                                                    }
+                                                }
+                                                return result;
+                                            };
+                                            try
+                                            {
+                                                if (Convert.ToDouble(penetrationNumber(temp.Trim())) > 0.5) invalid = true; //will flag anything above 0.5, just to be sure
+                                            }
+                                            catch
+                                            {
+                                                invalid = true;
+                                            }
+                                            try
+                                            {
+                                                if ((temp.Contains("studs")?temp.Remove(temp.IndexOf("studs")):temp).Trim() == "0.0") invalid = true; //will flag anything above 0.5, just to be sure
+                                            }
+                                            catch
+                                            {
+                                                invalid = true;
+                                            }
                                             foreach (char t in temp)
                                             {
                                                 if ((t < 48 || t > 57) && (t < 97 || t > 122) && t != 32 && t != 9 && t != 46)
@@ -2301,7 +2871,7 @@ namespace FileProcessingParsingReading
                                             {
                                                 missing = true;
                                             }
-                                            if(dcount < 1)
+                                            if(dcount != 1)
                                             {
                                                 invalid = true;
                                             }
@@ -2331,7 +2901,7 @@ namespace FileProcessingParsingReading
                                             {
                                                 invalid = true;
                                             }
-                                            if (dcount < 1)
+                                            if (dcount != 1)
                                             {
                                                 invalid = true;
                                             }
@@ -2369,7 +2939,7 @@ namespace FileProcessingParsingReading
                                             {
                                                 missing = true;
                                             }
-                                            if (dcount < 1)
+                                            if (dcount != 1)
                                             {
                                                 invalid = true;
                                             }
@@ -2402,7 +2972,7 @@ namespace FileProcessingParsingReading
                                             {
                                                 missing = true;
                                             }
-                                            if (dcount < 1)
+                                            if (dcount != 1)
                                             {
                                                 invalid = true;
                                             }
@@ -2436,7 +3006,7 @@ namespace FileProcessingParsingReading
                                             {
                                                 missing = true;
                                             }
-                                            if (dcount < 1)
+                                            if (dcount != 1)
                                             {
                                                 invalid = true;
                                             }
@@ -2467,7 +3037,7 @@ namespace FileProcessingParsingReading
                                             {
                                                 missing = true;
                                             }
-                                            if (dcount < 1)
+                                            if (dcount != 1)
                                             {
                                                 invalid = true;
                                             }
@@ -2499,6 +3069,10 @@ namespace FileProcessingParsingReading
                                             if (scount == temp.Length)
                                             {
                                                 missing = true;
+                                            }
+                                            if (dcount != 1)
+                                            {
+                                                invalid = true;
                                             }
                                         }
                                         issues.Add(FileParsing.SearchTargets.AmmoType, Tuple.Create(missing, invalid, temp));
@@ -2543,6 +3117,67 @@ namespace FileProcessingParsingReading
                                         }
                                         else
                                         {
+                                            Func<string, string> damageNumber = (input) => {
+                                                string result = "";
+                                                string te = "";
+                                                for (int i = 0; i < input.Length; i++)
+                                                {
+                                                    if (temp[i] < 58 && temp[i] > 47 || temp[i] == 46)
+                                                    {
+                                                        te += temp[i];
+                                                        try
+                                                        {
+                                                            if ((!(temp[i + 1] < 58) || !(temp[i + 1] > 47)) && temp[i + 1] != 46)
+                                                            {
+                                                                result += te;
+                                                            }
+                                                        }catch(IndexOutOfRangeException e)
+                                                        {
+                                                            invalid = true;
+                                                        }
+                                                    }
+                                                }
+                                                return result;
+                                            };
+                                            string trimmedTemp = temp.Trim();
+                                            int sep2 = trimmedTemp.LastIndexOf(' ');
+                                            int separatorIndex = trimmedTemp.IndexOf('-') == -1 ?
+                                                                    (trimmedTemp.IndexOf('>') == -1 ?
+                                                                        (trimmedTemp.IndexOf(' '))
+                                                                        : trimmedTemp.IndexOf('>'))
+                                                                    : trimmedTemp.IndexOf('-');
+                                            double damage1 = 0;
+                                            double damage2 = 0;
+                                            try
+                                            {
+                                                damage2 = Convert.ToDouble(
+                                                    damageNumber(
+                                                        trimmedTemp.Substring(
+                                                            sep2 == -1 ?
+                                                                (trimmedTemp.IndexOf('>') == -1
+                                                                    ? trimmedTemp.IndexOf('-')
+                                                                : trimmedTemp.IndexOf('>'))
+                                                            : sep2)));
+                                            }
+                                            catch
+                                            {
+                                                invalid = true;
+                                            }
+                                            if (damage2 < 10) invalid = true; //will flag anything above 1.4, just to be sure
+
+                                            try
+                                            {
+                                                damage1 = Convert.ToDouble(
+                                                    damageNumber(trimmedTemp[..^(separatorIndex)]));
+                                            }
+                                            catch
+                                            {
+                                                invalid = true;
+                                            }
+                                            if (damage1 < 10) invalid = true; //will flag anything above 1.4, just to be sure
+
+                                            if (damage1 <= damage2) invalid = true; //will flag anything above 1.4, just to be sure
+
                                             foreach (char t in temp)
                                             {
                                                 if ((t < 48 || t > 57) && t != 32 && t != 9 && t != 45 && t!= 62 && t!= 120)
@@ -2572,6 +3207,18 @@ namespace FileProcessingParsingReading
                                         }
                                         else
                                         {
+                                            string fireratestr = temp.Trim();
+                                            double firerateint = 0;
+                                            try
+                                            {
+                                                firerateint = Convert.ToDouble(fireratestr);
+
+                                            }
+                                            catch
+                                            {
+                                                invalid = true;
+                                            }
+                                            if (firerateint < 500) invalid = true;
                                             foreach (char t in temp)
                                             {
                                                 if ((t < 48 || t > 57) && t != 32 && t != 9)
@@ -2592,15 +3239,15 @@ namespace FileProcessingParsingReading
                                         issues.Add(FileParsing.SearchTargets.Firerate, Tuple.Create(missing, invalid, temp));
                                         icount = 0; scount = 0; missing = false; invalid = false;
 
-                                        string tabs = "\t\t\t\t\t\t ";
+                                        string tabs = "\t\t\t ";
                                         Console.WriteLine("Category:" + tabs + "missing invalid");
                                         Console.WriteLine("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
                                         //Console.Beep();
                                         foreach (FileParsing.SearchTargets st in issues.Keys)
                                         {
-                                            if (st == FileParsing.SearchTargets.Damage || st == FileParsing.SearchTargets.Rank) tabs = "\t\t\t\t\t\t\t ";
-                                            if(st == FileParsing.SearchTargets.PenetrationDepth) tabs = "\t\t\t\t\t ";
-                                            Console.WriteLine(st.ToString() + tabs + (issues[st].Item1?"+++++++":"       ") + " " + (issues[st].Item2 ? "+++++++" : "       ") + " " + (issues[st].Item1 || issues[st].Item2? issues[st].Item3 : ""));
+                                            if (st == FileParsing.SearchTargets.Damage || st == FileParsing.SearchTargets.Rank) tabs = "\t\t\t\t ";
+                                            if(st == FileParsing.SearchTargets.PenetrationDepth) tabs = "\t\t ";
+                                            Console.WriteLine(st.ToString() + tabs + (issues[st].Item1?"+++++++":"       ") + " " + (issues[st].Item2 ? "+++++++" : "       ") + " " + (issues[st].Item1 || issues[st].Item2? issues[st].Item3 : "\t\t\t" + issues[st].Item3));
 
                                             if (issues[st].Item1 || issues[st].Item2 || st==FileParsing.SearchTargets.AmmoType) //proofreading part
                                             {
@@ -2616,7 +3263,7 @@ namespace FileProcessingParsingReading
                                                     }
                                                     else if (st == FileParsing.SearchTargets.AmmoType || st == FileParsing.SearchTargets.ReloadTime || st == FileParsing.SearchTargets.EmptyReloadTime || st == FileParsing.SearchTargets.AimingWalkspeed || st == FileParsing.SearchTargets.WeaponWalkspeed)
                                                     {
-                                                        FileParsing.findStatisticInFileReplace(filepath2, st, issues[st].Item3, proofread, issues[st].Item1, issues[st].Item2, true);
+                                                        FileParsing.findStatisticInFileReplace(filepath2, st, issues[st].Item3, proofread, issues[st].Item1, issues[st].Item2 || st==FileParsing.SearchTargets.AmmoType, true);
                                                     }
                                                     else
                                                     {
@@ -2628,7 +3275,7 @@ namespace FileProcessingParsingReading
 
                                                 }
                                             }
-                                            tabs = "\t\t\t\t\t\t ";
+                                            tabs = "\t\t\t ";
                                             continue;
                                         }
                                         if (issues.Count < 1) continue;
@@ -2693,6 +3340,14 @@ namespace FileProcessingParsingReading
                                         }
                                         else
                                         {
+                                            try
+                                            {
+                                                if (Convert.ToDouble(temp.Trim()) < 25) invalid = true;
+                                            }
+                                            catch
+                                            {
+                                                invalid = true;
+                                            }
                                             foreach (char t in temp)
                                             {
                                                 if ((t < 48 || t > 57) && t != 32 && t != 9)
@@ -2722,6 +3377,14 @@ namespace FileProcessingParsingReading
                                         }
                                         else
                                         {
+                                            try
+                                            {
+                                                if (Convert.ToDouble(temp.Trim()) < 25) invalid = true;
+                                            }
+                                            catch
+                                            {
+                                                invalid = true;
+                                            }
                                             foreach (char t in temp)
                                             {
                                                 if ((t < 48 || t > 57) && t != 32 && t != 9)
@@ -2751,6 +3414,14 @@ namespace FileProcessingParsingReading
                                         }
                                         else
                                         {
+                                            try
+                                            {
+                                                if (Convert.ToDouble(temp.Trim()) < 100) invalid = true;
+                                            }
+                                            catch
+                                            {
+                                                invalid = true;
+                                            }
                                             foreach (char t in temp)
                                             {
                                                 if ((t < 48 || t > 57) && t != 32 && t != 9 )
@@ -2797,7 +3468,7 @@ namespace FileProcessingParsingReading
                                             {
                                                 missing = true;
                                             }
-                                            if(dcount < 1)
+                                            if(dcount != 1)
                                             {
                                                 invalid = true;
                                             }
@@ -2842,6 +3513,14 @@ namespace FileProcessingParsingReading
                                         }
                                         else
                                         {
+                                            try
+                                            {
+                                                if (Convert.ToDouble(temp.Trim()) > 3) invalid = true;
+                                            }
+                                            catch
+                                            {
+                                                invalid = true;
+                                            }
                                             foreach (char t in temp)
                                             {
                                                 if ((t < 48 || t > 57) && t != 32 && t != 9)
@@ -2863,27 +3542,27 @@ namespace FileProcessingParsingReading
                                         icount = 0; scount = 0; missing = false; invalid = false;
 
 
-                                        string tabs = "\t\t\t\t\t\t ";
+                                        string tabs = "\t\t\t ";
                                         Console.WriteLine("Category:" + tabs + "missing invalid");
                                         Console.WriteLine("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
                                         //Console.Beep();
                                         foreach (FileParsing.SearchTargets st in issues.Keys)
                                         {
-                                            if (st == FileParsing.SearchTargets.Damage || st == FileParsing.SearchTargets.Rank) tabs = "\t\t\t\t\t\t\t ";
-                                            if (st == FileParsing.SearchTargets.PenetrationDepth) tabs = "\t\t\t\t\t ";
-                                            Console.WriteLine(st.ToString() + tabs + (issues[st].Item1 ? "+++++++" : "       ") + " " + (issues[st].Item2 ? "+++++++" : "       ") + " " + (issues[st].Item1 || issues[st].Item2 ? issues[st].Item3 : ""));
+                                            if (st == FileParsing.SearchTargets.Damage || st == FileParsing.SearchTargets.Rank) tabs = "\t\t\t\t ";
+                                            if (st == FileParsing.SearchTargets.TriggerMechanism) tabs = "\t\t ";
+                                            Console.WriteLine(st.ToString() + tabs + (issues[st].Item1 ? "+++++++" : "       ") + " " + (issues[st].Item2 ? "+++++++" : "       ") + " " + (issues[st].Item1 || issues[st].Item2 ? issues[st].Item3 : "\t\t\t" + issues[st].Item3));
 
-                                            if (issues[st].Item1 || issues[st].Item2 || st == FileParsing.SearchTargets.AmmoType) //proofreading part
+                                            if (issues[st].Item1 || issues[st].Item2 || st == FileParsing.SearchTargets.TriggerMechanism) //proofreading part
                                             {
                                                 string proofread = Console.ReadLine() ?? "";
                                                 //since both filepaths are the same, we dont need any logic separating them
                                                 if (proofread != "")
                                                 {
-                                                    FileParsing.findStatisticInFileReplace(filepath1, st, issues[st].Item3, proofread, issues[st].Item1, issues[st].Item2, true);
-                                                    FileParsing.findStatisticInFileReplace(filepath2, st, issues[st].Item3, proofread, issues[st].Item1, issues[st].Item2, true);
+                                                    FileParsing.findStatisticInFileReplace(filepath1, st, issues[st].Item3, proofread, issues[st].Item1, issues[st].Item2 || st == FileParsing.SearchTargets.TriggerMechanism, true);
+                                                    FileParsing.findStatisticInFileReplace(filepath2, st, issues[st].Item3, proofread, issues[st].Item1, issues[st].Item2 || st == FileParsing.SearchTargets.TriggerMechanism, true);
                                                 }
                                             }
-                                            tabs = "\t\t\t\t\t\t ";
+                                            tabs = "\t\t\t ";
                                             continue;
                                         }
                                         if (issues.Count < 1) continue;                                        
@@ -2949,6 +3628,14 @@ namespace FileProcessingParsingReading
                                         }
                                         else
                                         {
+                                            try
+                                            {
+                                                if (Convert.ToDouble(temp) > 1.0) invalid = true; //will flag anything above 1.4, just to be sure
+                                            }
+                                            catch
+                                            {
+                                                invalid = true;
+                                            }
                                             foreach (char t in temp)
                                             {
                                                 if ((t < 48 || t > 57) && t != 32 && t != 9 && t != 46)
@@ -2966,7 +3653,7 @@ namespace FileProcessingParsingReading
                                             {
                                                 missing = true;
                                             }
-                                            if (dcount < 1)
+                                            if (dcount != 1)
                                             {
                                                 invalid = true;
                                             }
@@ -2980,6 +3667,14 @@ namespace FileProcessingParsingReading
                                         }
                                         else
                                         {
+                                            try
+                                            {
+                                                if (Convert.ToDouble(temp) > 1.0) invalid = true; //will flag anything above 1.4, just to be sure
+                                            }
+                                            catch
+                                            {
+                                                invalid = true;
+                                            }
                                             foreach (char t in temp)
                                             {
                                                 if ((t < 48 || t > 57) && t != 32 && t != 9 && t != 46)
@@ -2997,7 +3692,7 @@ namespace FileProcessingParsingReading
                                             {
                                                 missing = true;
                                             }
-                                            if (dcount < 1)
+                                            if (dcount != 1)
                                             {
                                                 invalid = true;
                                             }
@@ -3011,6 +3706,14 @@ namespace FileProcessingParsingReading
                                         }
                                         else
                                         {
+                                            try
+                                            {
+                                                if (Convert.ToDouble(temp) > 1.0) invalid = true; //will flag anything above 1.4, just to be sure
+                                            }
+                                            catch
+                                            {
+                                                invalid = true;
+                                            }
                                             foreach (char t in temp)
                                             {
                                                 if ((t < 48 || t > 57) && t != 32 && t != 9 && t != 46)
@@ -3028,7 +3731,7 @@ namespace FileProcessingParsingReading
                                             {
                                                 missing = true;
                                             }
-                                            if (dcount < 1)
+                                            if (dcount != 1)
                                             {
                                                 invalid = true;
                                             }
@@ -3044,6 +3747,14 @@ namespace FileProcessingParsingReading
                                         }
                                         else
                                         {
+                                            try
+                                            {
+                                                if (Convert.ToDouble(temp) < 60) invalid = true; //will flag anything above 1.4, just to be sure
+                                            }
+                                            catch
+                                            {
+                                                invalid = true;
+                                            }
                                             foreach (char t in temp)
                                             {
                                                 if ((t < 48 || t > 57) && t != 32 && t != 9 && t != 46)
@@ -3061,7 +3772,7 @@ namespace FileProcessingParsingReading
                                             {
                                                 missing = true;
                                             }
-                                            if (dcount < 1)
+                                            if (dcount != 1)
                                             {
                                                 invalid = true;
                                             }
@@ -3077,6 +3788,14 @@ namespace FileProcessingParsingReading
                                         }
                                         else
                                         {
+                                            try
+                                            {
+                                                if (Convert.ToDouble(temp) < 100) invalid = true; //will flag anything above 1.4, just to be sure
+                                            }
+                                            catch
+                                            {
+                                                invalid = true;
+                                            }
                                             foreach (char t in temp)
                                             {
                                                 if ((t < 48 || t > 57) && t != 32 && t != 9 && t != 46)
@@ -3094,7 +3813,7 @@ namespace FileProcessingParsingReading
                                             {
                                                 missing = true;
                                             }
-                                            if (dcount < 1)
+                                            if (dcount != 1)
                                             {
                                                 invalid = true;
                                             }
@@ -3127,7 +3846,7 @@ namespace FileProcessingParsingReading
                                             {
                                                 missing = true;
                                             }
-                                            if (dcount < 1)
+                                            if (dcount != 1)
                                             {
                                                 invalid = true;
                                             }
@@ -3136,19 +3855,50 @@ namespace FileProcessingParsingReading
                                         icount = 0; scount = 0; missing = false; invalid = false; dcount = 0;
 
 
+                                        temp = FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.BladeLength, consoleWrite);
+                                        if (temp == "")
+                                        {
+                                            missing = true;
+                                        }
+                                        else
+                                        {
+                                            foreach (char t in temp)
+                                            {
+                                                if ((t < 48 || t > 57) && t != 32 && t != 9 && t != 46)
+                                                {
+                                                    icount++;
+                                                }
+                                                if (t == 32) scount++;
+                                                if (t == 46) dcount++;
+                                            }
+                                            if (icount > 0)
+                                            {
+                                                invalid = true;
+                                            }
+                                            if (scount == temp.Length)
+                                            {
+                                                missing = true;
+                                            }
+                                            if (dcount != 1)
+                                            {
+                                                invalid = true;
+                                            }
+                                        }
+                                        issues.Add(FileParsing.SearchTargets.BladeLength, Tuple.Create(missing, invalid, temp));
+                                        icount = 0; scount = 0; missing = false; invalid = false; dcount = 0;
 
 
-                                        string tabs = "\t\t\t\t\t\t ";
+                                        string tabs = "\t\t\t ";
                                         Console.WriteLine("Category:" + tabs + "missing invalid");
                                         Console.WriteLine("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
                                         //Console.Beep();
                                         foreach (FileParsing.SearchTargets st in issues.Keys)
                                         {
-                                            if (st == FileParsing.SearchTargets.Damage || st == FileParsing.SearchTargets.Rank) tabs = "\t\t\t\t\t\t\t ";
-                                            if (st == FileParsing.SearchTargets.PenetrationDepth) tabs = "\t\t\t\t\t ";
-                                            Console.WriteLine(st.ToString() + tabs + (issues[st].Item1 ? "+++++++" : "       ") + " " + (issues[st].Item2 ? "+++++++" : "       ") + " " + (issues[st].Item1 || issues[st].Item2 ? issues[st].Item3 : ""));
+                                            //if (st == FileParsing.SearchTargets.Walkspeed || st == FileParsing.SearchTargets.BladeLength) tabs = "\t\t\t\t ";
+                                            //if (st == FileParsing.SearchTargets.FrontStabDamage || st == FileParsing.SearchTargets.BackStabDamage) tabs = "\t\t ";
+                                            Console.WriteLine(st.ToString() + tabs + (issues[st].Item1 ? "+++++++" : "       ") + " " + (issues[st].Item2 ? "+++++++" : "       ") + " " + (issues[st].Item1 || issues[st].Item2 ? issues[st].Item3 : "\t\t\t" + issues[st].Item3));
 
-                                            if (issues[st].Item1 || issues[st].Item2 || st == FileParsing.SearchTargets.AmmoType) //proofreading part
+                                            if (issues[st].Item1 || issues[st].Item2) //proofreading part
                                             {
                                                 string proofread = Console.ReadLine() ?? "";
                                                 //since both filepaths are the same, we dont need any logic separating them
@@ -3158,7 +3908,7 @@ namespace FileProcessingParsingReading
                                                     FileParsing.findStatisticInFileReplace(filepath2, st, issues[st].Item3, proofread, issues[st].Item1, issues[st].Item2, true);
                                                 }
                                             }
-                                            tabs = "\t\t\t\t\t\t ";
+                                            tabs = "\t\t\t ";
                                             continue;
                                         }
                                         if (issues.Count < 1) continue;
@@ -3173,8 +3923,7 @@ namespace FileProcessingParsingReading
                 }
                 continue;
             }
-            Task<string> e = strthing("bruh");
-            return e;
+            return keyValuePairs;
         }
 
 
@@ -3585,6 +4334,13 @@ namespace FileProcessingParsingReading
             T5.Name = nameof(T5);
             T6.Name = nameof(T6);
 
+            List<Thread> threads = new() { T1, T2, T3, T4, T5, T6 };
+            foreach(Thread j in threads)
+            {
+                j.IsBackground = true;
+                j.Priority = ThreadPriority.BelowNormal;
+            }
+
             if(DMRS || LMGS || OHBE)T1.Start();
             if(BRS || SHS || MPS || OTH || FGS || HEGS)T2.Start();
             if(OHBT || IGS || SRS || RES)T3.Start();
@@ -3755,6 +4511,171 @@ namespace FileProcessingParsingReading
             return result;
         }
 
+        public static void renameAllFiles()
+        {
+
+            //ars pds lmgs srs brs cas dmrs shs
+            //string file1 = ""; string file2 = "";
+            //BuildOptions categoryNumber = 0;
+            Action<List<string>, int> saveFilesGuns = (strings, savenumber) => {
+                for (int s = 0; s < strings.Count; s++)
+                {
+                    try
+                    {
+                        File.Move("cropped__1.00__" + strings[s] + "1.png", "cropped__1.00__" + savenumber + "__" + s + "__" + strings[s] + "1.png");
+                        File.Move("cropped__1.00__" + strings[s] + "2.png", "cropped__1.00__" + savenumber + "__" + s + "__" + strings[s] + "2.png");
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+
+                }
+            };
+            Action<List<string>, int> saveFilesOther = (strings, savenumber) => {
+                for (int s = 0; s < strings.Count; s++)
+                {
+                    try
+                    {
+                        File.Move("cropped__1.00__" + strings[s] + ".png", "cropped__1.00__" + savenumber + "__" + s + "__" + strings[s] + ".png");
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+
+                }
+            };
+            //FileProcessing.AllWeaponStrings weaponStrings = new(FileProcessing.BuildOptions.None);
+            saveFilesGuns(FileProcessing.AllWeaponStrings.AssaultRiflesStrings, 1);
+            saveFilesGuns(FileProcessing.AllWeaponStrings.PersonalDefenseWeaponsStrings, 2);
+            saveFilesGuns(FileProcessing.AllWeaponStrings.LightMachineGunsStrings, 3);
+            saveFilesGuns(FileProcessing.AllWeaponStrings.SniperRiflesStrings, 4);
+
+
+            saveFilesGuns(FileProcessing.AllWeaponStrings.BattleRiflesStrings, 5);
+            saveFilesGuns(FileProcessing.AllWeaponStrings.CarbineStrings, 6);
+            saveFilesGuns(FileProcessing.AllWeaponStrings.DesignatedMarksmanRiflesStrings, 7);
+            saveFilesGuns(FileProcessing.AllWeaponStrings.ShotgunsStrings, 8);
+
+
+            saveFilesGuns(FileProcessing.AllWeaponStrings.PistolsStrings, 9);
+            saveFilesGuns(FileProcessing.AllWeaponStrings.MachinePistolsStrings, 10);
+            saveFilesGuns(FileProcessing.AllWeaponStrings.RevolversStrings, 11);
+            saveFilesGuns(FileProcessing.AllWeaponStrings.OthersStrings, 12);
+
+
+            saveFilesOther(FileProcessing.AllWeaponStrings.FragmentationGrenadesStrings, 13);
+            saveFilesOther(FileProcessing.AllWeaponStrings.HighExplosiveGrenadesStrings, 14);
+            saveFilesOther(FileProcessing.AllWeaponStrings.ImpactGrenadesStrings, 15);
+
+
+            saveFilesOther(FileProcessing.AllWeaponStrings.OneHandBladeMelees, 16);
+            saveFilesOther(FileProcessing.AllWeaponStrings.OneHandBluntMelees, 17);
+            saveFilesOther(FileProcessing.AllWeaponStrings.TwoHandBladeMelees, 18);
+            saveFilesOther(FileProcessing.AllWeaponStrings.TwoHandBluntMelees, 19);
+        }
+
+    }
+
+    public class SQLConnectionHandling
+    {
+
+        private SQLiteConnectionStringBuilder connectionString;
+
+
+
+        //to standardize the SQL categories
+        public static Dictionary<FileReading.BuildOptions, string> CategoryNames = new()
+        {
+            {FileReading.BuildOptions.ARS, "Assault Rifles" },
+                    {FileReading.BuildOptions.PDWS, "Personal Defense Weapons" },
+                    {FileReading.BuildOptions.LMGS, "Light Machine Guns"},
+                    {FileReading.BuildOptions.SRS, "Sniper Rifles" },
+
+                    {FileReading.BuildOptions.BRS, "Battle Rifles" },
+                    {FileReading.BuildOptions.CAS, "Carbines" },
+                    {FileReading.BuildOptions.DMRS, "Designated Marksman Rifles" },
+                    {FileReading.BuildOptions.SHS, "Shotguns" },
+
+                    {FileReading.BuildOptions.PS, "Pistols" },
+                    {FileReading.BuildOptions.MPS, "Machine Pistols" },
+                    {FileReading.BuildOptions.RES, "Revolvers" },
+                    {FileReading.BuildOptions.OTH, "Others" },
+
+                    {FileReading.BuildOptions.FGS, "Fragmentation Grenades" },
+                    {FileReading.BuildOptions.HEGS, "High Explosive Grenades" },
+                    {FileReading.BuildOptions.IGS, "Impact Grenades" },
+
+                    {FileReading.BuildOptions.OHBE, "One Handed Blade Melees" },
+
+                    {FileReading.BuildOptions.OHBT, "One Handed Blunt Melees" },
+
+                    {FileReading.BuildOptions.THBE, "Two Handed Blade Melees" },
+
+                    {FileReading.BuildOptions.THBT, "Two Handed Blunt Melees" }
+        };
+
+        public SQLConnectionHandling()
+        {
+            SQLiteConnectionStringBuilder connectionStringBuilder = new(@"Data Source=.\Nephka.db;Version=3;FailIfMissing=True;");
+            connectionString = connectionStringBuilder;
+        }
+
+        public void InsertSQLGunRecord()
+        {
+
+            using (var conn = new SQLiteConnection(connectionString.ConnectionString))
+            {
+                using (var command = conn.CreateCommand())
+                {
+                    //command.CommandText = 
+                    //command.CommandText = @"INSERT INTO CategoryData (ClassName, Category1, Category2, Category3, Category4)
+                    //VALUES ('Scout', 'Sniper Rifles', 'Designated Marksman Rifles', 'Battle Rifles', 'Carbines');";
+                    command.CommandText = @"INSERT INTO CategoryData (ClassName, Category1, Category2, Category3, Category4)
+                                                VALUES ('Scout', 'Sniper Rifles', 'Designated Marksman Rifles', 'Battle Rifles', 'Carbines');";
+                    conn.Open();
+                    command.ExecuteReader();
+                    conn.Close();
+                    Console.ReadKey();
+                    /*
+                    SQLiteDataAdapter ad;
+                    DataTable dt = new DataTable();
+                    
+                    try
+                    {
+                        SQLiteCommand cmd;
+                        conn.Open();  //Initiate connection to the db
+                        cmd = conn.CreateCommand();
+                        cmd.CommandText = @"INSERT INTO CategoryData (ClassName, Category1, Category2, Category3, Category4)
+                                                VALUES ('Scout', 'Sniper Rifles', 'Designated Marksman Rifles', 'Battle Rifles', 'Carbines');";  //set the passed query
+                        ad = new SQLiteDataAdapter(cmd);
+                        ad.Fill(dt); //fill the datasource
+                    }
+                    catch (SQLiteException ex)
+                    {
+                        //Add your exception code here.
+                        Console.WriteLine(ex.Message);
+                    }
+                    conn.Close();*/
+                }
+            }
+        }
+
+        public void InsertSQLCategoryRecord(Category category)
+        {
+            /*
+            using (var conn = new SqlConnection(connectionString))
+            {
+                using (var command = conn.CreateCommand())
+                {
+                    command.CommandText = @"";
+                    conn.Open();
+                    command.ExecuteReader();
+                    Console.ReadKey();
+                }
+            }*/
+        }
 
 
     }

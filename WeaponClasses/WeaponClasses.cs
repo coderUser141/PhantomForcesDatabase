@@ -1305,6 +1305,10 @@
 
         }
 
+        public Gun(string name, bool hasRank, int rank) : base(name, hasRank, rank)
+        {
+        }
+
         private static ConversionList addNewConversionList(Conversion defaultConversion)
         {
             return new ConversionList(defaultConversion);
@@ -1395,6 +1399,10 @@
         private double bladeLength;
         private Carried carriedAttributes;
 
+        public Melee(string name, bool hasRank, int rank) : base(name, hasRank, rank)
+        {
+        }
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -1448,7 +1456,11 @@
         private int storedCapacity;
         private double blastRadius;
         private double killRadius;
-        private Ranged rangedAttributes;
+        private double maximumDamage;
+
+        public Grenade(string name, bool hasRank, int rank) : base(name, hasRank, rank)
+        {
+        }
 
         /// <summary>
         /// Constructor.
@@ -1464,7 +1476,7 @@
         /// <param name="blastRadius">The radius that is guaranteed to deal minimum damage.</param>
         /// <param name="killRadius">The radius that is guaranteed to deal lethal (100) damage.</param>
         /// <param name="rangedAttributes">The <see cref="Ranged.Ranged(double, double, double, double)">rangedAttributes</see> of the grenade.</param>
-        public Grenade(string name, bool hasRank, int rank, bool fuse, double fuseTime, bool special, string specialMode, int storedCapacity, double blastRadius, double killRadius, Ranged rangedAttributes) : base(name, hasRank, rank)
+        public Grenade(string name, bool hasRank, int rank, bool fuse, double fuseTime, bool special, string specialMode, int storedCapacity, double blastRadius, double killRadius, double maximumDamage) : base(name, hasRank, rank)
         {
             this.fuse = fuse;
             this.fuseTime = fuseTime;
@@ -1473,7 +1485,7 @@
             this.storedCapacity = storedCapacity;
             this.blastRadius = blastRadius;
             this.killRadius = killRadius;
-            this.rangedAttributes = rangedAttributes;
+            this.maximumDamage = maximumDamage;
         }
 
         /// <summary>
@@ -1514,7 +1526,7 @@
         /// <summary>
         /// RangedAttributes getter/setter. See <see cref="Grenade.Grenade(string, bool, int, bool, double, bool, string, int, double, double, Ranged)"></see>
         /// </summary>
-        public Ranged RangedAttributes { get { return rangedAttributes; } set { rangedAttributes = value; } }
+        public double MaximumDamage { get { return maximumDamage; } set { maximumDamage = value; } }
 
     }
 

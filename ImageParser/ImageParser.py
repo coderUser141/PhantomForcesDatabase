@@ -118,6 +118,9 @@ class ImageParser:
                 crops.append(("Top", r_crop))
                 crops.append(("General", j_crop))
         
+
+        proofread_crop = fullscreen_image[20:800, 1200:1880]
+        cv2.imwrite(("cropped__"+sys.argv[6]+"__"+sys.argv[5]),proofread_crop)
         #160:370
         
 
@@ -161,9 +164,9 @@ class ImageParser:
         sharpened_img = cv2.bilateralFilter(process2,9,75,75)
         thresh, im_bw = cv2.threshold(sharpened_img, 130, 255, cv2.THRESH_BINARY )
         eroded = thin_font(im_bw)
-        #cv2.imwrite("outputsharpened.png", sharpened_img)
-        #cv2.imwrite("outputbinaryfilter.png", im_bw)
-        #cv2.imwrite("outputeroded.png",eroded)
+        cv2.imwrite(("output__"+sys.argv[6]+"__sharpened__"+sys.argv[5]+".png"), sharpened_img)
+        cv2.imwrite(("output__"+sys.argv[6]+"__binaryfilter__"+sys.argv[5]+".png"), im_bw)
+        cv2.imwrite(("output__"+sys.argv[6]+"__eroded__"+sys.argv[5]+".png"),eroded)
         data = ""
         if general2 == "true" or not melee=="True" or not melee=="False": #or melee=="False"
             data = pytesseract.image_to_string(eroded, config="--psm 6")
@@ -174,6 +177,6 @@ class ImageParser:
         return data
 
 print("hi im python\n")
-print(sys.argv[0] + "\n" + sys.argv[1] + "\n" + sys.argv[2] + "\n" + sys.argv[3] + "\n" + sys.argv[4])
+print(sys.argv[0] + "\n" + sys.argv[1] + "\n" + sys.argv[2] + "\n" + sys.argv[3] + "\n" + sys.argv[4] + "\n" + sys.argv[5] + "\n" + sys.argv[6])
 parser = ImageParser()
 parser.parse_screenshot(sys.argv[1], sys.argv[3], sys.argv[4])
