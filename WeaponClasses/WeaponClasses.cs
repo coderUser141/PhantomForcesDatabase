@@ -926,7 +926,7 @@
             {
                 throw new ArgumentException("Cannot be zero nor negative.", nameof(emptyReloadSpeed));
             }
-            else if (gun.DefaultAimingWalkspeed <= 0)
+            else if (gun.DefaultAimingWalkspeed <= 0 && !gun.DefaultCaliber.Contains("20x82mm")) //exclude ntw
             {
                 throw new ArgumentException("Cannot be zero nor negative.", nameof(aimingWalkspeed));
             }
@@ -1161,7 +1161,7 @@
             {
                 throw new ArgumentException("Cannot be null.", nameof(emptyReloadSpeed));
             }
-            else if (aimingWalkspeed <= 0)
+            else if (aimingWalkspeed <= 0 && !caliber.Contains("20x82mm")) //exclude ntw
             {
                 throw new ArgumentException("Cannot be null.", nameof(aimingWalkspeed));
             }
@@ -1741,6 +1741,47 @@
                 weaponList.Add(deleg(weapon) + 1, weapon);
             }
             return true;
+        }
+
+        private int meleeID = 0;
+
+        /// <summary>
+        /// Adds a new <c>Weapon</c> to the list.
+        /// </summary>
+        /// <param name="weapon">The <c>Weapon</c> object to be added.</param>
+        /// <returns>True if succeeded, false otherwise.</returns>
+        public bool addMelee(Weapon weapon, int id)
+        {
+            int er = 2;
+            Func<Weapon, int> deleg = x => IDGenerator(x) != -1 ? IDGenerator(weapon) : er;
+            if (deleg(weapon) == er) return false;
+            try
+            {
+                weaponList.Add(id, weapon);
+            }
+            catch (ArgumentException)
+            {
+                weaponList.Add(id + 1, weapon);
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Searches for a melee by looking up its rank.
+        /// </summary>
+        /// <param name="name">The name to search with.</param>
+        /// <returns>The <c>Weapon</c>, if found. Throws an exception otherwise.</returns>
+        /// <exception cref="Exception"></exception>
+        public Weapon meleeLookupByName(string name)
+        {
+            foreach (Weapon weapon in weaponList.Values)
+            {
+                if (weapon.Name.Contains(name))
+                {
+                    return weapon;
+                }
+            }
+            throw new Exception("Weapon not found.");
         }
 
         /// <summary>

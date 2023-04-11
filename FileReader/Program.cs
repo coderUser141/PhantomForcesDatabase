@@ -21,8 +21,8 @@ Console.WriteLine("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 
 //Console.WriteLine(FileProcessing.WeaponOutputs.directPythonExecute("SCAR-L2.png", true, null));
 
-string filepath = @"limited\boxy-buster1.txt";
-string filepath2 = @"limited\boxy-buster2.txt";
+//string filepath = @"limited\boxy-buster1.txt";
+//string filepath2 = @"limited\boxy-buster2.txt";
 //Console.WriteLine(FileProcessing.Filenames.convertFileNameToGunName(filepath));
 //FileReading reading = new(FileReading.BuildOptions.NONE, false, true, true);
 /*
@@ -61,7 +61,10 @@ FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.Rank, true);
 FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.Rank, true);
 FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.Firerate, true);
 FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.Firerate, true);*/
-
+/*
+new FileProcessing.Filenames("M601.png", FileProcessing.WeaponOutputs.directPythonExecute("M601.png", true, null)).SetFilenames(Tuple.Create(false, false, true),null,false);
+new FileProcessing.Filenames("M602.png", FileProcessing.WeaponOutputs.directPythonExecute("M602.png", true, null)).SetFilenames(Tuple.Create(false, false, true), null, false);
+*/
 string nl = Environment.NewLine;
 Console.WriteLine("Hello and welcome to FileReader! This program handles building, " + nl +
     "OCR reading, and proofreading. If you would like to build the files needed, first ensure that the directory " + nl +
@@ -127,7 +130,6 @@ if (build == "@")
     FileReading file = new(FileReading.BuildOptions.NONE, false, true, true, false);
 }
 
-Console.ReadKey();
 Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:fff"));
 Console.WriteLine("Wow! It's been " + stopwatch.ElapsedMilliseconds.ToString() + " milliseconds since the build started." + nl +
     "That means it has been " + ((stopwatch.ElapsedMilliseconds / 1000) / 60) + " minutes since it started.");
@@ -167,7 +169,7 @@ namespace FileProcessingParsingReading
         //version 1.00 = pf version 8.0.0
         //version 1.01 = pf version 8.0.1
         private static readonly string version = "1.00";
-        private static string buildFolder = @"all build options v6\";
+        private static string buildFolder = @"all build options v5\";
         private static string readFolder = @"all build options v5\";
 
 
@@ -2156,11 +2158,11 @@ namespace FileProcessingParsingReading
             FileProcessing.AllWeaponStrings strings = new(BuildOptionsConvert(category));
             Console.WriteLine(weaponName);
 
-           
+
             if (category == BuildOptions.THBE || category == BuildOptions.THBT || category == BuildOptions.OHBT || category == BuildOptions.OHBE)
             {
                 string filepath = Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item1;
-                double bladeLength = Convert.ToDouble(FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.BladeLength, true).Trim()); 
+                double bladeLength = Convert.ToDouble(FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.BladeLength, true).Trim());
                 double frontStabDamage = Convert.ToDouble(FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.FrontStabDamage, true).Trim());
                 double backStabDamage = Convert.ToDouble(FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.BackStabDamage, true).Trim());
                 double walkspeed = Convert.ToDouble(FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.Walkspeed, true).Trim());
@@ -2189,12 +2191,12 @@ namespace FileProcessingParsingReading
                 string special = FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.SpecialEffects, true).Trim();
                 string triggerMechanism = FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.TriggerMechanism, true).Trim();
                 double fuseTime = 0;
-                if(triggerMechanism.Contains("fuse", StringComparison.CurrentCultureIgnoreCase))
+                if (triggerMechanism.Contains("fuse", StringComparison.CurrentCultureIgnoreCase))
                 {
                     string temp = "";
-                    foreach(char t in triggerMechanism)
+                    foreach (char t in triggerMechanism)
                     {
-                        if(t > 47 && t < 58 || t == 46)
+                        if (t > 47 && t < 58 || t == 46)
                         {
                             temp += t;
                         }
@@ -2216,7 +2218,7 @@ namespace FileProcessingParsingReading
                     rank = 262144;
                     hasRank = false;
                 }
-                init = new Grenade(weaponName, hasRank, rank, 
+                init = new Grenade(weaponName, hasRank, rank,
                     triggerMechanism.Contains("fuse", StringComparison.CurrentCultureIgnoreCase),
                     fuseTime, !special.Contains("none", StringComparison.CurrentCultureIgnoreCase), (!special.Contains("none", StringComparison.CurrentCultureIgnoreCase)) ? special : "", storedCapacity, blastRadius, killingRadius, maximumDamage);
             }
@@ -2226,27 +2228,29 @@ namespace FileProcessingParsingReading
 
                 string filepath1 = Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item2;
                 string filepath2 = Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item3;
+                string buffer = "    ";
 
-
-                string damagetemp = FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.DamageRange, true);
+                string damagetemp = FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.DamageRange, true) + buffer;
                 string damage1str = "";
                 string damage2str = "";
                 bool damageindexflag = false;
-                for(int i = 0; i < damagetemp.Length; i++)
+                string t1 = ""; string t2 = "";
+                for (int i = 0; i < damagetemp.Length - buffer.Length; i++)
                 {
-                    string t1 = ""; string t2 = "";
-                    if ((damagetemp[i] > 47 || damagetemp[i] < 58 || damagetemp[i] == 46) && damageindexflag == false)
+                    char e = damagetemp[i]; char r = damagetemp[i + 1];
+                    if (((damagetemp[i] > 47 && damagetemp[i] < 58) || damagetemp[i] == 46) && damageindexflag == false)
                     {
                         t1 += damagetemp[i];
-                        if (damagetemp[i + 1] > 57 || damagetemp[i+1] < 48 || damagetemp[i+1] != 46)
+                        if ((damagetemp[i + 1] > 57 || damagetemp[i + 1] < 48) && damagetemp[i + 1] != 46)
                         {
                             damage1str += t1;
                             damageindexflag = true;
                         }
-                    }else if((damagetemp[i] > 47 || damagetemp[i] < 58 || damagetemp[i] == 46) && damageindexflag == true)
+                    }
+                    else if (((damagetemp[i] > 47 && damagetemp[i] < 58) || damagetemp[i] == 46) && damageindexflag == true)
                     {
                         t2 += damagetemp[i];
-                        if (damagetemp[i + 1] > 57 || damagetemp[i + 1] < 48 || damagetemp[i + 1] != 46)
+                        if ((damagetemp[i + 1] > 57 || damagetemp[i + 1] < 48 ) && damagetemp[i + 1] != 46)
                         {
                             damage2str += t2;
                             damageindexflag = false;
@@ -2257,14 +2261,14 @@ namespace FileProcessingParsingReading
                 double damage2 = Convert.ToDouble(damage2str.Trim());
 
 
-                string ammocapstr = FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.AmmoCapacity, true);
+                string ammocapstr = FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.AmmoCapacity, true) + buffer;
                 string ammomagstr = "";
                 string ammoresstr = "";
                 bool ammocapindexflag = false;
-                for (int i = 0; i < ammocapstr.Length; i++)
+                t1 = ""; t2 = "";
+                for (int i = 0; i < ammocapstr.Length - buffer.Length; i++)
                 {
-                    string t1 = ""; string t2 = "";
-                    if ((ammocapstr[i] > 47 || ammocapstr[i] < 58) && ammocapindexflag == false)
+                    if ((ammocapstr[i] > 47 && ammocapstr[i] < 58) && ammocapindexflag == false)
                     {
                         t1 += ammocapstr[i];
                         if (ammocapstr[i + 1] > 57 || ammocapstr[i + 1] < 48)
@@ -2273,7 +2277,7 @@ namespace FileProcessingParsingReading
                             ammocapindexflag = true;
                         }
                     }
-                    else if ((ammocapstr[i] > 47 || ammocapstr[i] < 58) && ammocapindexflag == true)
+                    else if ((ammocapstr[i] > 47 && ammocapstr[i] < 58) && ammocapindexflag == true)
                     {
                         t2 += ammocapstr[i];
                         if (ammocapstr[i + 1] > 57 || ammocapstr[i + 1] < 48)
@@ -2283,23 +2287,23 @@ namespace FileProcessingParsingReading
                         }
                     }
                 }
-                double magcap = Convert.ToDouble(ammomagstr.Trim());
-                double rescap = Convert.ToDouble(ammoresstr.Trim());
+                int magcap = Convert.ToInt32(ammomagstr.Trim());
+                int rescap = Convert.ToInt32(ammoresstr.Trim());
 
                 double limbM = Convert.ToDouble(FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.LimbMultiplier, true).Trim());
                 double headM = Convert.ToDouble(FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.HeadMultiplier, true).Trim());
                 double torsoM = Convert.ToDouble(FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.TorsoMultiplier, true).Trim());
 
-                string mvstr = FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.MuzzleVelocity, true);
+                string mvstr = FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.MuzzleVelocity, true) + buffer;
                 string mvconvstr = "";
                 bool mvdotflag = false;
-                for (int i = 0; i < mvstr.Length; i++)
+                t1 = ""; t2 = "";
+                for (int i = 0; i < mvstr.Length - buffer.Length; i++)
                 {
-                    string t1 = "";
-                    if ((mvstr[i] > 47 || mvstr[i] < 58 || mvstr[i] == 46) && mvdotflag == false)
+                    if (((mvstr[i] > 47 && mvstr[i] < 58) || mvstr[i] == 46) && mvdotflag == false)
                     {
                         t1 += mvstr[i];
-                        if (mvstr[i + 1] > 57 || mvstr[i + 1] < 48 || mvstr[i+1] != 46)
+                        if ((mvstr[i + 1] > 57 || mvstr[i + 1] < 48)&& mvstr[i + 1] != 46)
                         {
                             mvconvstr += t1;
                             mvdotflag = true;
@@ -2308,16 +2312,16 @@ namespace FileProcessingParsingReading
                 }
                 double mv = Convert.ToDouble(mvconvstr.Trim());
 
-                string pdstr = FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.PenetrationDepth, true); 
+                string pdstr = FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.PenetrationDepth, true) + buffer;
                 string pdconvstr = "";
                 bool pddotflag = false;
-                for (int i = 0; i < pdstr.Length; i++)
+                t1 = ""; t2 = "";
+                for (int i = 0; i < pdstr.Length - buffer.Length; i++)
                 {
-                    string t1 = "";
-                    if ((pdstr[i] > 47 || pdstr[i] < 58 || pdstr[i] == 46) && pddotflag == false)
+                    if (((pdstr[i] > 47 && pdstr[i] < 58) || pdstr[i] == 46) && pddotflag == false)
                     {
-                        t1 += mvstr[i];
-                        if (pdstr[i + 1] > 57 || pdstr[i + 1] < 48 || pdstr[i + 1] != 46)
+                        t1 += pdstr[i];
+                        if ((pdstr[i + 1] > 57 || pdstr[i + 1] < 48) && pdstr[i + 1] != 46)
                         {
                             pdconvstr += t1;
                             pddotflag = true;
@@ -2327,16 +2331,16 @@ namespace FileProcessingParsingReading
                 double pd = Convert.ToDouble(pdconvstr.Trim());
 
 
-                string rtstr = FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.ReloadTime, true); 
+                string rtstr = FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.ReloadTime, true) + buffer;
                 string rtconvstr = "";
                 bool rtdotflag = false;
-                for (int i = 0; i < rtstr.Length; i++)
+                t1 = ""; t2 = "";
+                for (int i = 0; i < rtstr.Length - buffer.Length; i++)
                 {
-                    string t1 = "";
-                    if ((rtstr[i] > 47 || rtstr[i] < 58 || rtstr[i] == 46) && rtdotflag == false)
+                    if (((rtstr[i] > 47 && rtstr[i] < 58) || rtstr[i] == 46) && rtdotflag == false)
                     {
                         t1 += rtstr[i];
-                        if (rtstr[i + 1] > 57 || rtstr[i + 1] < 48 || rtstr[i + 1] != 46)
+                        if ((rtstr[i + 1] > 57 || rtstr[i + 1] < 48) && rtstr[i + 1] != 46)
                         {
                             rtconvstr += t1;
                             rtdotflag = true;
@@ -2344,16 +2348,17 @@ namespace FileProcessingParsingReading
                     }
                 }
                 double rt = Convert.ToDouble(rtconvstr.Trim());
-                string ertstr = FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.EmptyReloadTime, true);
+
+                string ertstr = FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.EmptyReloadTime, true) + buffer;
                 string ertconvstr = "";
                 bool ertdotflag = false;
-                for (int i = 0; i < ertstr.Length; i++)
+                t1 = ""; t2 = "";
+                for (int i = 0; i < ertstr.Length - buffer.Length; i++)
                 {
-                    string t1 = "";
-                    if ((ertstr[i] > 47 || ertstr[i] < 58 || ertstr[i] == 46) && ertdotflag == false)
+                    if (((ertstr[i] > 47 && ertstr[i] < 58) || ertstr[i] == 46) && ertdotflag == false)
                     {
                         t1 += ertstr[i];
-                        if (ertstr[i + 1] > 57 || ertstr[i + 1] < 48 || ertstr[i + 1] != 46)
+                        if ((ertstr[i + 1] > 57 || ertstr[i + 1] < 48) && ertstr[i + 1] != 46)
                         {
                             ertconvstr += t1;
                             ertdotflag = true;
@@ -2366,19 +2371,213 @@ namespace FileProcessingParsingReading
                 double ww = Convert.ToDouble(FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.WeaponWalkspeed, true));
 
                 string ammotype = FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.AmmoType, true);
-                FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.FireModes, true);
-                FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.FireModes, true);
+                
 
 
-                FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.Damage, true); //only __1.png files have the correct suppression
-                FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.Rank, true);
-                FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.Rank, true);
-                FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.Firerate, true);
+                string dvstr = FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.Damage, true) + buffer; //only __1.png files have the correct suppression
+                string damageval1 = "";
+                string damageval2 = "";
+                string pellets1 = "";
+                string pellets2 = "";
+                bool pelletsflag = false;
+
+                t1 = ""; t2 = "";
+                bool dflag = false;
+                for (int i = 0; i < dvstr.Length - buffer.Length; i++)
+                {
+                    if (((dvstr[i] > 47 && dvstr[i] < 58) || dvstr[i] == 46) && dflag == false)
+                    {
+                        t1 += dvstr[i];
+                        if ((dvstr[i + 1] > 57 || dvstr[i + 1] < 48) && dvstr[i + 1] != 46)
+                        {
+                            damageval1 += t1;
+                            dflag = true;
+                        }
+                        else if (dvstr.ToLower()[i + 1] == 120)
+                        {
+                            pelletsflag = true;
+                            pellets1 += dvstr[i + 2];
+                        }
+                    }
+                    else if (((dvstr[i] > 47 && dvstr[i] < 58) || dvstr[i] == 46) && dflag == true)
+                    {
+                        t2 += dvstr[i];
+                        if ((dvstr[i + 1] > 57 || dvstr[i + 1] < 48) && dvstr[i + 1] != 46)
+                        {
+                            damageval2 += t2;
+                            dflag = false;
+                        }
+                        else if (dvstr.ToLower()[i + 1] == 120)
+                        {
+                            pelletsflag = true;
+                            pellets1 += dvstr[i + 2];
+                        }
+                    }
+                }
+
+                int pel1 = pelletsflag ? Convert.ToInt32(pellets1.Trim()) : 0;
+                int pel2 = pelletsflag ? Convert.ToInt32(pellets2.Trim()) : 0;
+
+                double da1 = Convert.ToDouble(damageval1.Trim());
+                double da2 = Convert.ToDouble(damageval2.Trim());
+
+                int rank = 0; bool hasRank = true;
+                try
+                {
+                    rank = Convert.ToInt32(FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.Rank, true).Trim());
+                }
+                catch (FormatException)
+                {
+                    rank = 262144;
+                    hasRank = false;
+                }
+
+                string firemodestr = FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.FireModes, true) + buffer;
+                string lowerfiremodestr = firemodestr.ToLower();
+                t1 = ""; t2 = ""; string t3 = "";
+                List<string> list = new();
+                for(int i = 0; i < firemodestr.Length - buffer.Length; i++)
+                {
+                    if (lowerfiremodestr[i] > 96 && lowerfiremodestr[i] < 123)
+                    {
+                        t1 += lowerfiremodestr[i];
+                        if (lowerfiremodestr[i + 1] < 97 || lowerfiremodestr[i+1] > 122)
+                        {
+                            list.Add(t1);
+                            t1 = "";
+                        }
+                    }
+                }
+                list.TrimExcess();
+
+                string fireratestr = FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.Firerate, true).TrimStart() + buffer;
+                double firerate;
+                bool specialFirerate = false;
+                t1 = "";
+                Dictionary<char, string> dict = new();
+                int lettercount = 0;
+                for (int i = 0; i < fireratestr.Length - buffer.Length; i++)
+                {
+                    if (fireratestr.ToLower()[i] > 96 && fireratestr.ToLower()[i] < 123)
+                    {
+                        lettercount++;
+                    }
+                }
+                if (lettercount > 3)
+                {
+                    specialFirerate = true;
+                }
+
+                try
+                {
+                    firerate = Convert.ToDouble(fireratestr);
+                }
+                catch (FormatException) //if there are letters or "|"
+                {
+                    if (!specialFirerate)
+                    {
+                        for (int i = 0; i < fireratestr.Length - buffer.Length; i++)
+                        {
+                            if (fireratestr[i] > 47 && fireratestr[i] < 58)
+                            {
+                                t1 += fireratestr[i];
+                            }
+                            else if (fireratestr.ToLower()[i] > 96 && fireratestr.ToLower()[i] < 123)
+                            {
+                                dict.Add(fireratestr[i], t1);
+                                t1 = "";
+                            }
+                            if (i + 1 >= fireratestr.Length - buffer.Length) break;
+                        }
+                    }
+                    else
+                    {
+                        if(fireratestr.Contains("|") && fireratestr.IndexOf("|") > 3)
+                        {
+                            int separator = fireratestr.IndexOf("|");
+                            string g = fireratestr.Substring(0, separator);
+                            string h = fireratestr.Substring(separator, fireratestr.Length - buffer.Length- separator);
+                            char t = ' '; char u = ' ';
+                            if (g.Contains("SEMI", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                t = 's';
+                            }else if(g.Contains("AUTO", StringComparison.CurrentCultureIgnoreCase)){
+                                t = 'a';
+                            }else if(g.Contains("BURST", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                t = 'b';
+                            }
+                            if (h.Contains("SEMI", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                u = 's';
+                            }
+                            else if (h.Contains("AUTO", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                u = 'a';
+                            }
+                            else if (h.Contains("BURST", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                u  = 'b';
+                            }
+                            for (int i = 0; i < (g + buffer).Length - buffer.Length; i++)
+                            {
+                                if (g[i] > 47 && g[i] < 58)
+                                {
+                                    t1 += g[i];
+                                    if (g.ToLower()[i + 1] > 96 && g.ToLower()[i + 1] < 123 || g.ToLower()[i + 1] == 32)
+                                    {
+                                        dict.Add(t, t1.Trim());
+                                    }
+                                }
+                            }
+                            t1 = "";
+                            bool tester = false;
+                            for (int i = 0; i < (h + buffer).Length - buffer.Length; i++)
+                            {
+                                if (h[i] > 47 && h[i] < 58)
+                                {
+                                    t1 += g[i];
+                                    if (h.ToLower()[i + 1] > 96 && h.ToLower()[i + 1] < 123 || h.ToLower()[i + 1] == 32)
+                                    {
+                                        dict.Add(u, t1.Trim());
+                                        tester = true;
+                                    }
+                                }
+                            }
+                            if (!tester)
+                            {
+                                dict.Add(u, "59999");
+                            }
+                        }
+                    }
+                }
+
+                
+                if(dict.ContainsKey('b'))
+                {
+                    foreach(string s in list)
+                    {
+                        if(s.Contains("iii", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            //triple burst
+                        }else if(s.Contains("ii", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            //double burst
+                            if (dict['b'].Contains("instant burst", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                //for stevens db
+                            }
+                        }
+                    }
+                }
+
                 FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.Firerate, true);
 
-                FileParsing.SearchTargets t;
-            }
+                //put suppression
 
+                init = new Gun(weaponName, hasRank, rank, new Conversion
+                    (ammotype, rescap, magcap, new string[]{"a300"}, new Carried(limbM, torsoM, headM, ww), new Ranged(damage1, damage2, da1, da2), pd, mv, rt, ert, 0, aw),true, true);
+            }
             return init;
         }
 
@@ -2390,18 +2589,40 @@ namespace FileProcessingParsingReading
         public Category CategoryDataBuilder(Dictionary<int, FileProcessing.WeaponOutputs> valuePairs, BuildOptions categoryOption)
         {
             string categoryName = SQLConnectionHandling.CategoryNames[categoryOption];
+            bool melee = categoryOption == BuildOptions.OHBT || categoryOption == BuildOptions.THBT || categoryOption == BuildOptions.THBE || categoryOption == BuildOptions.OHBE;
             Category category = new(null, categoryName);
             FileProcessing.AllWeaponStrings strings = new(BuildOptionsConvert(categoryOption));
             List<string> strings1 = strings.GetStrings();
-            foreach (string s in strings1) //iterates through list of guns
+            int meleeID = 0;
+            if (melee)
             {
-                foreach(int i in valuePairs.Keys) //for each FILE, not gun
+                foreach (string s in strings1) //iterates through list of guns
                 {
-                    if (valuePairs[i].Filename.Contains(s))
+                    foreach (int i in valuePairs.Keys) //for each FILE, not gun
                     {
-                        //WeaponDataBuilder(valuePairs[i], categoryOption, s);
-                        category.addWeapon(WeaponDataBuilder(valuePairs[i], categoryOption, s));
-                        break;
+                        if (valuePairs[i].Filename.Contains(s))
+                        {
+                            //WeaponDataBuilder(valuePairs[i], categoryOption, s);
+                            category.addMelee(WeaponDataBuilder(valuePairs[i], categoryOption, s), meleeID);
+                            break;
+                        }
+                    }
+                    meleeID++;
+                }
+                
+            }
+            else
+            {
+                foreach (string s in strings1) //iterates through list of guns
+                {
+                    foreach (int i in valuePairs.Keys) //for each FILE, not gun
+                    {
+                        if (valuePairs[i].Filename.Contains(s))
+                        {
+                            //WeaponDataBuilder(valuePairs[i], categoryOption, s);
+                            category.addWeapon(WeaponDataBuilder(valuePairs[i], categoryOption, s));
+                            break;
+                        }
                     }
                 }
             }
@@ -2429,7 +2650,7 @@ namespace FileProcessingParsingReading
                 cl.addCategory(h);
                 //cl = new()
             }
-            return null;
+            return cl;
         }
 
 
@@ -2569,6 +2790,7 @@ namespace FileProcessingParsingReading
                                                     icount++;
                                                 }
                                                 if (t == 32) scount++;
+                                                if (t == 46) dcount++;
                                             }
                                             if (icount > 0)
                                             {
@@ -2578,9 +2800,13 @@ namespace FileProcessingParsingReading
                                             {
                                                 missing = true;
                                             }
+                                            if(dcount != 2)
+                                            {
+                                                invalid = true;
+                                            }
                                         }
                                         issues.Add(FileParsing.SearchTargets.DamageRange, Tuple.Create(missing, invalid, temp));
-                                        icount = 0; scount = 0; missing = false; invalid = false;
+                                        icount = 0; scount = 0; missing = false; invalid = false; dcount = 0;
 
 
                                         //ammo cap -> can only have numbers and "/"
@@ -3925,7 +4151,6 @@ namespace FileProcessingParsingReading
             }
             return keyValuePairs;
         }
-
 
         public BuildOptions BuildOptionsConvert (FileProcessing.BuildOptions options)
         {
