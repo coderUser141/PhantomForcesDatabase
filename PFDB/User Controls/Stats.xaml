@@ -7,19 +7,19 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <TextBlock VerticalAlignment="Top" Height="18" Margin="0,0,0,0">Gun:</TextBlock>
-        <TextBlock VerticalAlignment="Top" Height="18" Margin="0,30,0,0">Rank:</TextBlock>
-        <TextBlock VerticalAlignment="Top" Height="18" Margin="0,60,0,0">FireModes:</TextBlock>
-        <TextBlock VerticalAlignment="Top" Height="18" Margin="0,90,0,0">Limb Multiplier:</TextBlock>
-        <TextBlock VerticalAlignment="Top" Height="18" Margin="0,120,0,0">Torso Multiplier:</TextBlock>
-        <TextBlock VerticalAlignment="Top" Height="18" Margin="0,150,0,0">Head Multiplier:</TextBlock>
-        <TextBlock VerticalAlignment="Top" Height="18" Margin="0,180,0,0">Walkspeed:</TextBlock>
-        <TextBlock VerticalAlignment="Top" Height="18" Margin="0,210,0,0">Range 1:</TextBlock>
-        <TextBlock VerticalAlignment="Top" Height="18" Margin="0,240,0,0">Range 2:</TextBlock>
-        <TextBlock VerticalAlignment="Top" Height="18" Margin="0,270,0,0">Range 1 Damage:</TextBlock>
-        <TextBlock VerticalAlignment="Top" Height="18" Margin="0,300,0,0">Range 2 Damage:</TextBlock>
-        <TextBlock VerticalAlignment="Top" Name="Rank" Height="18" Margin="120,0,0,0">Example Gun</TextBlock>
-        <TextBlock VerticalAlignment="Top" Name="Name" Height="18" Margin="120,30,0,0">Example Rank</TextBlock>
+        <TextBlock Name="c1r1" VerticalAlignment="Top" Height="18" Margin="0,0,0,0"></TextBlock>
+        <TextBlock Name ="c1r2" VerticalAlignment="Top" Height="18" Margin="0,30,0,0"></TextBlock>
+        <TextBlock Name="c1r3" VerticalAlignment="Top" Height="18" Margin="0,60,0,0"></TextBlock>
+        <TextBlock Name="c1r4" VerticalAlignment="Top" Height="18" Margin="0,90,0,0"></TextBlock>
+        <TextBlock Name="c1r5" VerticalAlignment="Top" Height="18" Margin="0,120,0,0"></TextBlock>
+        <TextBlock Name="c1r6" VerticalAlignment="Top" Height="18" Margin="0,150,0,0"></TextBlock>
+        <TextBlock Name="c1r7" VerticalAlignment="Top" Height="18" Margin="0,180,0,0"></TextBlock>
+        <TextBlock Name="c1r8" VerticalAlignment="Top" Height="18" Margin="0,210,0,0"></TextBlock>
+        <TextBlock Name="c1r9" VerticalAlignment="Top" Height="18" Margin="0,240,0,0"></TextBlock>
+        <TextBlock Name="c1r10" VerticalAlignment="Top" Height="18" Margin="0,270,0,0"></TextBlock>
+        <TextBlock Name="c1r11" VerticalAlignment="Top" Height="18" Margin="0,300,0,0"></TextBlock>
+        <TextBlock VerticalAlignment="Top" Name="Name" Height="18" Margin="120,0,0,0">Example Gun</TextBlock>
+        <TextBlock VerticalAlignment="Top" Name="Rank" Height="18" Margin="120,30,0,0">Example Rank</TextBlock>
         <TextBlock VerticalAlignment="Top" Name="Firemodes" Height="18" Margin="120,60,0,0" TextWrapping="Wrap">Example Firemode</TextBlock>
         <TextBlock VerticalAlignment="Top" Name="limbMultiplier" Height="18" Margin="120,90,0,0">Example lM</TextBlock>
         <TextBlock VerticalAlignment="Top" Name="torsoMultiplier" Height="18" Margin="120,120,0,0">Example tM</TextBlock>
@@ -30,15 +30,15 @@
         <TextBlock VerticalAlignment="Top" Name="Range1Damage" Height="18" Margin="120,270,0,0">Example range1damage</TextBlock>
         <TextBlock VerticalAlignment="Top" Name="Range2Damage" Height="18" Margin="120,300,0,0">Example range2damage</TextBlock>
 
-        <TextBlock VerticalAlignment="Top" Height="18" Margin="300,90,0,0">Penetration:</TextBlock>
-        <TextBlock VerticalAlignment="Top" Height="18" Margin="300,120,0,0">Muzzle Velocity:</TextBlock>
-        <TextBlock VerticalAlignment="Top" Height="18" Margin="300,150,0,0">Reload speed:</TextBlock>
-        <TextBlock VerticalAlignment="Top" Height="18" Margin="300,180,0,0">Empty reload speed:</TextBlock>
-        <TextBlock VerticalAlignment="Top" Height="18" Margin="300,210,0,0">Suppression:</TextBlock>
-        <TextBlock VerticalAlignment="Top" Height="18" Margin="300,240,0,0">Aiming Walkspeed:</TextBlock>
-        <TextBlock VerticalAlignment="Top" Height="18" Margin="300,270,0,0">Caliber:</TextBlock>
-        <TextBlock VerticalAlignment="Top" Height="18" Margin="300,300,0,0">Total Ammo:</TextBlock>
-        <TextBlock VerticalAlignment="Top" Height="18" Margin="300,330,0,0">Magazine Capacity:</TextBlock>
+        <TextBlock Name="c2r4" VerticalAlignment="Top" Height="18" Margin="300,90,0,0"></TextBlock>
+        <TextBlock Name="c2r5" VerticalAlignment="Top" Height="18" Margin="300,120,0,0"></TextBlock>
+        <TextBlock Name="c2r6" VerticalAlignment="Top" Height="18" Margin="300,150,0,0"></TextBlock>
+        <TextBlock Name="c2r7" VerticalAlignment="Top" Height="18" Margin="300,180,0,0"></TextBlock>
+        <TextBlock Name="c2r8" VerticalAlignment="Top" Height="18" Margin="300,210,0,0"></TextBlock>
+        <TextBlock Name="c2r9" VerticalAlignment="Top" Height="18" Margin="300,240,0,0"></TextBlock>
+        <TextBlock Name="c2r10" VerticalAlignment="Top" Height="18" Margin="300,270,0,0"></TextBlock>
+        <TextBlock Name="c2r11" VerticalAlignment="Top" Height="18" Margin="300,300,0,0"></TextBlock>
+        <TextBlock Name="c2r12" VerticalAlignment="Top" Height="18" Margin="300,330,0,0"></TextBlock>
         <!--<TextBlock VerticalAlignment="Top" Height="18" Margin="300,180,0,0">Walkspeed:</TextBlock>
         <TextBlock VerticalAlignment="Top" Height="18" Margin="300,240,0,0">Range 2:</TextBlock>
         <TextBlock VerticalAlignment="Top" Height="18" Margin="300,270,0,0">Range 1 Damage:</TextBlock>

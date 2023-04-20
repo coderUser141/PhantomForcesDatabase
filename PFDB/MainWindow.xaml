@@ -25,8 +25,8 @@
             </Grid.ColumnDefinitions>
 
 
-            <ListView Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Guns}" SelectionMode="Single" SelectionChanged="GunList_SelectionChanged" Name="GunList"></ListView>
-            <userControls:MainStatDisplay Grid.Row="1" Grid.Column="2" x:Name="MainDisplay"></userControls:MainStatDisplay>
+            <ListView Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Weapons}" SelectionMode="Single" SelectionChanged="GunList_SelectionChanged" Name="GunList"></ListView>
+            <userControls:Stats Grid.Row="1" Grid.Column="2" x:Name="StatsDisplay"></userControls:Stats>
             <ListView Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Categories}" SelectionMode="Single" SelectionChanged="CategoryList_SelectionChanged" Name="CategoryList"></ListView>
             <!--<ListView Grid.Row="1" Grid.Column="2" ItemsSource="{Binding Conversions}"></ListView>-->
         </Grid>
@@ -44,14 +44,16 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
             <Button Grid.Column="0" Grid.Row="1" Content="Assault" Click="Assault_Click"/>
             <Button Grid.Column="1" Grid.Row="1" Content="Scout" Click="Scout_Click"/>
             <Button Grid.Column="2" Grid.Row="1" Content="Support" Click="Support_Click"/>
             <Button Grid.Column="3" Grid.Row="1" Content="Recon" Click="Recon_Click"/>
-            <Button Grid.Column="4" Grid.Row="1" Content="Melees" Click="Melees_Click"/>
-            <Button Grid.Column="5" Grid.Row="1" Content="Grenades" Click="Grenades_Click"/>
+            <Button Grid.Column="4" Grid.Row="1" Content="Secondary" Click="Secondary_Click"/>
+            <Button Grid.Column="5" Grid.Row="1" Content="Melees" Click="Melees_Click"/>
+            <Button Grid.Column="6" Grid.Row="1" Content="Grenades" Click="Grenades_Click"/>
             <TextBlock Text="Phantom Forces Database" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4" FontSize="18"/>
 
         </Grid>

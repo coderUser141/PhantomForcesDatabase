@@ -12,63 +12,29 @@ using System.Data.SQLite;
 
 using FileProcessingParsingReading;
 using WeaponClasses;
+using System.Collections.Concurrent;
+using System.Linq;
+using System.Data;
 
 Console.WriteLine("Hello, World!");
 Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:fff"));
 Console.WriteLine("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-
-//FileReading r = new(FileReading.BuildOptions.IGS, true, false);
-
-//Console.WriteLine(FileProcessing.WeaponOutputs.directPythonExecute("SCAR-L2.png", true, null));
-
-//string filepath = @"limited\boxy-buster1.txt";
-//string filepath2 = @"limited\boxy-buster2.txt";
-//Console.WriteLine(FileProcessing.Filenames.convertFileNameToGunName(filepath));
-//FileReading reading = new(FileReading.BuildOptions.NONE, false, true, true);
-/*
-List<Dictionary<int, FileProcessing.WeaponOutputs>> valuePairs = new(FileReading.thread1Async().Result);
-foreach(Dictionary<int, FileProcessing.WeaponOutputs> pair in valuePairs)
-{
-    foreach(int j in pair.Keys)
-    {
-        Console.WriteLine(pair[j].Filename);
-    }
-}
-*
-
-FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.DamageRange, true);
-FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.AmmoCapacity, true);
-FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.HeadMultiplier, true);
-FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.TorsoMultiplier, true);
-FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.LimbMultiplier, true);
-
-FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.MuzzleVelocity, true);
-FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.PenetrationDepth, true);
-
-FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.ReloadTime, true);
-FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.EmptyReloadTime, true);
-
-FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.AimingWalkspeed, true);
-FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.WeaponWalkspeed, true);
-
-FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.AmmoType, true);
-FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.FireModes, true);
-FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.FireModes, true);
-
-
-FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.Damage, true); //only __1.png files have the correct suppression
-FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.Rank, true);
-FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.Rank, true);
-FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.Firerate, true);
-FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.Firerate, true);*/
 /*
 new FileProcessing.Filenames("M601.png", FileProcessing.WeaponOutputs.directPythonExecute("M601.png", true, null)).SetFilenames(Tuple.Create(false, false, true),null,false);
 new FileProcessing.Filenames("M602.png", FileProcessing.WeaponOutputs.directPythonExecute("M602.png", true, null)).SetFilenames(Tuple.Create(false, false, true), null, false);
-*/
+
+new FileProcessing.Filenames("STONER-961.png", FileProcessing.WeaponOutputs.directPythonExecute("STONER-961.png", true, null)).SetFilenames(Tuple.Create(false, false, true), null, false);
+new FileProcessing.Filenames("STONER-962.png", FileProcessing.WeaponOutputs.directPythonExecute("STONER-962.png", true, null)).SetFilenames(Tuple.Create(false, false, true), null, false);
+new FileProcessing.Filenames("MGV-1761.png", FileProcessing.WeaponOutputs.directPythonExecute("MGV-1761.png", true, null)).SetFilenames(Tuple.Create(false, false, true), null, false);
+new FileProcessing.Filenames("MGV-1762.png", FileProcessing.WeaponOutputs.directPythonExecute("MGV-1762.png", true, null)).SetFilenames(Tuple.Create(false, false, true), null, false);
+new FileProcessing.Filenames("BWC9-A1.png", FileProcessing.WeaponOutputs.directPythonExecute("BWC9-A1.png", true, null)).SetFilenames(Tuple.Create(false, false, true), null, false);
+new FileProcessing.Filenames("BWC9-A2.png", FileProcessing.WeaponOutputs.directPythonExecute("BWC9-A2.png", true, null)).SetFilenames(Tuple.Create(false, false, true), null, false);
+new FileProcessing.Filenames("FIVE-01.png", FileProcessing.WeaponOutputs.directPythonExecute("FIVE-01.png", true, null)).SetFilenames(Tuple.Create(false, false, true), null, false);
+new FileProcessing.Filenames("FIVE-02.png", FileProcessing.WeaponOutputs.directPythonExecute("FIVE-02.png", true, null)).SetFilenames(Tuple.Create(false, false, true), null, false);*/
 string nl = Environment.NewLine;
 Console.WriteLine("Hello and welcome to FileReader! This program handles building, " + nl +
     "OCR reading, and proofreading. If you would like to build the files needed, first ensure that the directory " + nl +
-    @"'..\..\..\..\ImageParser\Weapons\' exists. This directory needs to have all the images used for " + nl +
+    @"'..\..\..\..\ImageParser\Weapons"+Global.DBVERSION+@"\' exists. This directory needs to have all the images used for " + nl +
     "reading. If it exists, the files need to have to use the correct format. Would you like to check " + nl +
     "if your files have the correct format? y / n");
 string? format = Console.ReadLine();
@@ -135,12 +101,44 @@ Console.WriteLine("Wow! It's been " + stopwatch.ElapsedMilliseconds.ToString() +
     "That means it has been " + ((stopwatch.ElapsedMilliseconds / 1000) / 60) + " minutes since it started.");
 Console.WriteLine("Would you like to proofread the values now? (Highly recommended as the OCR is not the best thing " + nl +
     "thing on the planet. y / n");
-
 string? proofread = Console.ReadLine() ?? "";
 if(proofread == "y")
 {
     FileReading.renameAllFiles(); //for cropped images, no other images are touched :)
-    FileReading file = new(FileReading.BuildOptions.NONE, false, true, false, true);
+    FileReading file = new(FileReading.BuildOptions.NONE, false, true, true, true);
+}
+
+Console.WriteLine("Write to SQLite database?");
+string? sqlw = Console.ReadLine() ?? "";
+if(sqlw == "y")
+{
+    FileReading file = new(FileReading.BuildOptions.ARS | FileReading.BuildOptions.PDWS | FileReading.BuildOptions.LMGS | FileReading.BuildOptions.SRS | FileReading.BuildOptions.CAS | FileReading.BuildOptions.DMRS | FileReading.BuildOptions.BRS | FileReading.BuildOptions.SHS | FileReading.BuildOptions.PS | FileReading.BuildOptions.MPS | FileReading.BuildOptions.RES | FileReading.BuildOptions.OTH | FileReading.BuildOptions.FGS | FileReading.BuildOptions.HEGS | FileReading.BuildOptions.IGS | FileReading.BuildOptions.OHBT | FileReading.BuildOptions.OHBE | FileReading.BuildOptions.THBT | FileReading.BuildOptions.THBE, true, true, false, false);
+    SQLConnectionHandling connectionHandling = new();
+    Dictionary<FileReading.Classes, Class> pairs = file.classpairs;
+    /*
+             ohbt: flame of olympia, pacific fm, slay bells, sleigh bells, the countdown
+             ohbe: gospell blade, icemourne
+             thbt: scl-s3-drastic, warhammer, zircon-slamsickle
+             */
+
+    //special thanks to: Kanako#9096, Fork#2067, and シノン△#1231
+    //huge shoutout to hackurtoaster#7938
+    foreach (FileReading.Classes c in pairs.Keys)
+    {
+        //connectionHandling.InsertSQLClassRecord(pairs[c]);
+
+    }
+    connectionHandling.InsertSQLWeaponRecords(pairs);
+
+}
+
+Console.WriteLine("Read from SQLite Database?");
+string? sqlr = Console.ReadLine() ?? "";
+if(sqlr == "y")
+{
+    SQLConnectionHandling a = new();
+    //a.GetAllSQLWeaponRecords();
+    a.GetSQLGunCategoryRecords(FileReading.BuildOptions.PDWS, Global.DBVERSION);
 }
 
 Console.ReadKey();
@@ -171,6 +169,7 @@ namespace FileProcessingParsingReading
         private static readonly string version = "1.00";
         private static string buildFolder = @"all build options v5\";
         private static string readFolder = @"all build options v5\";
+        private static readonly string dbversion = "100";
 
 
         public static string VERSION { get { return version; } }
@@ -185,6 +184,10 @@ namespace FileProcessingParsingReading
             set { readFolder = value; }
         }
 
+        public static string DBVERSION
+        {
+            get { return dbversion; }
+        }
 
 
 
@@ -234,12 +237,12 @@ namespace FileProcessingParsingReading
 
             private static List<string> personalDefenseWeaponsStrings = new() {
                 "mp5k","ump45","g36c","mp7","mac10","p90","colt-mars","mp5","colt-smg-633","l2a3","mp5sd","mp10","m3a1",
-                "mp510","uzi","aug-a3-para-xs","k7","ak74u","ppsh-41","fal-para-shorty","kriss-vector","pp-19-bizon","mp40",
-                "x95-smg","tommy-gun","rama-1130"};
+                "mp510","uzi","aug-a3-para-xs","k7","aks74u","ppsh-41","fal-para-shorty","kriss-vector","pp-19-bizon","mp40",
+                "x95-smg","tommy-gun","rama-1130"/*,"bwc9-a","five-0"*/};
 
                 //rebuild LMGS (m601 and m602 were swapped)
             private static List<string> lightMachineGunsStrings = new() {
-                "colt-lmg","m60","aug-hbar","mg36","rpk12","l86-lsw","rpk","hk21e","hamr-iar","rpk74","mg3kws" };
+                "colt-lmg","m60","aug-hbar","mg36","rpk12","l86-lsw","rpk","hk21e","hamr-iar","rpk74","mg3kws"/*,"mgv-176","stoner-96"*/ };
 
             private static List<string> sniperRiflesStrings = new() {
                 "intervention","model-700","dragunov-svu","aws","bfg-50","awm","trg-42","mosin-nagant","dragunov-svds",
@@ -637,7 +640,7 @@ namespace FileProcessingParsingReading
 
             public static string directPythonExecute(string filename, bool? primaryOrSecondary, bool? meleeOrGrenade)
             {
-                return executePython(@"C:\Users\peter\source\repos\Phantom Forces Database\ImageParser\dist\ImageParser.exe", @"..\..\..\..\ImageParser\Weapons\" + filename, @"..\..\..\..\ImageParser\",  filename, primaryOrSecondary, meleeOrGrenade);
+                return executePython(@"C:\Users\peter\source\repos\Phantom Forces Database\ImageParser\dist\ImageParser.exe", @"..\..\..\..\ImageParser\Weapons"+Global.DBVERSION+@"\" + filename, @"..\..\..\..\ImageParser\",  filename, primaryOrSecondary, meleeOrGrenade);
             }
 
         }
@@ -940,7 +943,7 @@ namespace FileProcessingParsingReading
                             string result = reader.ReadToEnd();
                             string finishTime = DateTime.Now.ToString("HH:mm:ss:fff");
                             //version is the ONLY non-static member
-                            string finalOutput = "VERSION:" + Global.VERSION + Environment.NewLine +"Started at " + startTime + Environment.NewLine + result + Environment.NewLine + "Finished at " + finishTime + Environment.NewLine + "Time elapsed: " + watch.ElapsedMilliseconds.ToString() + Environment.NewLine + @"C:\Users\peter\source\repos\Phantom Forces Database\ImageParser\Weapons\" + name;
+                            string finalOutput = "VERSION:" + Global.VERSION + Environment.NewLine +"Started at " + startTime + Environment.NewLine + result + Environment.NewLine + "Finished at " + finishTime + Environment.NewLine + "Time elapsed: " + watch.ElapsedMilliseconds.ToString() + Environment.NewLine + @"C:\Users\peter\source\repos\Phantom Forces Database\ImageParser\Weapons" + Global.DBVERSION + @"\" + name;
                             Console.WriteLine(name);
                             return finalOutput;
                         }
@@ -972,7 +975,7 @@ namespace FileProcessingParsingReading
                         {
                             Task<string> result = reader.ReadToEndAsync();
                             string finishTime = DateTime.Now.ToString("HH:mm:ss:fff");
-                            string finalOutput = "VERSION:" + Global.VERSION + "\nStarted at " + startTime + "\n" + result.Result + "\n" + "Finished at " + finishTime + "\nTime elapsed: " + watch.ElapsedMilliseconds.ToString() + "\n" + @"C:\Users\peter\source\repos\Phantom Forces Database\ImageParser\Weapons\" + name;
+                            string finalOutput = "VERSION:" + Global.VERSION + "\nStarted at " + startTime + "\n" + result.Result + "\n" + "Finished at " + finishTime + "\nTime elapsed: " + watch.ElapsedMilliseconds.ToString() + "\n" + @"C:\Users\peter\source\repos\Phantom Forces Database\ImageParser\Weapons"+Global.DBVERSION+@"\" + name;
                             Console.WriteLine(name);
                             return finalOutput;
                         }
@@ -1941,10 +1944,15 @@ namespace FileProcessingParsingReading
 
         }
 
-        private Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> result = new();
-        public Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> Result { get { return result; } }
+        private ConcurrentDictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> result = new();
 
+        public Dictionary<Classes, Class> classpairs;
 
+        private BuildOptions cpoptions;
+        private bool cpread;
+        private bool? cpoptimizedBuild;
+        private bool? cpfullBuild;
+        private bool cpproofread;
 
         public FileReading(BuildOptions options, bool read, bool? optimizedBuild, bool? fullBuild, bool proofread)
         {
@@ -1963,11 +1971,22 @@ namespace FileProcessingParsingReading
 
 
             //Gun
-            ControlPath(options, read,  optimizedBuild, fullBuild, proofread);
+
+            this.cpfullBuild = fullBuild;
+            this.cpread = read;
+            this.cpproofread = proofread;
+            this.cpoptimizedBuild = optimizedBuild;
+            this.cpoptions = options;
+            if (read || (fullBuild ?? false) || proofread) classpairs = returnFunction().Result;
 
             //Console.ReadKey();
         }
 
+        public async Task<Dictionary<Classes,Class>> returnFunction()
+        {
+            return ControlPath(cpoptions, cpread, cpoptimizedBuild, cpfullBuild, cpproofread).Result;
+        }
+        
         private static Dictionary<int, FileProcessing.WeaponOutputs> GetStrings(List<string> strings, bool twoFiles)
         {
            
@@ -1988,7 +2007,74 @@ namespace FileProcessingParsingReading
             return output;
         }
 
-        public async void ControlPath(BuildOptions options, bool read, bool? optimizedBuild, bool? fullBuild, bool proofread)
+        public static Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> task(Classes opt, Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> awaiter)
+        {
+            Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> result = new();
+            Action<BuildOptions, Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>>> adder = (opt, res) => res.Add(opt, awaiter[opt]);
+
+            switch (opt)
+            {
+                case Classes.Assault:
+                    {
+                        adder(BuildOptions.ARS, result);
+                        adder(BuildOptions.BRS, result);
+                        adder(BuildOptions.CAS, result);
+                        adder(BuildOptions.SHS, result);
+                        break;
+                    }
+                case Classes.Scout:
+                    {
+                        adder(BuildOptions.PDWS, result);
+                        adder(BuildOptions.DMRS, result);
+                        adder(BuildOptions.CAS, result);
+                        adder(BuildOptions.SHS, result);
+                        break;
+                    }
+                case Classes.Support:
+                    {
+                        adder(BuildOptions.LMGS, result);
+                        adder(BuildOptions.BRS, result);
+                        adder(BuildOptions.CAS, result);
+                        adder(BuildOptions.SHS, result);
+                        break;
+                    }
+                case Classes.Recon:
+                    {
+                        adder(BuildOptions.SRS, result);
+                        adder(BuildOptions.DMRS, result);
+                        adder(BuildOptions.BRS, result);
+                        adder(BuildOptions.CAS, result);
+                        break;
+                    }
+                case Classes.Secondary:
+                    {
+                        adder(BuildOptions.PS, result);
+                        adder(BuildOptions.MPS, result);
+                        adder(BuildOptions.RES, result);
+                        adder(BuildOptions.OTH, result);
+                        break;
+                    }
+                case Classes.Grenades:
+                    {
+                        adder(BuildOptions.FGS, result);
+                        adder(BuildOptions.HEGS, result);
+                        adder(BuildOptions.IGS, result);
+                        break;
+                    }
+                case Classes.Melees:
+                    {
+                        adder(BuildOptions.OHBE, result);
+                        adder(BuildOptions.OHBT, result);
+                        adder(BuildOptions.THBE, result);
+                        adder(BuildOptions.THBT, result);
+                        break;
+                    }
+            }
+            return result;
+
+        }
+
+        public async Task<Dictionary<Classes,Class>> ControlPath(BuildOptions options, bool read, bool? optimizedBuild, bool? fullBuild, bool proofread)
         {
             Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> awaiter = new();
             
@@ -2071,88 +2157,34 @@ namespace FileProcessingParsingReading
             Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> r = proofread?Proofread(awaiter, build1):awaiter;
             //Thread.EndCriticalRegion();
 
-            Action<BuildOptions, Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>>> adder = (opt, res) => res.Add(opt, awaiter[opt]);
+            
 
-            Func<Classes, Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>>> task = (opt) => {
-                Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> result = new();
-                switch (opt)
-                {
-                    case Classes.Assault: 
-                        {
-                            adder(BuildOptions.ARS, result);
-                            adder(BuildOptions.BRS, result);
-                            adder(BuildOptions.CAS, result);
-                            adder(BuildOptions.SHS, result);
-                            break;
-                        }
-                    case Classes.Scout:
-                        {
-                            adder(BuildOptions.PDWS, result);
-                            adder(BuildOptions.DMRS, result);
-                            adder(BuildOptions.CAS, result);
-                            adder(BuildOptions.SHS, result);
-                            break;
-                        }
-                    case Classes.Support:
-                        {
-                            adder(BuildOptions.LMGS, result);
-                            adder(BuildOptions.BRS, result);
-                            adder(BuildOptions.CAS, result);
-                            adder(BuildOptions.SHS, result);
-                            break;
-                        }
-                    case Classes.Recon:
-                        {
-                            adder(BuildOptions.SRS, result);
-                            adder(BuildOptions.BRS, result);
-                            adder(BuildOptions.CAS, result);
-                            adder(BuildOptions.SHS, result);
-                            break;
-                        }
-                    case Classes.Secondary:
-                        {
-                            adder(BuildOptions.PS, result);
-                            adder(BuildOptions.MPS, result);
-                            adder(BuildOptions.RES, result);
-                            adder(BuildOptions.OTH, result);
-                            break;
-                        }
-                    case Classes.Grenades:
-                        {
-                            adder(BuildOptions.FGS, result);
-                            adder(BuildOptions.HEGS, result);
-                            adder(BuildOptions.IGS, result);
-                            break;
-                        }
-                    case Classes.Melees:
-                        {
-                            adder(BuildOptions.OHBE, result);
-                            adder(BuildOptions.OHBT, result);
-                            adder(BuildOptions.THBE, result);
-                            adder(BuildOptions.THBT, result);
-                            break;
-                        }
-                }
-                return result;
-
+            Class assault = ClassDataBuilder(task(Classes.Assault, awaiter), Classes.Assault);
+            Class scout = ClassDataBuilder(task(Classes.Scout, awaiter), Classes.Scout);
+            Class support = ClassDataBuilder(task(Classes.Support, awaiter), Classes.Support);
+            Class recon = ClassDataBuilder(task(Classes.Recon, awaiter), Classes.Recon);
+            Class secondary = ClassDataBuilder(task(Classes.Secondary, awaiter), Classes.Secondary);
+            Class grenades = ClassDataBuilder(task(Classes.Grenades, awaiter), Classes.Grenades);
+            Class melees = ClassDataBuilder(task(Classes.Melees, awaiter), Classes.Melees);
+            Dictionary<Classes,Class> pairs = new()
+            {
+                { Classes.Assault, assault },
+                { Classes.Scout, scout },
+                { Classes.Support, support },
+                { Classes.Recon, recon },
+                { Classes.Secondary, secondary },
+                { Classes.Grenades, grenades },
+                { Classes.Melees, melees }
             };
-
-            Class assault = ClassDataBuilder(task(Classes.Assault), Classes.Assault);
-            Class scout = ClassDataBuilder(task(Classes.Scout), Classes.Scout);
-            Class support = ClassDataBuilder(task(Classes.Support), Classes.Support);
-            Class recon = ClassDataBuilder(task(Classes.Recon), Classes.Recon);
-            Class secondary = ClassDataBuilder(task(Classes.Secondary), Classes.Secondary);
-            Class grenades = ClassDataBuilder(task(Classes.Grenades), Classes.Grenades);
-            Class melees = ClassDataBuilder(task(Classes.Melees), Classes.Melees);
-
 
             SQLConnectionHandling handler = new();
             //handler.InsertSQLGunRecord();
             //add to sqlite database
+            return pairs;
 
         }
 
-        public Weapon WeaponDataBuilder(FileProcessing.WeaponOutputs outputs, BuildOptions category, string weaponName)
+        public static Weapon WeaponDataBuilder(FileProcessing.WeaponOutputs? outputs, BuildOptions category, string weaponName, string? buildfolder)
         {
             Weapon init = new(weaponName, false, 0);
             FileProcessing.AllWeaponStrings strings = new(BuildOptionsConvert(category));
@@ -2161,21 +2193,30 @@ namespace FileProcessingParsingReading
 
             if (category == BuildOptions.THBE || category == BuildOptions.THBT || category == BuildOptions.OHBT || category == BuildOptions.OHBE)
             {
-                string filepath = Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item1;
+                string filepath = "";
+                if (buildfolder == null)
+                {
+                    filepath = Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item1;
+
+                }
+                else
+                {
+                    filepath = buildfolder + weaponName + ".txt";
+                }
                 double bladeLength = Convert.ToDouble(FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.BladeLength, true).Trim());
                 double frontStabDamage = Convert.ToDouble(FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.FrontStabDamage, true).Trim());
                 double backStabDamage = Convert.ToDouble(FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.BackStabDamage, true).Trim());
                 double walkspeed = Convert.ToDouble(FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.Walkspeed, true).Trim());
 
 
-                double limbM = Convert.ToDouble(FileParsing.findStatisticInFile(Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item1, FileParsing.SearchTargets.LimbMultiplier, true).Trim());
-                double headM = Convert.ToDouble(FileParsing.findStatisticInFile(Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item1, FileParsing.SearchTargets.HeadMultiplier, true).Trim());
-                double torsoM = Convert.ToDouble(FileParsing.findStatisticInFile(Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item1, FileParsing.SearchTargets.TorsoMultiplier, true).Trim());
+                double limbM = Convert.ToDouble(FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.LimbMultiplier, true).Trim());
+                double headM = Convert.ToDouble(FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.HeadMultiplier, true).Trim());
+                double torsoM = Convert.ToDouble(FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.TorsoMultiplier, true).Trim());
 
                 int rank = 0; bool hasRank = true;
                 try
                 {
-                    rank = Convert.ToInt32(FileParsing.findStatisticInFile(Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item1, FileParsing.SearchTargets.Rank, true).Trim());
+                    rank = Convert.ToInt32(FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.Rank, true).Trim());
                 }
                 catch (FormatException)
                 {
@@ -2186,8 +2227,16 @@ namespace FileProcessingParsingReading
             }
             else if (category == BuildOptions.FGS || category == BuildOptions.IGS || category == BuildOptions.HEGS)
             {
+                string filepath = "";
+                if (buildfolder == null)
+                {
+                    filepath = Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item1;
 
-                string filepath = Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item1;
+                }
+                else
+                {
+                    filepath = buildfolder + weaponName + ".txt";
+                }
                 string special = FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.SpecialEffects, true).Trim();
                 string triggerMechanism = FileParsing.findStatisticInFile(filepath, FileParsing.SearchTargets.TriggerMechanism, true).Trim();
                 double fuseTime = 0;
@@ -2225,9 +2274,18 @@ namespace FileProcessingParsingReading
             else
             {
                 //double bladeLength = Convert.ToDouble(FileParsing.findStatisticInFile(Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item1, FileParsing.SearchTargets.BladeLength, true).Trim());
+                string filepath1 = ""; string filepath2 = "";
+                if (buildfolder == null)
+                {
+                    filepath1 = Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item2;
+                    filepath2 = Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item3;
 
-                string filepath1 = Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item2;
-                string filepath2 = Global.ReadFolder + FileProcessing.Filenames.convertGunNameToFileNames(weaponName).Item3;
+                }
+                else
+                {
+                    filepath1 = buildfolder + weaponName + "1.txt";
+                    filepath2 = buildfolder + weaponName + "2.txt";
+                }
                 string buffer = "    ";
 
                 string damagetemp = FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.DamageRange, true) + buffer;
@@ -2393,10 +2451,13 @@ namespace FileProcessingParsingReading
                             damageval1 += t1;
                             dflag = true;
                         }
-                        else if (dvstr.ToLower()[i + 1] == 120)
+                        if (dvstr.ToLower()[i + 1] == 120)
                         {
                             pelletsflag = true;
                             pellets1 += dvstr[i + 2];
+                            pellets1 += dvstr[i + 3] != 32 ? dvstr[i + 3] : "";
+                            i = (dvstr[i + 3] != 32) ? i += 4 : i += 3;
+                            dflag = true;
                         }
                     }
                     else if (((dvstr[i] > 47 && dvstr[i] < 58) || dvstr[i] == 46) && dflag == true)
@@ -2407,16 +2468,20 @@ namespace FileProcessingParsingReading
                             damageval2 += t2;
                             dflag = false;
                         }
-                        else if (dvstr.ToLower()[i + 1] == 120)
+                        if (dvstr.ToLower()[i + 1] == 120)
                         {
                             pelletsflag = true;
-                            pellets1 += dvstr[i + 2];
+                            pellets2 += dvstr[i + 2];
+                            pellets2 += dvstr[i + 3] != 32 ? dvstr[i + 3] : "";
+                            i = (dvstr[i + 3] != 32) ? i += 4 : i += 3;
+                            dflag = false;
                         }
                     }
                 }
 
                 int pel1 = pelletsflag ? Convert.ToInt32(pellets1.Trim()) : 0;
                 int pel2 = pelletsflag ? Convert.ToInt32(pellets2.Trim()) : 0;
+                if (pel1 != pel2) throw new Exception("pellets do not match");
 
                 double da1 = Convert.ToDouble(damageval1.Trim());
                 double da2 = Convert.ToDouble(damageval2.Trim());
@@ -2450,31 +2515,41 @@ namespace FileProcessingParsingReading
                 }
                 list.TrimExcess();
 
+                double suppression = Convert.ToDouble(FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.Suppression, true).TrimStart() + buffer);
+
                 string fireratestr = FileParsing.findStatisticInFile(filepath1, FileParsing.SearchTargets.Firerate, true).TrimStart() + buffer;
                 double firerate;
                 bool specialFirerate = false;
                 t1 = "";
                 Dictionary<char, string> dict = new();
                 int lettercount = 0;
+
                 for (int i = 0; i < fireratestr.Length - buffer.Length; i++)
                 {
                     if (fireratestr.ToLower()[i] > 96 && fireratestr.ToLower()[i] < 123)
                     {
-                        lettercount++;
+                        lettercount++; //checks the letter count of the firemodes "400B | 500A | 600S" = 3, while "200 SEMI | INSTANT BURST" has >3
                     }
                 }
                 if (lettercount > 3)
                 {
-                    specialFirerate = true;
+                    specialFirerate = true; //stevens and sawed off, and af2011
                 }
 
+                string instantburstflag = "59999"; //the flag that tells if the weapon has instant burst
+                
                 try
                 {
                     firerate = Convert.ToDouble(fireratestr);
+                    foreach(string str in list) {
+                        if (str.Contains("burst", StringComparison.CurrentCultureIgnoreCase) || str.Contains("ii", StringComparison.CurrentCultureIgnoreCase) || str.Contains("iii", StringComparison.CurrentCultureIgnoreCase) || str.Contains("iiii", StringComparison.CurrentCultureIgnoreCase) || str.Contains("iiiii", StringComparison.CurrentCultureIgnoreCase)) dict.Add('b', fireratestr);
+                        if (str.Contains("auto", StringComparison.CurrentCultureIgnoreCase)) dict.Add('a', fireratestr);
+                        if (str.Contains("semi", StringComparison.CurrentCultureIgnoreCase)) dict.Add('s', fireratestr);
+                    }
                 }
                 catch (FormatException) //if there are letters or "|"
                 {
-                    if (!specialFirerate)
+                    if (!specialFirerate) //regular gun
                     {
                         for (int i = 0; i < fireratestr.Length - buffer.Length; i++)
                         {
@@ -2484,13 +2559,13 @@ namespace FileProcessingParsingReading
                             }
                             else if (fireratestr.ToLower()[i] > 96 && fireratestr.ToLower()[i] < 123)
                             {
-                                dict.Add(fireratestr[i], t1);
+                                dict.Add(fireratestr[i], t1);//adds entry e.g. 'b', "500"
                                 t1 = "";
                             }
                             if (i + 1 >= fireratestr.Length - buffer.Length) break;
                         }
                     }
-                    else
+                    else //for stevens, sawed off, af2011
                     {
                         if(fireratestr.Contains("|") && fireratestr.IndexOf("|") > 3)
                         {
@@ -2546,37 +2621,89 @@ namespace FileProcessingParsingReading
                             }
                             if (!tester)
                             {
-                                dict.Add(u, "59999");
+                                dict.Add(u, instantburstflag);
                             }
                         }
                     }
                 }
-
-                
-                if(dict.ContainsKey('b'))
+                List<string> firemodeList = new();
+                foreach(char k in dict.Keys)
                 {
-                    foreach(string s in list)
+                    string specialFlags = ""; //special flags for firemode constructor
+                    if(pel1 != 0)
                     {
-                        if(s.Contains("iii", StringComparison.CurrentCultureIgnoreCase))
+                        specialFlags = "sh";
+                    }
+                    if (k == 'b' || k == 'B')
+                    {
+                        foreach (string s in list)
                         {
-                            //triple burst
-                        }else if(s.Contains("ii", StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            //double burst
-                            if (dict['b'].Contains("instant burst", StringComparison.CurrentCultureIgnoreCase))
+                            if (s.Contains("iiiii", StringComparison.CurrentCultureIgnoreCase))
                             {
-                                //for stevens db
+
+                                specialFlags = "bbbbb";
+                            }
+                            else
+                            if (s.Contains("iiii", StringComparison.CurrentCultureIgnoreCase))
+                            {
+
+                                specialFlags = "bbbb";
+                            }
+                            else
+                            if (s.Contains("iii", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                specialFlags = "bbb";
+                                //triple burst
+                            }
+                            else if (s.Contains("ii", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                specialFlags = "bb";
+                                //double burst
+                                try
+                                {
+                                    if (dict['b']?.Contains(instantburstflag, StringComparison.CurrentCultureIgnoreCase) == true)
+                                    {
+                                        specialFlags = "b";
+                                        //for stevens db
+                                    }
+                                }
+                                catch
+                                {
+                                    if (dict['B']?.Contains(instantburstflag, StringComparison.CurrentCultureIgnoreCase) == true)
+                                    {
+                                        specialFlags = "b";
+                                        //for stevens db
+                                    }
+                                }
+                                try
+                                {
+                                    if (dict['B']?.Contains(instantburstflag, StringComparison.CurrentCultureIgnoreCase) == true)
+                                    {
+                                        specialFlags = "b";
+                                        //for stevens db
+                                    }
+                                }
+                                catch
+                                {
+                                    if (dict['b']?.Contains(instantburstflag, StringComparison.CurrentCultureIgnoreCase) == true)
+                                    {
+                                        specialFlags = "b";
+                                        //for stevens db
+                                    }
+                                }
                             }
                         }
                     }
+                    firemodeList.Add((k.ToString().ToLower() + dict[k] + (specialFlags!=""?specialFlags:"o") + (pel1 != 0? pel1.ToString():"0")).Trim()) ; 
                 }
+                
 
                 FileParsing.findStatisticInFile(filepath2, FileParsing.SearchTargets.Firerate, true);
 
                 //put suppression
 
                 init = new Gun(weaponName, hasRank, rank, new Conversion
-                    (ammotype, rescap, magcap, new string[]{"a300"}, new Carried(limbM, torsoM, headM, ww), new Ranged(damage1, damage2, da1, da2), pd, mv, rt, ert, 0, aw),true, true);
+                    (ammotype, rescap, magcap, firemodeList, new Carried(limbM, torsoM, headM, ww), new Ranged(damage1, damage2, da1, da2), pd, mv, rt, ert, suppression, aw),true, true);
             }
             return init;
         }
@@ -2585,8 +2712,15 @@ namespace FileProcessingParsingReading
         //the class has access to ALL data
         //the class needs to tell the category builder which category it is
         //the category builder needs to tell the weaponbuilder what TYPE of weapon and what CATEGORY
+        /*
+             ohbt: flame of olympia, pacific fm, slay bells, sleigh bells, the countdown
+             ohbe: gospell blade, icemourne
+             thbt: scl-s3-drastic, warhammer, zircon-slamsickle
+             */
 
-        public Category CategoryDataBuilder(Dictionary<int, FileProcessing.WeaponOutputs> valuePairs, BuildOptions categoryOption)
+        //special thanks to: Kanako#9096, Fork#2067, and シノン△#1231
+        //huge shoutout to hackurtoaster#7938
+        public static Category CategoryDataBuilder(Dictionary<int, FileProcessing.WeaponOutputs> valuePairs, BuildOptions categoryOption)
         {
             string categoryName = SQLConnectionHandling.CategoryNames[categoryOption];
             bool melee = categoryOption == BuildOptions.OHBT || categoryOption == BuildOptions.THBT || categoryOption == BuildOptions.THBE || categoryOption == BuildOptions.OHBE;
@@ -2603,7 +2737,7 @@ namespace FileProcessingParsingReading
                         if (valuePairs[i].Filename.Contains(s))
                         {
                             //WeaponDataBuilder(valuePairs[i], categoryOption, s);
-                            category.addMelee(WeaponDataBuilder(valuePairs[i], categoryOption, s), meleeID);
+                            category.addMelee(WeaponDataBuilder(valuePairs[i], categoryOption, s, null), meleeID);
                             break;
                         }
                     }
@@ -2620,16 +2754,57 @@ namespace FileProcessingParsingReading
                         if (valuePairs[i].Filename.Contains(s))
                         {
                             //WeaponDataBuilder(valuePairs[i], categoryOption, s);
-                            category.addWeapon(WeaponDataBuilder(valuePairs[i], categoryOption, s));
+                            category.addWeapon(WeaponDataBuilder(valuePairs[i], categoryOption, s, null));
                             break;
                         }
                     }
                 }
             }
+            string lim = @"limited\";
+            switch (categoryOption)
+            {
+                case BuildOptions.OHBT:
+                    {
+                        category.addMelee(WeaponDataBuilder(null,BuildOptions.OHBT,"flame-of-olympia", lim),meleeID);
+                        meleeID++;
+                        category.addMelee(WeaponDataBuilder(null, BuildOptions.OHBT, "pacific-fm", lim), meleeID);
+                        meleeID++; 
+                        category.addMelee(WeaponDataBuilder(null, BuildOptions.OHBT, "slay-bells", lim), meleeID);
+                        meleeID++;
+                        category.addMelee(WeaponDataBuilder(null, BuildOptions.OHBT, "sleigh-bells", lim), meleeID);
+                        meleeID++; 
+                        category.addMelee(WeaponDataBuilder(null, BuildOptions.OHBT, "the-countdown", lim), meleeID);
+                        meleeID++;
+                        break;
+                    }
+                case BuildOptions.OHBE:
+                    {
+                        category.addMelee(WeaponDataBuilder(null, BuildOptions.OHBE, "gospell-blade", lim), meleeID);
+                        meleeID++;
+                        category.addMelee(WeaponDataBuilder(null, BuildOptions.OHBE, "icemourne",lim), meleeID);
+                        meleeID++;
+                        break;
+                    }
+                case BuildOptions.THBT:
+                    {
+                        category.addMelee(WeaponDataBuilder(null, BuildOptions.THBT, "scl-s3-drastic", lim), meleeID);
+                        meleeID++;
+                        category.addMelee(WeaponDataBuilder(null, BuildOptions.THBT, "warhammer", lim), meleeID);
+                        meleeID++;
+                        category.addMelee(WeaponDataBuilder(null, BuildOptions.THBT, "zircon-slamsickle", lim), meleeID);
+                        meleeID++;
+                        break;
+                    }
+                case BuildOptions.PS:
+                    {
+                        category.addWeapon(WeaponDataBuilder(null, BuildOptions.PS, "boxy-buster", lim));
+                        break;
+                    }
+            }
             return category;
         }
 
-        public Class ClassDataBuilder(Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> valuePairs, Classes classOption)
+        public static Class ClassDataBuilder(Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> valuePairs, Classes classOption)
         {
             string className = "";
             switch (classOption)
@@ -4152,7 +4327,7 @@ namespace FileProcessingParsingReading
             return keyValuePairs;
         }
 
-        public BuildOptions BuildOptionsConvert (FileProcessing.BuildOptions options)
+        public static BuildOptions BuildOptionsConvert (FileProcessing.BuildOptions options)
         {
             BuildOptions result = 0;
             switch (options)
@@ -4260,7 +4435,7 @@ namespace FileProcessingParsingReading
             return result;
         }
 
-        public FileProcessing.BuildOptions BuildOptionsConvert(BuildOptions options)
+        public static FileProcessing.BuildOptions BuildOptionsConvert(BuildOptions options)
         {
             FileProcessing.BuildOptions result = 0;
             switch (options)
@@ -4468,7 +4643,7 @@ namespace FileProcessingParsingReading
             if (decoder(options, (int)BuildOptions.THBT)) THBT.Start();
             if (decoder(options, (int)BuildOptions.THBE)) THBE.Start();
 
-            this.result = result;
+            this.result = new ConcurrentDictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>> (result);
             return result;
 
         }
@@ -4574,8 +4749,8 @@ namespace FileProcessingParsingReading
             if(THBT || THBE)T6.Start();
 
             Console.WriteLine("damnit");
-            return result;
-
+            
+            return new Dictionary<BuildOptions, Dictionary<int, FileProcessing.WeaponOutputs>>(result);
 
             //) thread1Async().Start();
 
@@ -4588,17 +4763,17 @@ namespace FileProcessingParsingReading
 
             Dictionary<int, FileProcessing.WeaponOutputs>? output1 = null; 
             if(DMRS)output1 = await FileProcessing.multithreadedReadFileListAsync(FileProcessing.StreamOptions.Both, FileProcessing.AllWeaponStrings.DesignatedMarksmanRiflesStrings, Tuple.Create(false, true, true), "designatedmarksmanrifles.txt", true, null, new Dictionary<int, FileProcessing.WeaponOutputs>());
-            this.result.Add(BuildOptions.DMRS, output1 ?? new());
+            this.result.TryAdd(BuildOptions.DMRS, output1 ?? new());
 
 
             Dictionary<int, FileProcessing.WeaponOutputs>? output2 = null; 
             if(LMGS)output2 = await FileProcessing.multithreadedReadFileListAsync(FileProcessing.StreamOptions.Both, FileProcessing.AllWeaponStrings.LightMachineGunsStrings, Tuple.Create(false, true, true), "lightmachineguns.txt", true, null, new Dictionary<int, FileProcessing.WeaponOutputs>());
-            this.result.Add(BuildOptions.LMGS, output2 ?? new());
+            this.result.TryAdd(BuildOptions.LMGS, output2 ?? new());
 
 
             Dictionary<int, FileProcessing.WeaponOutputs>? output3 = null;
             if (OHBE) output3 = await FileProcessing.multithreadedReadFileListAsync(FileProcessing.StreamOptions.Both, FileProcessing.AllWeaponStrings.OneHandBladeMelees, Tuple.Create(false, true, true), "onehandedblademelees.txt", null, true, new Dictionary<int, FileProcessing.WeaponOutputs>());
-            this.result.Add(BuildOptions.OHBE, output3 ?? new());
+            this.result.TryAdd(BuildOptions.OHBE, output3 ?? new());
 
             result.Add(BuildOptions.DMRS, output1 ?? new());
             result.Add(BuildOptions.LMGS, output2 ?? new());
@@ -4613,32 +4788,32 @@ namespace FileProcessingParsingReading
 
             Dictionary<int, FileProcessing.WeaponOutputs>? output1 = null;
             if (BRS) output1 = await FileProcessing.multithreadedReadFileListAsync(FileProcessing.StreamOptions.Both, FileProcessing.AllWeaponStrings.BattleRiflesStrings, Tuple.Create(false, true, true), "battlerifles.txt", true, null, new Dictionary<int, FileProcessing.WeaponOutputs>());
-            this.result.Add(BuildOptions.BRS, output1 ?? new());
+            this.result.TryAdd(BuildOptions.BRS, output1 ?? new());
 
 
             Dictionary<int, FileProcessing.WeaponOutputs>? output2 = null;
             if (SHS) output2 = await FileProcessing.multithreadedReadFileListAsync(FileProcessing.StreamOptions.Both, FileProcessing.AllWeaponStrings.ShotgunsStrings, Tuple.Create(false, true, true), "shotguns.txt", true, null, new Dictionary<int, FileProcessing.WeaponOutputs>());
-            this.result.Add(BuildOptions.SHS, output2 ?? new());
+            this.result.TryAdd(BuildOptions.SHS, output2 ?? new());
 
 
             Dictionary<int, FileProcessing.WeaponOutputs>? output3 = null;
             if (MPS) output3 = await FileProcessing.multithreadedReadFileListAsync(FileProcessing.StreamOptions.Both, FileProcessing.AllWeaponStrings.MachinePistolsStrings, Tuple.Create(false, true, true), "machinepistols.txt", false, null, new Dictionary<int, FileProcessing.WeaponOutputs>());
-            this.result.Add(BuildOptions.MPS, output3 ?? new());
+            this.result.TryAdd(BuildOptions.MPS, output3 ?? new());
 
 
             Dictionary<int, FileProcessing.WeaponOutputs>? output4 = null;
             if (OTH) output4 = await FileProcessing.multithreadedReadFileListAsync(FileProcessing.StreamOptions.Both,FileProcessing.AllWeaponStrings.OthersStrings, Tuple.Create(false, true, true), "others.txt", false, null, new Dictionary<int, FileProcessing.WeaponOutputs>());
-            this.result.Add(BuildOptions.OTH, output4 ?? new());
+            this.result.TryAdd(BuildOptions.OTH, output4 ?? new());
 
 
             Dictionary<int, FileProcessing.WeaponOutputs>? output5 = null;
             if (FGS) output5 = await FileProcessing.multithreadedReadFileListAsync(FileProcessing.StreamOptions.Both, FileProcessing.AllWeaponStrings.FragmentationGrenadesStrings, Tuple.Create(false, true, true), "fragmentationgrenades.txt", null, false, new Dictionary<int, FileProcessing.WeaponOutputs>());
-            this.result.Add(BuildOptions.FGS, output5 ?? new());
+            this.result.TryAdd(BuildOptions.FGS, output5 ?? new());
 
 
             Dictionary<int, FileProcessing.WeaponOutputs>? output6 = null;
             if (HEGS) output6 = await FileProcessing.multithreadedReadFileListAsync(FileProcessing.StreamOptions.Both, FileProcessing.AllWeaponStrings.HighExplosiveGrenadesStrings, Tuple.Create(false, true, true), "highexplosivegrenades.txt", null, false, new Dictionary<int, FileProcessing.WeaponOutputs>());
-            this.result.Add(BuildOptions.HEGS, output6 ?? new());
+            this.result.TryAdd(BuildOptions.HEGS, output6 ?? new());
 
             result.Add(BuildOptions.BRS, output1 ?? new());
             result.Add(BuildOptions.SHS, output2 ?? new());
@@ -4656,21 +4831,21 @@ namespace FileProcessingParsingReading
 
             Dictionary<int, FileProcessing.WeaponOutputs>? output1 = null;
             if (OHBT) output1 = await FileProcessing.multithreadedReadFileListAsync(FileProcessing.StreamOptions.Both,FileProcessing.AllWeaponStrings.OneHandBluntMelees, Tuple.Create(false, true, true), "onehandedbluntmelees.txt", null, true, new Dictionary<int, FileProcessing.WeaponOutputs>());
-            this.result.Add(BuildOptions.OHBT, output1 ?? new());
+            this.result.TryAdd(BuildOptions.OHBT, output1 ?? new());
 
 
             Dictionary<int, FileProcessing.WeaponOutputs>? output2 = null;
             if (IGS) output2 = await FileProcessing.multithreadedReadFileListAsync(FileProcessing.StreamOptions.Both, FileProcessing.AllWeaponStrings.ImpactGrenadesStrings, Tuple.Create(false, true, true), "impactgrenades.txt", null, false, new Dictionary<int, FileProcessing.WeaponOutputs>());
-            this.result.Add(BuildOptions.IGS, output2 ?? new());
+            this.result.TryAdd(BuildOptions.IGS, output2 ?? new());
 
 
             Dictionary<int, FileProcessing.WeaponOutputs>? output3 = null;
             if (SRS) output3 = await FileProcessing.multithreadedReadFileListAsync(FileProcessing.StreamOptions.Both, FileProcessing.AllWeaponStrings.SniperRiflesStrings, Tuple.Create(false, true, true), "sniperrifles.txt", true, null, new Dictionary<int, FileProcessing.WeaponOutputs>());
-            this.result.Add(BuildOptions.SRS, output3 ?? new());
+            this.result.TryAdd(BuildOptions.SRS, output3 ?? new());
 
             Dictionary<int, FileProcessing.WeaponOutputs>? output4 = null;
             if (RES) output4 = await FileProcessing.multithreadedReadFileListAsync(FileProcessing.StreamOptions.Both, FileProcessing.AllWeaponStrings.RevolversStrings, Tuple.Create(false, true, true), "revolvers.txt", false, null, new Dictionary<int, FileProcessing.WeaponOutputs>());
-            this.result.Add(BuildOptions.RES, output4 ?? new());
+            this.result.TryAdd(BuildOptions.RES, output4 ?? new());
 
             result.Add(BuildOptions.OHBT, output1 ?? new());
             result.Add(BuildOptions.IGS, output2 ?? new());
@@ -4686,12 +4861,12 @@ namespace FileProcessingParsingReading
 
             Dictionary<int, FileProcessing.WeaponOutputs>? output1 = null;
             if (PDWS) output1 = await FileProcessing.multithreadedReadFileListAsync(FileProcessing.StreamOptions.Both, FileProcessing.AllWeaponStrings.PersonalDefenseWeaponsStrings, Tuple.Create(false, true, true), "personaldefenseweapons.txt", true, null, new Dictionary<int, FileProcessing.WeaponOutputs>());
-            this.result.Add(BuildOptions.PDWS, output1 ?? new());
+            this.result.TryAdd(BuildOptions.PDWS, output1 ?? new());
 
 
             Dictionary<int, FileProcessing.WeaponOutputs>? output2 = null;
             if (CAS) output2 = await FileProcessing.multithreadedReadFileListAsync(FileProcessing.StreamOptions.Both, FileProcessing.AllWeaponStrings.CarbineStrings, Tuple.Create(false, true, true), "carbines.txt", true, null, new Dictionary<int, FileProcessing.WeaponOutputs>());
-            this.result.Add(BuildOptions.CAS, output2 ?? new());
+            this.result.TryAdd(BuildOptions.CAS, output2 ?? new());
 
             result.Add(BuildOptions.PDWS, output1 ?? new());
             result.Add(BuildOptions.CAS, output2 ?? new());
@@ -4705,12 +4880,12 @@ namespace FileProcessingParsingReading
 
             Dictionary<int, FileProcessing.WeaponOutputs>? output1 = null;
             if (ARS) output1 = await FileProcessing.multithreadedReadFileListAsync(FileProcessing.StreamOptions.Both,FileProcessing.AllWeaponStrings.AssaultRiflesStrings, Tuple.Create(false, true, true), "assaultrifles.txt", true, null, new Dictionary<int, FileProcessing.WeaponOutputs>());
-            this.result.Add(BuildOptions.ARS, output1 ?? new());
+            this.result.TryAdd(BuildOptions.ARS, output1 ?? new());
 
 
             Dictionary<int, FileProcessing.WeaponOutputs>? output2 = null;
             if (PS) output2 = await FileProcessing.multithreadedReadFileListAsync(FileProcessing.StreamOptions.Both,FileProcessing.AllWeaponStrings.PistolsStrings, Tuple.Create(false, true, true), "carbines.txt", false, null, new Dictionary<int, FileProcessing.WeaponOutputs>());
-            this.result.Add(BuildOptions.PS, output2 ?? new());
+            this.result.TryAdd(BuildOptions.PS, output2 ?? new());
 
             result.Add(BuildOptions.ARS, output1 ?? new());
             result.Add(BuildOptions.PS, output2 ?? new());
@@ -4724,12 +4899,12 @@ namespace FileProcessingParsingReading
 
             Dictionary<int, FileProcessing.WeaponOutputs>? output1 = null;
             if (THBT) output1 = await FileProcessing.multithreadedReadFileListAsync(FileProcessing.StreamOptions.Both, FileProcessing.AllWeaponStrings.TwoHandBluntMelees, Tuple.Create(false, true, true), "twohandedbluntmelees.txt", null, true, new Dictionary<int, FileProcessing.WeaponOutputs>());
-            this.result.Add(BuildOptions.THBT, output1 ?? new());
+            this.result.TryAdd(BuildOptions.THBT, output1 ?? new());
 
 
             Dictionary<int, FileProcessing.WeaponOutputs>? output2 = null;
             if (THBE) output2 = await FileProcessing.multithreadedReadFileListAsync(FileProcessing.StreamOptions.Both, FileProcessing.AllWeaponStrings.TwoHandBladeMelees, Tuple.Create(false, true, true), "twohandedblademelees.txt", null, true, new Dictionary<int, FileProcessing.WeaponOutputs>());
-            this.result.Add(BuildOptions.THBE, output2 ?? new());
+            this.result.TryAdd(BuildOptions.THBE, output2 ?? new());
 
             result.Add(BuildOptions.THBT, output1 ?? new());
             result.Add(BuildOptions.THBE, output2 ?? new());
@@ -4838,7 +5013,8 @@ namespace FileProcessingParsingReading
 
                     {FileReading.BuildOptions.THBE, "Two Handed Blade Melees" },
 
-                    {FileReading.BuildOptions.THBT, "Two Handed Blunt Melees" }
+                    {FileReading.BuildOptions.THBT, "Two Handed Blunt Melees" },
+            {FileReading.BuildOptions.NONE,"None" }
         };
 
         public SQLConnectionHandling()
@@ -4847,62 +5023,399 @@ namespace FileProcessingParsingReading
             connectionString = connectionStringBuilder;
         }
 
-        public void InsertSQLGunRecord()
+        public void InsertSQLClassRecord(Class insertion)
         {
 
             using (var conn = new SQLiteConnection(connectionString.ConnectionString))
             {
                 using (var command = conn.CreateCommand())
                 {
-                    //command.CommandText = 
-                    //command.CommandText = @"INSERT INTO CategoryData (ClassName, Category1, Category2, Category3, Category4)
-                    //VALUES ('Scout', 'Sniper Rifles', 'Designated Marksman Rifles', 'Battle Rifles', 'Carbines');";
-                    command.CommandText = @"INSERT INTO CategoryData (ClassName, Category1, Category2, Category3, Category4)
-                                                VALUES ('Scout', 'Sniper Rifles', 'Designated Marksman Rifles', 'Battle Rifles', 'Carbines');";
+                    List<string> categoryNames = new();
+                    foreach(Category s in insertion.getCategoryList())
+                    {
+                        categoryNames.Add(s.Name);
+                    }
+                    bool grenades = insertion.Name.Contains("grenade", StringComparison.CurrentCultureIgnoreCase) || insertion.Name.Contains("nade", StringComparison.CurrentCultureIgnoreCase);
+                    if (grenades)
+                    {
+                        command.CommandText = String.Format(
+                                                    @"INSERT INTO CategoryData (ClassName, Category1, Category2, Category3)
+                                                VALUES ('{0}', '{1}', '{2}', '{3}');",
+                                                    insertion.Name, categoryNames[0], categoryNames[1], categoryNames[2]);
+                    }
+                    else {
+                        command.CommandText = String.Format(
+                                                    @"INSERT INTO CategoryData (ClassName, Category1, Category2, Category3, Category4)
+                                                VALUES ('{0}', '{1}', '{2}', '{3}', '{4}');",
+                                                    insertion.Name, categoryNames[0], categoryNames[1], categoryNames[2], categoryNames[3]);
+                    }
                     conn.Open();
                     command.ExecuteReader();
                     conn.Close();
                     Console.ReadKey();
-                    /*
-                    SQLiteDataAdapter ad;
-                    DataTable dt = new DataTable();
                     
-                    try
-                    {
-                        SQLiteCommand cmd;
-                        conn.Open();  //Initiate connection to the db
-                        cmd = conn.CreateCommand();
-                        cmd.CommandText = @"INSERT INTO CategoryData (ClassName, Category1, Category2, Category3, Category4)
-                                                VALUES ('Scout', 'Sniper Rifles', 'Designated Marksman Rifles', 'Battle Rifles', 'Carbines');";  //set the passed query
-                        ad = new SQLiteDataAdapter(cmd);
-                        ad.Fill(dt); //fill the datasource
-                    }
-                    catch (SQLiteException ex)
-                    {
-                        //Add your exception code here.
-                        Console.WriteLine(ex.Message);
-                    }
-                    conn.Close();*/
                 }
             }
         }
 
-        public void InsertSQLCategoryRecord(Category category)
+        public void InsertSQLWeaponRecords(Dictionary<FileReading.Classes, Class> pairs) 
+            
         {
-            /*
-            using (var conn = new SqlConnection(connectionString))
+            /*using (var conn = new SQLiteConnection(connectionString.ConnectionString))
             {
                 using (var command = conn.CreateCommand())
                 {
-                    command.CommandText = @"";
                     conn.Open();
-                    command.ExecuteReader();
-                    Console.ReadKey();
+                    command.CommandText = "SELECT * FROM CategoryData;";
+                    using(var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+
+                        }
+
+                    }
                 }
             }*/
+
+                    Dictionary<FileReading.BuildOptions, Category> p1 = new();
+            foreach(FileReading.Classes r in pairs.Keys) //for each class
+            {
+                foreach(Category h in pairs[r].getCategoryList()) //for each category in each class
+                {
+                    foreach(FileReading.BuildOptions k in CategoryNames.Keys)
+                    {
+                        if(h.Name == CategoryNames[k]){
+                            try
+                            {
+                                p1.Add(k, h);
+                            }
+                            catch
+                            {
+                                continue;
+                            }
+                        }
+                    }
+                }
+            }
+            foreach(FileReading.BuildOptions o in p1.Keys)
+            {
+                if(o == FileReading.BuildOptions.FGS || o == FileReading.BuildOptions.IGS || o == FileReading.BuildOptions.HEGS)
+                {
+                    foreach(Grenade g in p1[o].getWeapons().Cast<Grenade>())
+                    {
+                        using (var conn = new SQLiteConnection(connectionString.ConnectionString))
+                        {
+                            using (var command = conn.CreateCommand())
+                            {
+
+                                conn.Open();
+                                command.CommandText = String.Format(@"INSERT INTO GrenadeData{10} (Name, HasRank, Rank, FuseTime, SpecialEffects, BlastRadius, KillingRadius, MaximumDamage, Version, Category)
+                                                VALUES ('{0}', '{1}', {2}, {3}, '{4}', {5}, {6}, {7}, '{8}', '{9}');",
+                                                g.Name,g.HasRank?"True":"False",g.Rank, g.FuseTime, 
+                                                g.SpecialMode, g.BlastRadius, g.KillRadius, g.MaximumDamage,
+                                                Global.VERSION, CategoryNames[o], Global.DBVERSION);
+                                command.ExecuteReader();
+                                conn.Close();
+                            }
+                        }
+                    }
+                } else if(o == FileReading.BuildOptions.OHBT || o == FileReading.BuildOptions.OHBE || o == FileReading.BuildOptions.THBT  || o == FileReading.BuildOptions.THBE)
+                {
+                    foreach (Melee m in p1[o].getWeapons().Cast<Melee>())
+                    {
+                        using (var conn = new SQLiteConnection(connectionString.ConnectionString))
+                        {
+                            using (var command = conn.CreateCommand())
+                            {
+
+                                conn.Open();
+                                command.CommandText = String.Format(@"INSERT INTO MeleeData{12} (Name, HasRank, Rank, BladeLength, FrontStabDamage, BackStabDamage, HeadMultiplier, TorsoMultiplier, LimbMultiplier, Walkspeed, Version, Category)
+                                                VALUES ('{0}', '{1}', {2}, {3}, {4}, {5}, {6}, {7}, {8}, {9}, '{10}', '{11}');",
+                                                m.Name, m.HasRank ? "True" : "False", m.Rank, m.BladeLength,
+                                                m.FrontStabDamage, m.BackStabDamage, m.CarriedAttributes.HeadMultiplier, m.CarriedAttributes.TorsoMultiplier, m.CarriedAttributes.LimbMultiplier, m.CarriedAttributes.WalkSpeed,
+                                                Global.VERSION, CategoryNames[o], Global.DBVERSION);
+                                command.ExecuteReader();
+                                conn.Close();
+                            }
+                        }
+                    }
+                } else if(o == FileReading.BuildOptions.NONE)
+                {
+
+                }
+                else
+                {
+
+                    foreach (Gun g in p1[o].getWeapons().Cast<Gun>())
+                    {
+
+
+                        List<string> convForeignHooks = new();
+                        List<Conversion> convs = g.Conversions.getConversions();
+                        for (int i = 0; i < convs.Count; i++)
+                        {
+                            using (var conn = new SQLiteConnection(connectionString.ConnectionString))
+                            {
+                                using (var command = conn.CreateCommand())
+                                {
+                                    Conversion k = convs[i];
+
+                                    if (i == 0)
+                                    {
+                                        if (k.ConversionName == null || !k.ConversionName.Contains(g.Name, StringComparison.CurrentCultureIgnoreCase))
+                                        {
+                                            k.ConversionName = g.Name; //make sure the default conversion has the gun name on it
+                                        }
+                                    }
+                                    if (convForeignHooks.Count > 10)
+                                    {
+                                        Console.WriteLine("too many conversions"); break;
+                                    }
+                                    convForeignHooks.Add(k.ConversionName);
+                                    
+
+                                    conn.Open();
+                                    switch (k.FireModes.getFireModes().Count) {
+                                        case 1:
+                                            FireMode t = k.FireModes.getFireModes()[0];
+                                            command.CommandText = String.Format(@"INSERT INTO ConversionData{23} (ConversionName, Caliber, ReserveAmmoCapacity, MagazineCapacity, HeadMultiplier, TorsoMultiplier, LimbMultiplier, Damage1, Damage2, Damage1Range, Damage2Range, MuzzleVelocity, PenetrationDepth, Suppression, ReloadTime, EmptyReloadTime, AimingWalkspeed, WeaponWalkspeed,Version, Firemode1, Firemode1Firerate, Firemode1Special, Firemode1Pellets)
+                                                VALUES ('{0}', '{1}', {2},{3},
+                                                        {4},{5},{6},{7},
+                                                        {8},{9},{10},{11},
+                                                        {12},{13},{14},{15},
+                                                        {16},{17},'{18}',
+                                                        '{19}',{20},'{21}',{22});",
+                                                        k.ConversionName, k.Caliber, k.AmmoCapacity, k.MagazineCapacity,
+                                                        k.CarriedAttributes.HeadMultiplier, k.CarriedAttributes.TorsoMultiplier, k.CarriedAttributes.LimbMultiplier, k.RangedAttributes.Range1Damage,
+                                                        k.RangedAttributes.Range2Damage, k.RangedAttributes.Range1, k.RangedAttributes.Range2, k.MuzzleVelocity,
+                                                        k.Penetration, k.Suppression, k.ReloadSpeed, k.EmptyReloadSpeed,
+                                                        k.AimingWalkspeed, k.CarriedAttributes.WalkSpeed, Global.VERSION,
+                                                        t.Mode, t.Firerate, t.SpecialMode, t.Pellets, Global.DBVERSION);
+                                            break;
+                                        case 2:
+                                            FireMode w = k.FireModes.getFireModes()[0];
+                                            FireMode u = k.FireModes.getFireModes()[1];
+                                            command.CommandText = String.Format(@"INSERT INTO ConversionData{27} (ConversionName, Caliber, ReserveAmmoCapacity, MagazineCapacity, HeadMultiplier, TorsoMultiplier, LimbMultiplier, Damage1, Damage2, Damage1Range, Damage2Range, MuzzleVelocity, PenetrationDepth, Suppression, ReloadTime, EmptyReloadTime, AimingWalkspeed, WeaponWalkspeed,Version, Firemode1, Firemode1Firerate, Firemode1Special, Firemode1Pellets, Firemode2, Firemode2Firerate, Firemode2Special, Firemode2Pellets)
+                                                VALUES ('{0}', '{1}', {2},{3},
+                                                        {4},{5},{6},{7},
+                                                        {8},{9},{10},{11},
+                                                        {12},{13},{14},{15},
+                                                        {16},{17},'{18}',
+                                                        '{19}',{20},'{21}',{22},
+                                                        '{23}',{24},'{25}',{26});",
+                                                        k.ConversionName, k.Caliber, k.AmmoCapacity, k.MagazineCapacity,
+                                                        k.CarriedAttributes.HeadMultiplier, k.CarriedAttributes.TorsoMultiplier, k.CarriedAttributes.LimbMultiplier, k.RangedAttributes.Range1Damage,
+                                                        k.RangedAttributes.Range2Damage, k.RangedAttributes.Range1, k.RangedAttributes.Range2, k.MuzzleVelocity,
+                                                        k.Penetration, k.Suppression, k.ReloadSpeed, k.EmptyReloadSpeed,
+                                                        k.AimingWalkspeed, k.CarriedAttributes.WalkSpeed, Global.VERSION,
+                                                        w.Mode, w.Firerate,w.SpecialMode, w.Pellets,
+                                                        u.Mode, u.Firerate, u.SpecialMode, u.Pellets, Global.DBVERSION);
+                                            break;
+                                        case 3:
+                                            FireMode x = k.FireModes.getFireModes()[0];
+                                            FireMode y = k.FireModes.getFireModes()[1];
+                                            FireMode z = k.FireModes.getFireModes()[2];
+                                            command.CommandText = String.Format(@"INSERT INTO ConversionData{31} (ConversionName, Caliber, ReserveAmmoCapacity, MagazineCapacity, HeadMultiplier, TorsoMultiplier, LimbMultiplier, Damage1, Damage2, Damage1Range, Damage2Range, MuzzleVelocity, PenetrationDepth, Suppression, ReloadTime, EmptyReloadTime, AimingWalkspeed, WeaponWalkspeed,Version, Firemode1, Firemode1Firerate, Firemode1Special, Firemode1Pellets, Firemode2, Firemode2Firerate, Firemode2Special, Firemode2Pellets, Firemode3, Firemode3Firerate, Firemode3Special, Firemode3Pellets)
+                                                VALUES ('{0}', '{1}', {2},{3},
+                                                        {4},{5},{6},{7},
+                                                        {8},{9},{10},{11},
+                                                        {12},{13},{14},{15},
+                                                        {16},{17},'{18}',
+                                                        '{19}',{20},'{21}',{22},
+                                                        '{23}',{24},'{25}',{26},
+                                                        '{27}',{28},'{29}',{30});",
+                                                        k.ConversionName, k.Caliber, k.AmmoCapacity, k.MagazineCapacity,
+                                                        k.CarriedAttributes.HeadMultiplier, k.CarriedAttributes.TorsoMultiplier, k.CarriedAttributes.LimbMultiplier, k.RangedAttributes.Range1Damage,
+                                                        k.RangedAttributes.Range2Damage, k.RangedAttributes.Range1, k.RangedAttributes.Range2, k.MuzzleVelocity,
+                                                        k.Penetration, k.Suppression, k.ReloadSpeed, k.EmptyReloadSpeed,
+                                                        k.AimingWalkspeed, k.CarriedAttributes.WalkSpeed, Global.VERSION,
+                                                        x.Mode,x.Firerate,x.SpecialMode, x.Pellets,
+                                                        y.Mode,y.Firerate, y.SpecialMode, y.Pellets,
+                                                        z.Mode,z.Firerate, z.SpecialMode, z.Pellets, Global.DBVERSION);
+                                            break;
+                                    }
+                                    command.ExecuteReader();
+                                    conn.Close();
+
+                                }
+                            }
+                        }
+                        using (var conn = new SQLiteConnection(connectionString.ConnectionString))
+                        {
+                            using (var command = conn.CreateCommand())
+                            {
+
+
+
+                                conn.Open();
+
+                                string commandStringLine1p1 = "INSERT INTO GunData"+Global.DBVERSION+"(DefaultName,HasRank,Rank,Version,Category";
+                                string commandStringLine2p1 = String.Format(")VALUES ('{0}','{1}',{2},'{3}','{4}'",
+                                    g.Name, g.HasRank ? "True" : "False", g.Rank, Global.VERSION, CategoryNames[o]);
+                                string commandStringLine1p2 = "";
+                                string commandStringLine2p2 = ""; 
+                                for (int i = 1; i < convForeignHooks.Count + 1; i++)
+                                {
+                                    commandStringLine1p2 += (",Conversion" + i.ToString());
+                                    commandStringLine2p2 += (",'" + convForeignHooks[i - 1]+"'");
+                                }
+
+                                command.CommandText = commandStringLine1p1 + commandStringLine1p2 + commandStringLine2p1 + commandStringLine2p2 + ");";
+                                command.ExecuteReader();
+                                conn.Close();
+
+                            }
+                        }
+
+                    }
+                }
+            }
+
         }
 
+        /*
+        public void GetAllSQLWeaponRecords()
+        {
+            List<string> tableNames = new();
+            using (var conn = new SQLiteConnection(connectionString.ConnectionString))
+            {
+                using (var command = conn.CreateCommand())
+                {
+                    conn.Open();
+                    command.CommandText = "SELECT * FROM GunData100 FULL JOIN ConversionData100 ON ConversionData100.ConversionName = GunData100.Conversion1;";
+                    using(var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string line = "";
+                            //iterate through columns (31) 
+                            for(int i = 0; i < 31 + 14; i++)
+                            {
+                                line += (reader.GetValue(i).ToString() + "\t");
+                            }
+                            Console.WriteLine(line);
+                        }
+                    }
+                }
+            }
+        }*/
 
+        public enum FiremodeSelect
+        {
+            Firemode1,
+            Firemode2,
+            Firemode3
+        }
+
+        public enum ConversionsSelect
+        {
+            C1 = 1,C2,C3,C4,C5,C6,C7,C8,C9,C10
+        }
+
+        //match the 0
+
+        public Category GetSQLGunCategoryRecords(FileReading.BuildOptions option, string VERSIONSTRING)
+        {
+            string v = VERSIONSTRING;
+            string query = "";
+            Category result = new(null, CategoryNames[option]);
+            using (var conn = new SQLiteConnection(connectionString.ConnectionString))
+            {
+                using (var command = conn.CreateCommand())
+                {
+                    //DefaultName	HasRank	Rank	Version	Category	Conversion1	Conversion2	Conversion3	Conversion4	Conversion5	Conversion6	Conversion7	Conversion8	Conversion9	Conversion10	ConversionName	Caliber	ReserveAmmoCapacity	MagazineCapacity	HeadMultiplier	TorsoMultiplier	LimbMultiplier	Damage1	Damage2	Damage1Range	Damage2Range	MuzzleVelocity	PenetrationDepth	Suppression	ReloadTime	EmptyReloadTime	AimingWalkspeed	WeaponWalkspeed	Version1	Firemode1	Firemode1Firerate	Firemode1Special	Firemode1Pellets	Firemode2	Firemode2Firerate	Firemode2Special	Firemode2Pellets	Firemode3	Firemode3Firerate	Firemode3Special	Firemode3Pellets
+                    //1dn 2hr 3r 4v 5c 6c1 7c2 8c3 9c4 10c5 11c6 12c7 13c8 14c9 15c10
+                    //16cn 17c 18rac 19mc 20hm 21tm 22lm 23d1 24d2 25d1r 26d2r 27mv
+                    //28pd 29s 30rt 31ert 32aw 33ww 34v1
+                    //35f1 36f1f 37f1s 38f1p
+                    //39f1 40f1f 41f1s 42f1p
+                    //43f1 44f1f 45f1s 46f1p
+
+
+                    conn.Open();
+                    command.CommandText = "SELECT * FROM GunData" + v + ";"; //+ " LEFT JOIN ConversionData" + v + " ON ConversionData" + v + ".ConversionName = GunData" + v + ".Conversion"+cs+";";
+
+                    using(var reader = command.ExecuteReader())
+                    {
+                        while(reader.Read())
+                        {
+                            string name = reader.GetString(0);
+                            result.addWeapon(new Gun(name, reader.GetString(1).Contains("True",StringComparison.CurrentCultureIgnoreCase), reader.GetInt32(2), GetSQLConversionRecord(name, new()
+                            {
+                                reader.GetString(5),
+                                reader.GetString(6),
+                                reader.GetString(7),
+                                reader.GetString(8),
+                                reader.GetString(9),
+                                reader.GetString(10),
+                                reader.GetString(11),
+                                reader.GetString(12),
+                                reader.GetString(13),
+                                reader.GetString(14)
+                            }, VERSIONSTRING)));
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+        public ConversionList GetSQLConversionRecord(string GunName,List<string> ConversionNames, string VERSIONSTRING)
+        {
+            string v = VERSIONSTRING;
+            ConversionList list = new(new(false, false, new("blank", false, 0))); //to init, will get overwritten
+            foreach (string s in ConversionNames)
+            {
+                using (var conn = new SQLiteConnection(connectionString.ConnectionString))
+                {
+                    //1cn 2c 3rac 4mc 5hm 6tm 7lm 8d1 9d2 10d1r 11d2r 12mv
+                    //13pd 14s 15rt 16ert 17aw 18ww 19v1
+                    //20f1 21f1f 22f1s 23f1p
+                    //24f1 25f1f 26f1s 27f1p
+                    //28f1 29f1f 30f1s 31f1p
+                    using (var command = conn.CreateCommand())
+                    {
+                        conn.Open();
+                        command.CommandText = $"SELECT * FROM ConversionData" + v + " LIKE '{s}';";
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+
+                                if (reader.GetString(0).Contains(GunName) && GunName.Contains(reader.GetString(0)))
+                                {
+                                    list.DefaultConversion = 
+                                        new(GunName, "", reader.GetString(0), null, reader.GetString(1), reader.GetInt32(2), reader.GetInt32(3), new FireModeList(new List<FireMode>()
+                                    {
+                                       new FireMode(reader.GetDouble(20),reader.GetString(19),(reader.GetString(21).Contains("burst",StringComparison.CurrentCultureIgnoreCase)),reader.GetString(21),(!reader.IsDBNull(21) && reader.GetString(21) != ""),reader.GetString(21),reader.GetInt32(22)),
+
+                                       new FireMode(reader.GetDouble(24),reader.GetString(23),(reader.GetString(25).Contains("burst",StringComparison.CurrentCultureIgnoreCase)),reader.GetString(25),(!reader.IsDBNull(25) && reader.GetString(25) != ""),reader.GetString(25),reader.GetInt32(26)),
+
+                                       new FireMode(reader.GetDouble(28),reader.GetString(27),(reader.GetString(29).Contains("burst",StringComparison.CurrentCultureIgnoreCase)),reader.GetString(29),(!reader.IsDBNull(29) && reader.GetString(29) != ""),reader.GetString(29),reader.GetInt32(30))
+                                    }), new Carried(reader.GetDouble(4), reader.GetDouble(5), reader.GetDouble(6), reader.GetDouble(17)), new Ranged(reader.GetDouble(9), reader.GetDouble(10), reader.GetDouble(7), reader.GetDouble(8)), reader.GetDouble(12), reader.GetDouble(11), reader.GetDouble(14), reader.GetDouble(15), reader.GetDouble(13), reader.GetDouble(16));
+                                    
+                                }
+                                else
+                                {
+                                    list.addConversion(
+                                        new(GunName, "", reader.GetString(0), null, reader.GetString(1), reader.GetInt32(2), reader.GetInt32(3), new FireModeList(new List<FireMode>()
+                                    {
+                                       new FireMode(reader.GetDouble(20),reader.GetString(19),(reader.GetString(21).Contains("burst",StringComparison.CurrentCultureIgnoreCase)),reader.GetString(21),(!reader.IsDBNull(21) && reader.GetString(21) != ""),reader.GetString(21),reader.GetInt32(22)),
+
+                                       new FireMode(reader.GetDouble(24),reader.GetString(23),(reader.GetString(25).Contains("burst",StringComparison.CurrentCultureIgnoreCase)),reader.GetString(25),(!reader.IsDBNull(25) && reader.GetString(25) != ""),reader.GetString(25),reader.GetInt32(26)),
+
+                                       new FireMode(reader.GetDouble(28),reader.GetString(27),(reader.GetString(29).Contains("burst",StringComparison.CurrentCultureIgnoreCase)),reader.GetString(29),(!reader.IsDBNull(29) && reader.GetString(29) != ""),reader.GetString(29),reader.GetInt32(30))
+                                    }), new Carried(reader.GetDouble(4), reader.GetDouble(5), reader.GetDouble(6), reader.GetDouble(17)), new Ranged(reader.GetDouble(9), reader.GetDouble(10), reader.GetDouble(7), reader.GetDouble(8)), reader.GetDouble(12), reader.GetDouble(11), reader.GetDouble(14), reader.GetDouble(15), reader.GetDouble(13), reader.GetDouble(16)));
+                                }
+                            }
+                        }
+                        conn.Close();
+                    }
+                }
+            }
+            return list;
+        }
     }
 
 }

@@ -348,3 +348,5 @@ healthchecksdb
 /build/ImageParser
 /BananaSQLTest.sql
 /FileReader/limited
+/ImageParser/Weapons100
+/ImageParser/Weapons101

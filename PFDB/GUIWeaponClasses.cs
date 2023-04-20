@@ -13,66 +13,6 @@ namespace PFDB
     
     public partial class MainWindow
     {
-        /*
-        private ObservableCollection<string> rangeds;
-
-        public ObservableCollection<string> Rangeds
-        {
-            get { return rangeds; }
-            set { rangeds = value; }
-        }
-
-        private ObservableCollection<string> conversions;
-
-        public ObservableCollection<string> Conversions
-        {
-            get { return conversions; }
-            set { conversions = value; }
-        }
-
-
-        private ObservableCollection<string> carrieds;
-
-        public ObservableCollection<string> Carrieds
-        {
-            get { return carrieds; }
-            set { carrieds = value; }
-        }
-        */
-        private ObservableCollection<string> categories;
-        private ObservableCollection<Category> categoryObjects;
-        private ObservableCollection<string> guns;
-        private ObservableCollection<Gun> gunObjects;
-
-        /// <summary>
-        /// <c>Gun</c> objects that are passed to the main display panel
-        /// </summary>
-        public ObservableCollection<Gun> GunObjects
-        {
-            get { return gunObjects; }
-            set { gunObjects = value; }
-        }
-
-        /// <summary>
-        /// Gun names displayed in list
-        /// </summary>
-        public ObservableCollection<string> Guns
-        {
-            get { return guns; }
-            set { guns = value; }
-        }
-
-        public ObservableCollection<Category> CategoryObjects
-        {
-            get { return categoryObjects; }
-            set { categoryObjects = value; }
-        }
-
-        public ObservableCollection<string> Categories
-        {
-            get { return categories; }
-            set { categories = value; }
-        }
 
 
 

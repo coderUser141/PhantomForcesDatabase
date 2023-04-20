@@ -9,6 +9,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using WeaponClasses;
+using FileProcessingParsingReading;
+using PFDB.User_Controls;
+using System;
+using System.Reflection;
+using System.Diagnostics.Metrics;
+using System.Windows.Documents;
 //using FileReader;
 
 namespace PFDB
@@ -18,30 +24,39 @@ namespace PFDB
     /// </summary>
     public partial class MainWindow : Window
     {
+
+        public Dictionary<FileReading.Classes, Class> classpairs;
+
+        private FileReading.BuildOptions gunlistsend = FileReading.BuildOptions.NONE;
+
+        private ObservableCollection<string> categories;
+        private ObservableCollection<Category> categoryObjects;
+        private ObservableCollection<string> weapons;
+        private ObservableCollection<Weapon> weaponObjects;
+
+        private Class classflag = new(null,"");
+
+        /// <summary>
+        /// <c>Weapon</c> objects that are passed to the main display panel
+        /// </summary>
+        public ObservableCollection<Weapon> WeaponObjects { get { return weaponObjects; } set { weaponObjects = value; } }
         
-        private Gun G36, M16A4, AS_VAL;
-        private Category AssaultRifles;
 
-        private Gun L2A3, MP5SD;
-        private Category PersonalDefenseWeapons;
+        /// <summary>
+        /// Weapon names displayed in list
+        /// </summary>
+        public ObservableCollection<string> Weapons { get { return weapons; } set { weapons = value; } }
 
-        private Gun M4A1, G36K;
-        private Category Carbines;
+        /// <summary>
+        /// <c>Category</c> objects that are passed to the main display panel
+        /// </summary>
+        public ObservableCollection<Category> CategoryObjects{ get { return categoryObjects; } set{ categoryObjects = value; } }
 
-        private Gun KSG12;
-        private Category Shotguns;
-
-        private Class Assault, Scout;
-
-        private enum Classes
-        {
-            Assault,
-            Scout,
-            Support,
-            Recon,
-            Melees,
-            Grenades
-        }
+        /// <summary>
+        /// Category names displayed in a list
+        /// </summary>
+        public ObservableCollection<string> Categories { get { return categories; } set { categories = value; } }
+        
 
         private void GunList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
@@ -51,7 +66,30 @@ namespace PFDB
             }
             else
             {
-                MainDisplay.passText(GunObjects[GunList.SelectedIndex]);
+                switch (gunlistsend)
+                {
+                    case FileReading.BuildOptions.FGS or FileReading.BuildOptions.IGS or FileReading.BuildOptions.HEGS:
+                        {
+                            StatsDisplay.passText((Grenade)weaponObjects[GunList.SelectedIndex]);
+                            break;
+                        }
+                    case FileReading.BuildOptions.OHBT or FileReading.BuildOptions.OHBE or FileReading.BuildOptions.THBE or FileReading.BuildOptions.THBT:
+                        {
+
+                            StatsDisplay.passText((Melee)weaponObjects[GunList.SelectedIndex]);
+                            break;
+                        }
+                    case FileReading.BuildOptions.NONE:
+                        {
+                            break;
+                        }
+                    default: //guns
+                        {
+
+                            StatsDisplay.passText((Gun)weaponObjects[GunList.SelectedIndex]);
+                            break;
+                        }
+                }
             }
         }
 
@@ -63,76 +101,60 @@ namespace PFDB
             }
             else
             {
-                gunList(CategoryObjects[CategoryList.SelectedIndex]);
+                int index = CategoryList.SelectedIndex; //gets the selected index
+                FileReading.BuildOptions build = CategoryFinder(index);
+                gunList(CategoryObjects[CategoryList.SelectedIndex], build);
             }
         }
 
         private void Assault_Click(object sender, RoutedEventArgs e)
         {
-
+            listUpdater(FileReading.Classes.Assault);
         }
 
         private void Scout_Click(object sender, RoutedEventArgs e)
         {
 
+            listUpdater(FileReading.Classes.Scout);
         }
 
         private void Support_Click(object sender, RoutedEventArgs e)
         {
 
+            listUpdater(FileReading.Classes.Support);
         }
 
         private void Recon_Click(object sender, RoutedEventArgs e)
         {
 
+            listUpdater(FileReading.Classes.Recon);
         }
 
         private void Melees_Click(object sender, RoutedEventArgs e)
         {
 
+            listUpdater(FileReading.Classes.Melees);
         }
 
         private void Grenades_Click(object sender, RoutedEventArgs e)
         {
+
+            listUpdater(FileReading.Classes.Grenades);
+        }
+
+        private void Secondary_Click(object sender, RoutedEventArgs e)
+        {
+            listUpdater(FileReading.Classes.Secondary);
 
         }
 
         /// <summary>
         /// Constructor.
         /// </summary>
-        public MainWindow()
+        public MainWindow() 
         {
-            Carried defaultAR = new(1.00, 1.00, 1.40, 14.00);
-            G36 = new("G36", true, 25, new Conversion("5.56x45mm", 150, 30, new string[] { "a750", "b750bb0", "s750" }, defaultAR, new Ranged(80, 160, 31, 23), 1.30, 2700.00, 2.6, 3.4, 0.35, 8.4), true, true);
-            G36.Conversions.addConversion(new Conversion(G36.Name, ".300 BLK", "T36", true, "300 AAC Blackout", 150, 30, new string[] { "a750", "s750" }, G36.DefaultCarriedAttributes, new Ranged(45, 160, 31, 20.13), 1.30, 2000.00, 2.6, 3.4, 1.00, G36.DefaultAimingWalkspeed));
-            M16A4 = new("M16A4", true, 20, new Conversion("5.56x45mm NATO", 150, 30, new string[] { "a680", "s680" }, new Carried(1.00, 1.00, 1.50, 14.00), new Ranged(40, 165, 35, 22), 1.20, 2800.00, 2.0, 2.7, 0.50, 9.8), true, true);
-            AS_VAL = new("AS VAL", true, 15, new Conversion("9x39mm SP", 140, 20, new string[] { "a800", "s800" }, defaultAR, new Ranged(60, 95, 34, 20), 1.00, 1500.00, 2.3, 3.0, 0.40, 8.4), true, true);
-
-            L2A3 = new("L2A3", true, 53, new Conversion("9x19mm", 170, 34, new string[] { "a550" }, defaultAR, new Ranged(45, 105, 36, 24), 1.10, 2000.00, 2.2, 3.1, 0.5, 10.5), true, true);
-            MP5SD = new("MP5SD", true, 60, new Conversion("9x19mm", 150, 30, new string[] { "a800", "s800" }, defaultAR, new Ranged(22, 110, 34, 18), 0.50, 1800.00, 2, 2.8, 0.25, 10.5), true, true);
-
-            //M4A1 = new("M4A1")
-
-            AssaultRifles = new(G36, "Assault Rifles");
-            AssaultRifles.addWeapon(AS_VAL);
-            AssaultRifles.addWeapon(M16A4);
-
-            PersonalDefenseWeapons = new(L2A3, "PDWs");
-            PersonalDefenseWeapons.addWeapon(MP5SD);
-
-            Carbines = new(M4A1, "Carbines");
-            Carbines.addWeapon(G36K);
-
-            Shotguns = new(KSG12, "Shotguns");
-
-            Assault = new(AssaultRifles, "AssaultRifles");
-            Assault.addCategory(Carbines);
-            Assault.addCategory(Shotguns);
-
-            Scout = new(PersonalDefenseWeapons, "PDWs");
-            Scout.addCategory(Carbines);
-
-
+            FileReading fileOutputs = new(FileReading.BuildOptions.NONE, true, true, true, false);
+            classpairs = fileOutputs.returnFunction().Result;
 
             DataContext = this;
 
@@ -142,10 +164,10 @@ namespace PFDB
             //carrieds = new ObservableCollection<string>();
             //rangeds = new ObservableCollection<string>();
             //conversions = new ObservableCollection<string>();
-            guns = new ObservableCollection<string>();
-            gunObjects = new ObservableCollection<Gun>();
-            categoryObjects = new ObservableCollection<Category>();
-            categories = new ObservableCollection<string>();
+            weapons = new();
+            weaponObjects = new();
+            categoryObjects = new();
+            categories = new();
 
 
             InitializeComponent();
@@ -158,74 +180,165 @@ namespace PFDB
 
 
         //adds the guns in the category to the gunlist
-        private void gunList(Category category)
+        private void gunList(Category category, FileReading.BuildOptions buildOptions)
         {
-            Guns.Clear();
-            GunObjects.Clear();
-            foreach(Gun gun in category.getWeapons())
+            Weapons.Clear();
+            WeaponObjects.Clear();
+
+            switch (buildOptions)
             {
-                addGun(gun);
+                case FileReading.BuildOptions.NONE:
+                    gunlistsend = FileReading.BuildOptions.NONE;
+                    break;
+                case FileReading.BuildOptions.ARS:
+                    gunlistsend = FileReading.BuildOptions.ARS;
+                    break;
+                case FileReading.BuildOptions.PDWS:
+                    gunlistsend = FileReading.BuildOptions.PDWS;
+                    break;
+                case FileReading.BuildOptions.LMGS:
+                    gunlistsend = FileReading.BuildOptions.LMGS;
+                    break;
+                case FileReading.BuildOptions.SRS:
+                    gunlistsend = FileReading.BuildOptions.SRS;
+                    break;
+                case FileReading.BuildOptions.BRS:
+                    gunlistsend = FileReading.BuildOptions.BRS;
+                    break;
+                case FileReading.BuildOptions.CAS:
+                    gunlistsend = FileReading.BuildOptions.CAS;
+                    break;
+                case FileReading.BuildOptions.DMRS:
+                    gunlistsend = FileReading.BuildOptions.DMRS;
+                    break;
+                case FileReading.BuildOptions.SHS:
+                    gunlistsend = FileReading.BuildOptions.SHS;
+                    break;
+                case FileReading.BuildOptions.PS:
+                    gunlistsend = FileReading.BuildOptions.PS;
+                    break;
+                case FileReading.BuildOptions.MPS:
+                    gunlistsend = FileReading.BuildOptions.MPS;
+                    break;
+                case FileReading.BuildOptions.RES:
+                    gunlistsend = FileReading.BuildOptions.RES;
+                    break;
+                case FileReading.BuildOptions.OTH:
+                    gunlistsend = FileReading.BuildOptions.OTH;
+                    break;
+                case FileReading.BuildOptions.FGS:
+                    gunlistsend = FileReading.BuildOptions.FGS;
+                    break;
+                case FileReading.BuildOptions.IGS:
+                    gunlistsend = FileReading.BuildOptions.IGS;
+                    break;
+                case FileReading.BuildOptions.HEGS:
+                    gunlistsend = FileReading.BuildOptions.HEGS;
+                    break;
+                case FileReading.BuildOptions.OHBT:
+                    gunlistsend = FileReading.BuildOptions.OHBT;
+                    break;
+                case FileReading.BuildOptions.OHBE:
+                    gunlistsend = FileReading.BuildOptions.OHBE;
+                    break;
+                case FileReading.BuildOptions.THBE:
+                    gunlistsend = FileReading.BuildOptions.THBE;
+                    break;
+                case FileReading.BuildOptions.THBT:
+                    gunlistsend = FileReading.BuildOptions.THBT;
+                    break;
             }
+            foreach(Weapon weapon in category.getWeapons())
+            {
+                addWeapon(weapon);
+            }
+            
+            
         }
 
         //adds to the observable collection
-        private void addGun(Gun gun)
+        private void addWeapon(Weapon gun)
         {
-            Guns.Add(gun.Name);
-            GunObjects.Add(gun);
+            Weapons.Add(gun.Name);
+            WeaponObjects.Add(gun);
         }
 
-        private void categoryList(Class classes) {
-            Categories.Clear();
-            CategoryObjects.Clear();
+        private void categoryList(Class classes) { 
+            Categories.Clear(); //clears the category names
+            CategoryObjects.Clear(); //clears the category objects
             foreach (Category category in classes.getCategoryList())
             {
-                addCategory(category);
+                addCategory(category); //adds a category according to the class
             }
         }
 
+
         private void addCategory(Category category)
         {
+            
             Categories.Add(category.Name);
             CategoryObjects.Add(category);
         }
 
         
-        private void listUpdater(Classes classes)
+        public FileReading.BuildOptions CategoryFinder(int index)
+        {
+            FileReading.BuildOptions options = FileReading.BuildOptions.NONE;
+            foreach (FileReading.BuildOptions b in SQLConnectionHandling.CategoryNames.Keys) //goes through the list of categories and their buildoptions
+            {
+                if (categories[index].Contains(SQLConnectionHandling.CategoryNames[b])) //if the selected category matches one of the categories in the list, assign options to the key
+                {
+                    options = b; break;
+                }
+            }
+            return options;
+        }
+        private void listUpdater(FileReading.Classes classes) //called when a category button is clicked
         {
             switch (classes)
             {
-                case Classes.Assault:
+                case FileReading.Classes.Assault:
                     {
-                        categoryList(Assault);
+                        categoryList(classpairs[FileReading.Classes.Assault]);
                         break;
                     }
-                case Classes.Scout:
+                case FileReading.Classes.Scout:
                     {
-                        categoryList(Scout);
+                        categoryList(classpairs[FileReading.Classes.Scout]);
                         break;
                     }
-                case Classes.Support:
+                case FileReading.Classes.Support:
                     {
-
+                        categoryList(classpairs[FileReading.Classes.Support]);
                         break;
                     }
-                case Classes.Recon:
+                case FileReading.Classes.Recon:
                     {
-
+                        categoryList(classpairs[FileReading.Classes.Recon]);
                         break;
                     }
-                case Classes.Melees:
+                case FileReading.Classes.Melees:
                     {
-
+                        categoryList(classpairs[FileReading.Classes.Melees]);
                         break;
                     }
-                case Classes.Grenades:
+                case FileReading.Classes.Grenades:
                     {
-
+                        categoryList(classpairs[FileReading.Classes.Grenades]);
+                        break;
+                    }
+                case FileReading.Classes.Secondary:
+                    {
+                        categoryList(classpairs[FileReading.Classes.Secondary]);
                         break;
                     }
             }
         }
+
     }
 }
+
+//button gets clicked
+//handler adds the categories listed inside the Class list
+//function iterates through the categories listed
+//categories listed then add their weapon list along with the type of weapons

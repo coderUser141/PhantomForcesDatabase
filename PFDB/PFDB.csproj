@@ -31,7 +31,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DatabaseFunctions\DatabaseFunctions.vcxproj" />
     <ProjectReference Include="..\FileReader\FileReader.csproj" />
     <ProjectReference Include="..\WeaponClasses\WeaponClasses.csproj" />
   </ItemGroup>
