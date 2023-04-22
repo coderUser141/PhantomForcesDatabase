@@ -1324,9 +1324,28 @@
             }
         }
 
+        /// <summary>
+        /// Constructor for SQL database reading.
+        /// </summary>
+        /// <param name="name">Name of the gun.</param>
+        /// <param name="hasRank">If the gun has a rank.</param>
+        /// <param name="rank">The gun's rank.</param>
+        /// <param name="conversions">List of conversions as a <c>ConversionList</c> object.</param>
         public Gun(string name, bool hasRank, int rank, ConversionList conversions) : base(name, hasRank, rank)
         {
-
+            defaultCaliber = conversions.DefaultConversion.Caliber;
+            defaultAmmoCapacity = conversions.DefaultConversion.AmmoCapacity;
+            defaultMagazineCapacity = conversions.DefaultConversion.MagazineCapacity;
+            defaultFireModes = conversions.DefaultConversion.FireModes;
+            defaultCarriedAttributes = conversions.DefaultConversion.CarriedAttributes;
+            defaultRangedAttributes = conversions.DefaultConversion.RangedAttributes;
+            defaultPenetration = conversions.DefaultConversion.Penetration;
+            defaultMuzzleVelocity = conversions.DefaultConversion.MuzzleVelocity;
+            defaultReloadSpeed = conversions.DefaultConversion.ReloadSpeed;
+            defaultEmptyReloadSpeed = conversions.DefaultConversion.EmptyReloadSpeed;
+            defaultSuppression = conversions.DefaultConversion.Suppression;
+            aimingWalkspeed = conversions.DefaultConversion.AimingWalkspeed;
+            this.conversions = conversions;
         }
 
         

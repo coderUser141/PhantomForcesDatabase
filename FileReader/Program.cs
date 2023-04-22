@@ -15,6 +15,7 @@ using WeaponClasses;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Data;
+using static FileProcessingParsingReading.FileReading;
 
 Console.WriteLine("Hello, World!");
 Console.WriteLine(DateTime.Now.ToString("HH:mm:ss:fff"));
@@ -138,7 +139,7 @@ if(sqlr == "y")
 {
     SQLConnectionHandling a = new();
     //a.GetAllSQLWeaponRecords();
-    a.GetSQLGunCategoryRecords(FileReading.BuildOptions.PDWS, Global.DBVERSION);
+    Class g = a.GetSQLClass(Classes.Assault, Global.DBVERSION);
 }
 
 Console.ReadKey();
@@ -166,10 +167,10 @@ namespace FileProcessingParsingReading
 
         //version 1.00 = pf version 8.0.0
         //version 1.01 = pf version 8.0.1
-        private static readonly string version = "1.00";
-        private static string buildFolder = @"all build options v5\";
-        private static string readFolder = @"all build options v5\";
-        private static readonly string dbversion = "100";
+        private static readonly string version = "1.01";
+        private static string buildFolder = @"all build options v6\";
+        private static string readFolder = @"all build options v6\";
+        private static readonly string dbversion = "101";
 
 
         public static string VERSION { get { return version; } }
@@ -238,11 +239,11 @@ namespace FileProcessingParsingReading
             private static List<string> personalDefenseWeaponsStrings = new() {
                 "mp5k","ump45","g36c","mp7","mac10","p90","colt-mars","mp5","colt-smg-633","l2a3","mp5sd","mp10","m3a1",
                 "mp510","uzi","aug-a3-para-xs","k7","aks74u","ppsh-41","fal-para-shorty","kriss-vector","pp-19-bizon","mp40",
-                "x95-smg","tommy-gun","rama-1130"/*,"bwc9-a","five-0"*/};
+                "x95-smg","tommy-gun","rama-1130","bwc9-a","five-0"};
 
                 //rebuild LMGS (m601 and m602 were swapped)
             private static List<string> lightMachineGunsStrings = new() {
-                "colt-lmg","m60","aug-hbar","mg36","rpk12","l86-lsw","rpk","hk21e","hamr-iar","rpk74","mg3kws"/*,"mgv-176","stoner-96"*/ };
+                "colt-lmg","m60","aug-hbar","mg36","rpk12","l86-lsw","rpk","hk21e","hamr-iar","rpk74","mg3kws","mgv-176","stoner-96" };
 
             private static List<string> sniperRiflesStrings = new() {
                 "intervention","model-700","dragunov-svu","aws","bfg-50","awm","trg-42","mosin-nagant","dragunov-svds",
@@ -5313,8 +5314,61 @@ namespace FileProcessingParsingReading
             C1 = 1,C2,C3,C4,C5,C6,C7,C8,C9,C10
         }
 
-        //match the 0
+        public Class GetSQLClass(FileReading.Classes classOption, string VERSIONSTRING)
+        {
+            string className = "";
+            switch (classOption)
+            {
+                case FileReading.Classes.Assault: className = "Assault"; break;
+                case FileReading.Classes.Scout: className = "Scout"; break;
+                case FileReading.Classes.Support: className = "Support"; break;
+                case FileReading.Classes.Recon: className = "Recon"; break;
+                case FileReading.Classes.Secondary: className = "Secondary"; break;
+                case FileReading.Classes.Grenades: className = "Grenades"; break;
+                case FileReading.Classes.Melees: className = "Melees"; break;
+            }
+            Class cl = new(null, className);
+            string v = Global.DBVERSION;
+            using (var conn = new SQLiteConnection(connectionString.ConnectionString))
+            {
+                using (var command = conn.CreateCommand())
+                {
+                    conn.Open();
+                    command.CommandText = "";
+                    List<string> categoryNames = new();
+                    command.CommandText = "SELECT * FROM CategoryData WHERE ClassName LIKE '" + className + "%';";
+                    using(var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            if (classOption == Classes.Grenades)
+                            {
+                                cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.FGS, v));
+                                cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.HEGS, v));
+                                cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.IGS, v));
+                            }
+                            else
+                            {
+                                for (int i = 1; i < 5; i++) {
+                                    foreach (BuildOptions bo in CategoryNames.Keys)
+                                    {
+                                        if (CategoryNames[bo] == reader.GetString(i))
+                                        {
+                                            cl.addCategory(GetSQLGunCategoryRecords(bo, v));
+                                        }
+                                }
+                                }
+                            }
+                        }
 
+                    }
+                    
+                }
+            }
+            return cl;
+        }
+
+        //match the 0
         public Category GetSQLGunCategoryRecords(FileReading.BuildOptions option, string VERSIONSTRING)
         {
             string v = VERSIONSTRING;
@@ -5334,26 +5388,26 @@ namespace FileProcessingParsingReading
 
 
                     conn.Open();
-                    command.CommandText = "SELECT * FROM GunData" + v + ";"; //+ " LEFT JOIN ConversionData" + v + " ON ConversionData" + v + ".ConversionName = GunData" + v + ".Conversion"+cs+";";
+                    command.CommandText = "SELECT * FROM GunData" + v + " WHERE GunData"+v+".Category = '"+CategoryNames[option] + "';"; //+ " LEFT JOIN ConversionData" + v + " ON ConversionData" + v + ".ConversionName = GunData" + v + ".Conversion"+cs+";";
 
                     using(var reader = command.ExecuteReader())
                     {
                         while(reader.Read())
                         {
                             string name = reader.GetString(0);
-                            result.addWeapon(new Gun(name, reader.GetString(1).Contains("True",StringComparison.CurrentCultureIgnoreCase), reader.GetInt32(2), GetSQLConversionRecord(name, new()
-                            {
-                                reader.GetString(5),
-                                reader.GetString(6),
-                                reader.GetString(7),
-                                reader.GetString(8),
-                                reader.GetString(9),
-                                reader.GetString(10),
-                                reader.GetString(11),
-                                reader.GetString(12),
-                                reader.GetString(13),
-                                reader.GetString(14)
-                            }, VERSIONSTRING)));
+                            List<string> conversions = new();
+                            Action<int> adder = (i) => { if (!reader.IsDBNull(i)) conversions.Add(reader.GetString(i)); };
+                            adder(5);
+                            adder(6);
+                            adder(7);
+                            adder(8);
+                            adder(9);
+                            adder(10);
+                            adder(11);
+                            adder(12);
+                            adder(13);
+                            adder(14);
+                            result.addWeapon(new Gun(name, reader.GetString(1).Contains("True",StringComparison.CurrentCultureIgnoreCase), reader.GetInt32(2), GetSQLConversionRecord(name, conversions, VERSIONSTRING)));
                         }
                     }
                 }
@@ -5364,20 +5418,20 @@ namespace FileProcessingParsingReading
         public ConversionList GetSQLConversionRecord(string GunName,List<string> ConversionNames, string VERSIONSTRING)
         {
             string v = VERSIONSTRING;
-            ConversionList list = new(new(false, false, new("blank", false, 0))); //to init, will get overwritten
+            ConversionList list = new(new(false, false, new("blank", false, 1, new Conversion("blank", 10, 10, new() { "a100sh8"}, new(1,1,1,1), new(1,1,1,1),1, 100, 2,2,2,2),false, false))); //to init, will get overwritten
             foreach (string s in ConversionNames)
             {
                 using (var conn = new SQLiteConnection(connectionString.ConnectionString))
                 {
                     //1cn 2c 3rac 4mc 5hm 6tm 7lm 8d1 9d2 10d1r 11d2r 12mv
                     //13pd 14s 15rt 16ert 17aw 18ww 19v1
-                    //20f1 21f1f 22f1s 23f1p
+                    //20f1 21f1f 22f1s 23f1px
                     //24f1 25f1f 26f1s 27f1p
                     //28f1 29f1f 30f1s 31f1p
                     using (var command = conn.CreateCommand())
                     {
                         conn.Open();
-                        command.CommandText = $"SELECT * FROM ConversionData" + v + " LIKE '{s}';";
+                        command.CommandText = $"SELECT * FROM ConversionData" + v + " WHERE ConversionName LIKE '"+s+"';";
                         using (var reader = command.ExecuteReader())
                         {
                             while (reader.Read())
@@ -5385,28 +5439,40 @@ namespace FileProcessingParsingReading
 
                                 if (reader.GetString(0).Contains(GunName) && GunName.Contains(reader.GetString(0)))
                                 {
-                                    list.DefaultConversion = 
-                                        new(GunName, "", reader.GetString(0), null, reader.GetString(1), reader.GetInt32(2), reader.GetInt32(3), new FireModeList(new List<FireMode>()
+                                    List<FireMode> fconv = new();
+                                    if (!reader.IsDBNull(19)){
+                                        fconv.Add(new(reader.GetDouble(20), reader.GetString(19), (reader.GetString(21).Contains("burst", StringComparison.CurrentCultureIgnoreCase)), reader.GetString(21), (!reader.IsDBNull(21) && reader.GetString(21) != ""), reader.GetString(21), reader.GetInt32(22)));
+                                    }
+                                    if (!reader.IsDBNull(23))
                                     {
-                                       new FireMode(reader.GetDouble(20),reader.GetString(19),(reader.GetString(21).Contains("burst",StringComparison.CurrentCultureIgnoreCase)),reader.GetString(21),(!reader.IsDBNull(21) && reader.GetString(21) != ""),reader.GetString(21),reader.GetInt32(22)),
+                                        fconv.Add(new FireMode(reader.GetDouble(24), reader.GetString(23), (reader.GetString(25).Contains("burst", StringComparison.CurrentCultureIgnoreCase)), reader.GetString(25), (!reader.IsDBNull(25) && reader.GetString(25) != ""), reader.GetString(25), reader.GetInt32(26)));
+                                    }
+                                    if (!reader.IsDBNull(27))
+                                    {
+                                        fconv.Add(new FireMode(reader.GetDouble(28), reader.GetString(27), (reader.GetString(29).Contains("burst", StringComparison.CurrentCultureIgnoreCase)), reader.GetString(29), (!reader.IsDBNull(29) && reader.GetString(29) != ""), reader.GetString(29), reader.GetInt32(30)));
+                                    }
+                                    list.DefaultConversion = 
+                                        new(GunName, "", reader.GetString(0), null, reader.GetString(1), reader.GetInt32(2), reader.GetInt32(3), new FireModeList(fconv), new Carried(reader.GetDouble(4), reader.GetDouble(5), reader.GetDouble(6), reader.GetDouble(17)), new Ranged(reader.GetDouble(9), reader.GetDouble(10), reader.GetDouble(7), reader.GetDouble(8)), reader.GetDouble(12), reader.GetDouble(11), reader.GetDouble(14), reader.GetDouble(15), reader.GetDouble(13), reader.GetDouble(16));
 
-                                       new FireMode(reader.GetDouble(24),reader.GetString(23),(reader.GetString(25).Contains("burst",StringComparison.CurrentCultureIgnoreCase)),reader.GetString(25),(!reader.IsDBNull(25) && reader.GetString(25) != ""),reader.GetString(25),reader.GetInt32(26)),
-
-                                       new FireMode(reader.GetDouble(28),reader.GetString(27),(reader.GetString(29).Contains("burst",StringComparison.CurrentCultureIgnoreCase)),reader.GetString(29),(!reader.IsDBNull(29) && reader.GetString(29) != ""),reader.GetString(29),reader.GetInt32(30))
-                                    }), new Carried(reader.GetDouble(4), reader.GetDouble(5), reader.GetDouble(6), reader.GetDouble(17)), new Ranged(reader.GetDouble(9), reader.GetDouble(10), reader.GetDouble(7), reader.GetDouble(8)), reader.GetDouble(12), reader.GetDouble(11), reader.GetDouble(14), reader.GetDouble(15), reader.GetDouble(13), reader.GetDouble(16));
                                     
                                 }
                                 else
                                 {
-                                    list.addConversion(
-                                        new(GunName, "", reader.GetString(0), null, reader.GetString(1), reader.GetInt32(2), reader.GetInt32(3), new FireModeList(new List<FireMode>()
+                                    List<FireMode> fconv = new();
+                                    if (!reader.IsDBNull(19))
                                     {
-                                       new FireMode(reader.GetDouble(20),reader.GetString(19),(reader.GetString(21).Contains("burst",StringComparison.CurrentCultureIgnoreCase)),reader.GetString(21),(!reader.IsDBNull(21) && reader.GetString(21) != ""),reader.GetString(21),reader.GetInt32(22)),
-
-                                       new FireMode(reader.GetDouble(24),reader.GetString(23),(reader.GetString(25).Contains("burst",StringComparison.CurrentCultureIgnoreCase)),reader.GetString(25),(!reader.IsDBNull(25) && reader.GetString(25) != ""),reader.GetString(25),reader.GetInt32(26)),
-
-                                       new FireMode(reader.GetDouble(28),reader.GetString(27),(reader.GetString(29).Contains("burst",StringComparison.CurrentCultureIgnoreCase)),reader.GetString(29),(!reader.IsDBNull(29) && reader.GetString(29) != ""),reader.GetString(29),reader.GetInt32(30))
-                                    }), new Carried(reader.GetDouble(4), reader.GetDouble(5), reader.GetDouble(6), reader.GetDouble(17)), new Ranged(reader.GetDouble(9), reader.GetDouble(10), reader.GetDouble(7), reader.GetDouble(8)), reader.GetDouble(12), reader.GetDouble(11), reader.GetDouble(14), reader.GetDouble(15), reader.GetDouble(13), reader.GetDouble(16)));
+                                        fconv.Add(new(reader.GetDouble(20), reader.GetString(19), (reader.GetString(21).Contains("burst", StringComparison.CurrentCultureIgnoreCase)), reader.GetString(21), (!reader.IsDBNull(21) && reader.GetString(21) != ""), reader.GetString(21), reader.GetInt32(22)));
+                                    }
+                                    if (!reader.IsDBNull(23))
+                                    {
+                                        fconv.Add(new FireMode(reader.GetDouble(24), reader.GetString(23), (reader.GetString(25).Contains("burst", StringComparison.CurrentCultureIgnoreCase)), reader.GetString(25), (!reader.IsDBNull(25) && reader.GetString(25) != ""), reader.GetString(25), reader.GetInt32(26)));
+                                    }
+                                    if (!reader.IsDBNull(27))
+                                    {
+                                        fconv.Add(new FireMode(reader.GetDouble(28), reader.GetString(27), (reader.GetString(29).Contains("burst", StringComparison.CurrentCultureIgnoreCase)), reader.GetString(29), (!reader.IsDBNull(29) && reader.GetString(29) != ""), reader.GetString(29), reader.GetInt32(30)));
+                                    }
+                                    list.addConversion(
+                                        new(GunName, "", reader.GetString(0), null, reader.GetString(1), reader.GetInt32(2), reader.GetInt32(3), new FireModeList(fconv), new Carried(reader.GetDouble(4), reader.GetDouble(5), reader.GetDouble(6), reader.GetDouble(17)), new Ranged(reader.GetDouble(9), reader.GetDouble(10), reader.GetDouble(7), reader.GetDouble(8)), reader.GetDouble(12), reader.GetDouble(11), reader.GetDouble(14), reader.GetDouble(15), reader.GetDouble(13), reader.GetDouble(16)));
                                 }
                             }
                         }
