@@ -6,7 +6,7 @@
     <UseWPF>true</UseWPF>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
-    <Platforms>AnyCPU;x64;x86</Platforms>
+    <Platforms>AnyCPU;x64;x86;ARM32;ARM64</Platforms>
     <StartupObject></StartupObject>
   </PropertyGroup>
 

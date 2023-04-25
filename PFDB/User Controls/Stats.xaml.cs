@@ -17,11 +17,11 @@ namespace PFDB.User_Controls
 
         
 
-        public void passText(Gun gun)
+        public void passText(Gun gun, Conversion conversion)
         {
             clearText();
-            Name.Text = gun.Name;
-            c1r1.Text = "Gun Name:";
+            Name.Text = gun.Name + " / " + conversion.ConversionName;
+            c1r1.Text = "Gun Name / Conversion Name:";
 
             Rank.Text = "Rank " + gun.Rank.ToString();
             c1r2.Text = "Gun Rank:";
@@ -29,43 +29,45 @@ namespace PFDB.User_Controls
             Firemodes.Text = GUIWeaponClass.firemodelistJoiner(GUIWeaponClass.firemodeGUI(gun.Conversions.DefaultConversion.FireModes));
             c1r3.Text = "Firemodes:";
 
-            limbMultiplier.Text = gun.DefaultCarriedAttributes.LimbMultiplier.ToString() + "x";
+            
+
+            limbMultiplier.Text = conversion.CarriedAttributes.LimbMultiplier.ToString() + "x";
             c1r4.Text = "Limb Multiplier:";
 
-            headMultiplier.Text = gun.DefaultCarriedAttributes.HeadMultiplier.ToString() + "x";
+            headMultiplier.Text = conversion.CarriedAttributes.HeadMultiplier.ToString() + "x";
             c1r6.Text = "Head Multiplier:";
 
-            torsoMultiplier.Text = gun.DefaultCarriedAttributes.TorsoMultiplier.ToString() + "x";
+            torsoMultiplier.Text = conversion.CarriedAttributes.TorsoMultiplier.ToString() + "x";
             c1r5.Text = "Torso Multiplier:";
 
-            walkspeed.Text = gun.DefaultCarriedAttributes.WalkSpeed.ToString();
+            walkspeed.Text = conversion.CarriedAttributes.WalkSpeed.ToString();
             c1r7.Text = "Weapon Walkspeed:";
-            Range1.Text = gun.DefaultRangedAttributes.Range1.ToString() + " studs";
+            Range1.Text = conversion.RangedAttributes.Range1.ToString() + " studs";
             c1r8.Text = "Range 1:";
-            Range2.Text = gun.DefaultRangedAttributes.Range2.ToString() + " studs";
+            Range2.Text = conversion.RangedAttributes.Range2.ToString() + " studs";
             c1r9.Text = "Range 2:";
-            Range1Damage.Text = gun.DefaultRangedAttributes.Range1Damage.ToString();
+            Range1Damage.Text = conversion.RangedAttributes.Range1Damage.ToString();
             c1r10.Text = "Range 1 Damage:";
-            Range2Damage.Text = gun.DefaultRangedAttributes.Range2Damage.ToString();
+            Range2Damage.Text = conversion.RangedAttributes.Range2Damage.ToString();
             c1r11.Text = "Range 2 Damage:";
 
-            Penetration.Text = gun.DefaultPenetration == 1 ? gun.DefaultPenetration.ToString() + " stud" : gun.DefaultPenetration.ToString() + " studs";
+            Penetration.Text = conversion.Penetration == 1 ? gun.DefaultPenetration.ToString() + " stud" : gun.DefaultPenetration.ToString() + " studs";
             c2r4.Text = "Penetration Depth:";
-            MuzzleVelocity.Text = gun.DefaultMuzzleVelocity.ToString() + " studs/s";
+            MuzzleVelocity.Text = conversion.MuzzleVelocity.ToString() + " studs/s";
             c2r5.Text = "Muzzle Velocity:";
-            ReloadSpeed.Text = gun.DefaultReloadSpeed.ToString() + " seconds";
+            ReloadSpeed.Text = conversion.ReloadSpeed.ToString() + " seconds";
             c2r6.Text = "Reload Time:";
-            EmptyReloadSpeed.Text = gun.DefaultEmptyReloadSpeed.ToString() + " seconds";
+            EmptyReloadSpeed.Text = conversion.EmptyReloadSpeed.ToString() + " seconds";
             c2r7.Text = "Empty Reload Time:";
-            Suppression.Text = gun.DefaultSuppression.ToString();
+            Suppression.Text = conversion.Suppression.ToString();
             c2r8.Text = "Suppression:";
-            AimingWalkspeeed.Text = gun.DefaultAimingWalkspeed.ToString();
+            AimingWalkspeeed.Text = conversion.AimingWalkspeed.ToString();
             c2r9.Text = "Aiming Walkspeed:";
-            Caliber.Text = gun.DefaultCaliber.ToString();
+            Caliber.Text = conversion.Caliber.ToString();
             c2r10.Text = "Caliber:";
-            TotalAmmo.Text = gun.DefaultAmmoCapacity.ToString();
+            TotalAmmo.Text = conversion.AmmoCapacity.ToString();
             c2r11.Text = "Reserve Ammo Capacity:";
-            MagazineCapacity.Text = gun.DefaultMagazineCapacity.ToString();
+            MagazineCapacity.Text = conversion.MagazineCapacity.ToString();
             c2r12.Text = "Magazine Capacity:";
             
 
@@ -151,10 +153,10 @@ namespace PFDB.User_Controls
         {
             clearText();
             Name.Text = melee.Name;
-            c1r1.Text = "Gun Name:";
+            c1r1.Text = "Melee Name:";
 
             Rank.Text = "Rank " + melee.Rank.ToString();
-            c1r2.Text = "Gun Rank:";
+            c1r2.Text = "Melee Rank:";
 
             Firemodes.Text = melee.BladeLength.ToString();
             c1r3.Text = "Blade Length:";

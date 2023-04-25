@@ -15,6 +15,7 @@ using System;
 using System.Reflection;
 using System.Diagnostics.Metrics;
 using System.Windows.Documents;
+using System.Threading;
 //using FileReader;
 
 namespace PFDB
@@ -24,6 +25,9 @@ namespace PFDB
     /// </summary>
     public partial class MainWindow : Window
     {
+
+        private double version = 1.00;
+        private string dbversion = "100";
 
         public Dictionary<FileReading.Classes, Class> classpairs;
 
@@ -70,12 +74,17 @@ namespace PFDB
                 {
                     case FileReading.BuildOptions.FGS or FileReading.BuildOptions.IGS or FileReading.BuildOptions.HEGS:
                         {
+                            DefaultConversionButton.IsEnabled = false;
+                            APConversionButton.IsEnabled = false;
+                            HPConversionButton.IsEnabled = false;
                             StatsDisplay.passText((Grenade)weaponObjects[GunList.SelectedIndex]);
                             break;
                         }
                     case FileReading.BuildOptions.OHBT or FileReading.BuildOptions.OHBE or FileReading.BuildOptions.THBE or FileReading.BuildOptions.THBT:
                         {
-
+                            DefaultConversionButton.IsEnabled = false;
+                            APConversionButton.IsEnabled = false;
+                            HPConversionButton.IsEnabled = false;
                             StatsDisplay.passText((Melee)weaponObjects[GunList.SelectedIndex]);
                             break;
                         }
@@ -85,10 +94,49 @@ namespace PFDB
                         }
                     default: //guns
                         {
+                            DefaultConversionButton.IsEnabled = true;
+                            APConversionButton.IsEnabled = true;
+                            HPConversionButton.IsEnabled = true;
 
-                            StatsDisplay.passText((Gun)weaponObjects[GunList.SelectedIndex]);
+                            Gun gun = (Gun)weaponObjects[GunList.SelectedIndex];
+                            if (DefaultConversionButton.IsChecked == true)
+                            {
+                                StatsDisplay.passText(gun, gun.Conversions.DefaultConversion);
+                            }
+                            else if (APConversionButton.IsChecked == true)
+                            {
+                                StatsDisplay.passText(gun, new(true, false, gun));
+                            }
+                            else if (HPConversionButton.IsChecked == true)
+                            {
+                                StatsDisplay.passText(gun, new(false, true, gun));
+                            }
                             break;
                         }
+                }
+            }
+        }
+
+        private void ConversionButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (GunList.SelectedIndex < 0)
+            {
+                //do nothing
+            }
+            else
+            {
+                Gun gun = (Gun)weaponObjects[GunList.SelectedIndex];
+                if (DefaultConversionButton.IsChecked == true)
+                {
+                    StatsDisplay.passText(gun, gun.Conversions.DefaultConversion);
+                }
+                else if (APConversionButton.IsChecked == true)
+                {
+                    StatsDisplay.passText(gun, new(true, false, gun));
+                }
+                else if (HPConversionButton.IsChecked == true)
+                {
+                    StatsDisplay.passText(gun, new(false, true, gun));
                 }
             }
         }
@@ -148,13 +196,73 @@ namespace PFDB
 
         }
 
+        private void Version_Click(object sender, RoutedEventArgs e)
+        {
+            VersionUpdater();
+            if(Version100Button?.IsChecked == true)
+            {
+                version = 1.00;
+            }else if(Version101Button?.IsChecked==true)
+            {
+                version = 1.01;
+            }
+
+            weapons.Clear();
+            weaponObjects.Clear();
+            categories.Clear();
+            categoryObjects.Clear();
+            //StatsDisplay.clearText();
+            VersionUpdater();
+            Dictionary<FileReading.Classes, Class> cl = new();
+            SQLConnectionHandling connectionHandling = new();
+            Action<FileReading.Classes> action = (a) => { cl.Add(a, connectionHandling.GetSQLClass(a, dbversion)); };
+            action(FileReading.Classes.Assault);
+            action(FileReading.Classes.Scout);
+            action(FileReading.Classes.Support);
+            action(FileReading.Classes.Recon);
+            action(FileReading.Classes.Secondary);
+            action(FileReading.Classes.Grenades);
+            action(FileReading.Classes.Melees);
+            classpairs = cl;
+            VersionDisplay.Text = version.ToString();
+        }
+
+        private static void ShowMessage()
+        {
+            MessageBox.Show("Please wait while the database loads the data...");
+        }
+
+        private void VersionUpdater()
+        {
+            if(version == 1.00)
+            {
+                dbversion = "100";
+            }else if(version == 1.01)
+            {
+                dbversion = "101";
+            }
+        }
+
         /// <summary>
         /// Constructor.
         /// </summary>
         public MainWindow() 
         {
-            FileReading fileOutputs = new(FileReading.BuildOptions.NONE, true, true, true, false);
-            classpairs = fileOutputs.returnFunction().Result;
+            Thread T1 = new(() => ShowMessage());
+            T1.Name = "T1";
+            T1.Start();
+            Dictionary<FileReading.Classes, Class> cl = new();
+            SQLConnectionHandling connectionHandling = new();
+            VersionUpdater();
+            Action<FileReading.Classes> action = (a) => { cl.Add(a, connectionHandling.GetSQLClass(a, dbversion)); };
+            action(FileReading.Classes.Assault);
+            action(FileReading.Classes.Scout);
+            action(FileReading.Classes.Support);
+            action(FileReading.Classes.Recon);
+            action(FileReading.Classes.Secondary);
+            action(FileReading.Classes.Grenades);
+            action(FileReading.Classes.Melees);
+            classpairs = cl;
 
             DataContext = this;
 
@@ -172,6 +280,7 @@ namespace PFDB
 
             InitializeComponent();
 
+            VersionDisplay.Text = version.ToString();
 
         }
 
@@ -335,6 +444,7 @@ namespace PFDB
             }
         }
 
+        
     }
 }
 

@@ -8,12 +8,12 @@
 
   <Identity
     Name="bddd0481-1278-4ce5-b1f4-98f3a3c7a458"
-    Publisher="CN=peter"
-    Version="1.0.0.0" />
+    Publisher="CN=AethelhelmKyviro"
+    Version="1.0.4.0" />
 
   <Properties>
     <DisplayName>AppInstaller</DisplayName>
-    <PublisherDisplayName>peter</PublisherDisplayName>
+    <PublisherDisplayName>Aethelhelm#5659</PublisherDisplayName>
     <Logo>Images\StoreLogo.png</Logo>
   </Properties>
 
@@ -31,12 +31,11 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="AppInstaller"
-        Description="AppInstaller"
+        DisplayName="Phantom Forces DataBase (PFDB) Installer"
         BackgroundColor="transparent"
         Square150x150Logo="Images\Square150x150Logo.png"
-        Square44x44Logo="Images\Square44x44Logo.png">
-        <uap:DefaultTile Wide310x150Logo="Images\Wide310x150Logo.png" />
+        Square44x44Logo="Images\Square44x44Logo.png" Description="The installer for the Phantom Forces DataBase, made by Kyviro a.k.a. Aethelhelm#5659 on Discord.">
+        <uap:DefaultTile Wide310x150Logo="Images\Wide310x150Logo.png"  Square71x71Logo="Images\SmallTile.png" Square310x310Logo="Images\LargeTile.png"/>
         <uap:SplashScreen Image="Images\SplashScreen.png" />
       </uap:VisualElements>
     </Application>

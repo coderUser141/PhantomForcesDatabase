@@ -113,7 +113,8 @@ Console.WriteLine("Write to SQLite database?");
 string? sqlw = Console.ReadLine() ?? "";
 if(sqlw == "y")
 {
-    FileReading file = new(FileReading.BuildOptions.ARS | FileReading.BuildOptions.PDWS | FileReading.BuildOptions.LMGS | FileReading.BuildOptions.SRS | FileReading.BuildOptions.CAS | FileReading.BuildOptions.DMRS | FileReading.BuildOptions.BRS | FileReading.BuildOptions.SHS | FileReading.BuildOptions.PS | FileReading.BuildOptions.MPS | FileReading.BuildOptions.RES | FileReading.BuildOptions.OTH | FileReading.BuildOptions.FGS | FileReading.BuildOptions.HEGS | FileReading.BuildOptions.IGS | FileReading.BuildOptions.OHBT | FileReading.BuildOptions.OHBE | FileReading.BuildOptions.THBT | FileReading.BuildOptions.THBE, true, true, false, false);
+    //FileReading file = new(FileReading.BuildOptions.ARS | FileReading.BuildOptions.PDWS | FileReading.BuildOptions.LMGS | FileReading.BuildOptions.SRS | FileReading.BuildOptions.CAS | FileReading.BuildOptions.DMRS | FileReading.BuildOptions.BRS | FileReading.BuildOptions.SHS | FileReading.BuildOptions.PS | FileReading.BuildOptions.MPS | FileReading.BuildOptions.RES | FileReading.BuildOptions.OTH | FileReading.BuildOptions.FGS | FileReading.BuildOptions.HEGS | FileReading.BuildOptions.IGS | FileReading.BuildOptions.OHBT | FileReading.BuildOptions.OHBE | FileReading.BuildOptions.THBT | FileReading.BuildOptions.THBE, true, true, false, false);
+    FileReading file = new(BuildOptions.FGS | BuildOptions.HEGS | BuildOptions.IGS, true, true, false, false);
     SQLConnectionHandling connectionHandling = new();
     Dictionary<FileReading.Classes, Class> pairs = file.classpairs;
     /*
@@ -167,10 +168,10 @@ namespace FileProcessingParsingReading
 
         //version 1.00 = pf version 8.0.0
         //version 1.01 = pf version 8.0.1
-        private static readonly string version = "1.01";
-        private static string buildFolder = @"all build options v6\";
-        private static string readFolder = @"all build options v6\";
-        private static readonly string dbversion = "101";
+        private static readonly string version = "1.00";
+        private static string buildFolder = @"all build options v5\";
+        private static string readFolder = @"all build options v5\";
+        private static readonly string dbversion = "100";
 
 
         public static string VERSION { get { return version; } }
@@ -236,13 +237,21 @@ namespace FileProcessingParsingReading
                 "ak12","an94","as-val","scar-l","aug-a1","m16a4","g36","m16a1","m16a3","type-20","aug-a2","k2","famas-f1",
                 "ak47","aug-a3","l85a2","hk416","ak74","akm","ak103","tar-21","type-88","m231","c7a2","stg-44","g11k2" };
 
-            private static List<string> personalDefenseWeaponsStrings = new() {
+            private static List<string> personalDefenseWeaponsStrings100 = new() {
+                "mp5k","ump45","g36c","mp7","mac10","p90","colt-mars","mp5","colt-smg-633","l2a3","mp5sd","mp10","m3a1",
+                "mp510","uzi","aug-a3-para-xs","k7","aks74u","ppsh-41","fal-para-shorty","kriss-vector","pp-19-bizon","mp40",
+                "x95-smg","tommy-gun","rama-1130"/*,"bwc9-a","five-0"*/};
+
+            private static List<string> personalDefenseWeaponsStrings101 = new() {
                 "mp5k","ump45","g36c","mp7","mac10","p90","colt-mars","mp5","colt-smg-633","l2a3","mp5sd","mp10","m3a1",
                 "mp510","uzi","aug-a3-para-xs","k7","aks74u","ppsh-41","fal-para-shorty","kriss-vector","pp-19-bizon","mp40",
                 "x95-smg","tommy-gun","rama-1130","bwc9-a","five-0"};
 
-                //rebuild LMGS (m601 and m602 were swapped)
-            private static List<string> lightMachineGunsStrings = new() {
+            //rebuild LMGS (m601 and m602 were swapped)
+            private static List<string> lightMachineGunsStrings100 = new() {
+                "colt-lmg","m60","aug-hbar","mg36","rpk12","l86-lsw","rpk","hk21e","hamr-iar","rpk74","mg3kws"/*,"mgv-176","stoner-96" */};
+
+            private static List<string> lightMachineGunsStrings101 = new() {
                 "colt-lmg","m60","aug-hbar","mg36","rpk12","l86-lsw","rpk","hk21e","hamr-iar","rpk74","mg3kws","mgv-176","stoner-96" };
 
             private static List<string> sniperRiflesStrings = new() {
@@ -322,8 +331,35 @@ namespace FileProcessingParsingReading
 
 
             public static List<string> AssaultRiflesStrings { get { return assaultRiflesStrings; }}
-            public static List<string> PersonalDefenseWeaponsStrings { get { return personalDefenseWeaponsStrings; }  }
-            public static List<string> LightMachineGunsStrings { get { return lightMachineGunsStrings; }  }
+            public static List<string> PersonalDefenseWeaponsStrings { get {
+                    if (Global.VERSION == "1.01" && Global.DBVERSION == "101")
+                    {
+                        return personalDefenseWeaponsStrings101;
+                    }
+                    else if (Global.VERSION == "1.00" && Global.DBVERSION == "100")
+                    {
+                        return personalDefenseWeaponsStrings100;
+                    }
+                    else
+                    {
+                        throw new Exception("mismatched VERSION and DBVERSION, you have a broken copy");
+                    }
+                }  }
+
+            public static List<string> LightMachineGunsStrings { get {
+                    if (Global.VERSION == "1.01" && Global.DBVERSION == "101")
+                    {
+                        return lightMachineGunsStrings101;
+                    }
+                    else if(Global.VERSION == "1.00" && Global.DBVERSION == "100")
+                    {
+                        return lightMachineGunsStrings100;
+                    }
+                    else
+                    {
+                        throw new Exception("mismatched VERSION and DBVERSION, you have a broken copy");
+                    }
+                }  }
             public static List<string> SniperRiflesStrings { get { return sniperRiflesStrings; } }
             public static List<string> BattleRiflesStrings { get { return battleRiflesStrings; } }
             public static List<string> DesignatedMarksmanRiflesStrings { get { return designatedMarksmanRiflesStrings; } }
@@ -364,7 +400,7 @@ namespace FileProcessingParsingReading
                         }
                     case BuildOptions.PersonalDefenseWeapons:
                         {
-                            foreach (string s in personalDefenseWeaponsStrings)
+                            foreach (string s in PersonalDefenseWeaponsStrings)
                             {
                                 stringBuilding.Add(s);
                             }
@@ -372,7 +408,7 @@ namespace FileProcessingParsingReading
                         }
                     case BuildOptions.LightMachineGuns:
                         {
-                            foreach (string s in lightMachineGunsStrings)
+                            foreach (string s in LightMachineGunsStrings)
                             {
                                 stringBuilding.Add(s);
                             }
@@ -512,11 +548,11 @@ namespace FileProcessingParsingReading
                             {
                                 stringBuilding.Add(s);
                             }
-                            foreach (string s in personalDefenseWeaponsStrings)
+                            foreach (string s in PersonalDefenseWeaponsStrings)
                             {
                                 stringBuilding.Add(s);
                             }
-                            foreach (string s in lightMachineGunsStrings)
+                            foreach (string s in LightMachineGunsStrings)
                             {
                                 stringBuilding.Add(s);
                             }
@@ -5111,11 +5147,11 @@ namespace FileProcessingParsingReading
                             {
 
                                 conn.Open();
-                                command.CommandText = String.Format(@"INSERT INTO GrenadeData{10} (Name, HasRank, Rank, FuseTime, SpecialEffects, BlastRadius, KillingRadius, MaximumDamage, Version, Category)
-                                                VALUES ('{0}', '{1}', {2}, {3}, '{4}', {5}, {6}, {7}, '{8}', '{9}');",
+                                command.CommandText = String.Format(@"INSERT INTO GrenadeData{10} (Name, HasRank, Rank, FuseTime, SpecialEffects, BlastRadius, KillingRadius, MaximumDamage, Version, Category, StoredCapacity)
+                                                VALUES ('{0}', '{1}', {2}, {3}, '{4}', {5}, {6}, {7}, '{8}', '{9}', {11});",
                                                 g.Name,g.HasRank?"True":"False",g.Rank, g.FuseTime, 
                                                 g.SpecialMode, g.BlastRadius, g.KillRadius, g.MaximumDamage,
-                                                Global.VERSION, CategoryNames[o], Global.DBVERSION);
+                                                Global.VERSION, CategoryNames[o], Global.DBVERSION, g.StoredCapacity);
                                 command.ExecuteReader();
                                 conn.Close();
                             }
@@ -5328,89 +5364,192 @@ namespace FileProcessingParsingReading
                 case FileReading.Classes.Melees: className = "Melees"; break;
             }
             Class cl = new(null, className);
-            string v = Global.DBVERSION;
+            string v = VERSIONSTRING;
+            
+            switch (classOption)
+            {
+                case Classes.Assault:
+                    {
+
+                        cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.ARS, v));
+                        cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.BRS, v));
+                        cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.CAS, v));
+                        cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.SHS, v));
+                        break;
+                    }
+                case Classes.Scout:
+                    {
+
+                        cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.PDWS, v));
+                        cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.DMRS, v));
+                        cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.CAS, v));
+                        cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.SHS, v));
+                        break;
+                    }
+                case Classes.Support:
+                    {
+                        cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.LMGS, v));
+                        cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.BRS, v));
+                        cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.CAS, v));
+                        cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.SHS, v));
+                        break;
+                    }
+                case Classes.Recon:
+                    {
+
+                        cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.SRS, v));
+                        cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.DMRS, v));
+                        cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.BRS, v));
+                        cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.CAS, v));
+                        break;
+                    }
+                case Classes.Secondary:
+                    {
+
+                        cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.PS, v));
+                        cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.MPS, v));
+                        cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.RES, v));
+                        cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.OTH, v));
+                        break;
+                    }
+                case Classes.Melees:
+                    {
+
+                        cl.addCategory(GetSQLMeleeCategoryRecords(BuildOptions.OHBE, v));
+                        cl.addCategory(GetSQLMeleeCategoryRecords(BuildOptions.OHBT, v));
+                        cl.addCategory(GetSQLMeleeCategoryRecords(BuildOptions.THBE, v));
+                        cl.addCategory(GetSQLMeleeCategoryRecords(BuildOptions.THBT, v));
+                        break;
+                    }
+                case Classes.Grenades:
+                    {
+                        cl.addCategory(GetSQLGrenadeCategoryRecords(BuildOptions.FGS, v));
+                        cl.addCategory(GetSQLGrenadeCategoryRecords(BuildOptions.HEGS, v));
+                        cl.addCategory(GetSQLGrenadeCategoryRecords(BuildOptions.IGS, v));
+                        break;
+                    }
+            }
+                        
+            return cl;
+        }
+        
+        //match the 0
+        public Category GetSQLGunCategoryRecords(FileReading.BuildOptions option, string VERSIONSTRING)
+        {
+            if (option != BuildOptions.OHBT && option != BuildOptions.OHBE && option != BuildOptions.THBT && option != BuildOptions.THBE && option != BuildOptions.FGS && option != BuildOptions.HEGS && option != BuildOptions.IGS)
+            {
+                string v = VERSIONSTRING;
+                Category result = new(null, CategoryNames[option]);
+                using (var conn = new SQLiteConnection(connectionString.ConnectionString))
+                {
+                    using (var command = conn.CreateCommand())
+                    {
+                        //DefaultName	HasRank	Rank	Version	Category	Conversion1	Conversion2	Conversion3	Conversion4	Conversion5	Conversion6	Conversion7	Conversion8	Conversion9	Conversion10	ConversionName	Caliber	ReserveAmmoCapacity	MagazineCapacity	HeadMultiplier	TorsoMultiplier	LimbMultiplier	Damage1	Damage2	Damage1Range	Damage2Range	MuzzleVelocity	PenetrationDepth	Suppression	ReloadTime	EmptyReloadTime	AimingWalkspeed	WeaponWalkspeed	Version1	Firemode1	Firemode1Firerate	Firemode1Special	Firemode1Pellets	Firemode2	Firemode2Firerate	Firemode2Special	Firemode2Pellets	Firemode3	Firemode3Firerate	Firemode3Special	Firemode3Pellets
+                        //1dn 2hr 3r 4v 5c 6c1 7c2 8c3 9c4 10c5 11c6 12c7 13c8 14c9 15c10
+                        //16cn 17c 18rac 19mc 20hm 21tm 22lm 23d1 24d2 25d1r 26d2r 27mv
+                        //28pd 29s 30rt 31ert 32aw 33ww 34v1
+                        //35f1 36f1f 37f1s 38f1p
+                        //39f1 40f1f 41f1s 42f1p
+                        //43f1 44f1f 45f1s 46f1p
+
+
+                        conn.Open();
+                        command.CommandText = "SELECT * FROM GunData" + v + " WHERE GunData" + v + ".Category = '" + CategoryNames[option] + "';"; //+ " LEFT JOIN ConversionData" + v + " ON ConversionData" + v + ".ConversionName = GunData" + v + ".Conversion"+cs+";";
+                                                                                                                                                   //remember that there are two ways: search by category and search by name listed in weaponstrings, laptop will die soon
+
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                string name = reader.GetString(0);
+                                List<string> conversions = new();
+                                Action<int> adder = (i) => { if (!reader.IsDBNull(i)) conversions.Add(reader.GetString(i)); };
+                                adder(5);
+                                adder(6);
+                                adder(7);
+                                adder(8);
+                                adder(9);
+                                adder(10);
+                                adder(11);
+                                adder(12);
+                                adder(13);
+                                adder(14);
+                                result.addWeapon(new Gun(name, reader.GetString(1).Contains("True", StringComparison.CurrentCultureIgnoreCase), reader.GetInt32(2), GetSQLConversionRecord(name, conversions, v)));
+                            }
+                        }
+                    }
+                }
+                return result;
+            }
+            else
+            {
+
+                throw new ArgumentException("option cannot be a non-gun type");
+            }
+        }
+
+        public Category GetSQLMeleeCategoryRecords(FileReading.BuildOptions option, string VERSIONSTRING)
+        {
+            if (option != BuildOptions.OHBT && option != BuildOptions.OHBE && option != BuildOptions.THBT && option != BuildOptions.THBE)
+            {
+                throw new ArgumentException("option cannot be a non-melee type");
+            }
+            Category result = new(null, CategoryNames[option]);
+            string v = VERSIONSTRING;
+            int meleeID = 0;
             using (var conn = new SQLiteConnection(connectionString.ConnectionString))
             {
                 using (var command = conn.CreateCommand())
                 {
                     conn.Open();
-                    command.CommandText = "";
-                    List<string> categoryNames = new();
-                    command.CommandText = "SELECT * FROM CategoryData WHERE ClassName LIKE '" + className + "%';";
+                    command.CommandText = "SELECT * FROM MeleeData" + v + " WHERE MeleeData" + v + ".Category = '" + CategoryNames[option] + "';";
                     using(var reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            if (classOption == Classes.Grenades)
-                            {
-                                cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.FGS, v));
-                                cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.HEGS, v));
-                                cl.addCategory(GetSQLGunCategoryRecords(BuildOptions.IGS, v));
-                            }
-                            else
-                            {
-                                for (int i = 1; i < 5; i++) {
-                                    foreach (BuildOptions bo in CategoryNames.Keys)
-                                    {
-                                        if (CategoryNames[bo] == reader.GetString(i))
-                                        {
-                                            cl.addCategory(GetSQLGunCategoryRecords(bo, v));
-                                        }
-                                }
-                                }
-                            }
-                        }
+                            string name = reader.GetString(0);
+                            List<string> conversions = new();
 
+                            result.addMelee(new Melee(name, reader.GetString(1).Contains("True", StringComparison.CurrentCultureIgnoreCase), reader.GetInt32(2),reader.GetDouble(4),reader.GetDouble(5),reader.GetDouble(3),new(reader.GetDouble(8), reader.GetDouble(7), reader.GetDouble(6), reader.GetDouble(9))),meleeID);
+                            meleeID++;
+                        }
                     }
-                    
+
                 }
+
             }
-            return cl;
+            return result;
         }
 
-        //match the 0
-        public Category GetSQLGunCategoryRecords(FileReading.BuildOptions option, string VERSIONSTRING)
+        public Category GetSQLGrenadeCategoryRecords(FileReading.BuildOptions option, string VERSIONSTRING)
         {
-            string v = VERSIONSTRING;
-            string query = "";
+            if(option != BuildOptions.FGS && option != BuildOptions.HEGS && option != BuildOptions.IGS)
+            {
+                throw new ArgumentException("option cannot be a non-grenade type");
+            }
             Category result = new(null, CategoryNames[option]);
+            string v = VERSIONSTRING;
+            int meleeID = 0;
             using (var conn = new SQLiteConnection(connectionString.ConnectionString))
             {
                 using (var command = conn.CreateCommand())
                 {
-                    //DefaultName	HasRank	Rank	Version	Category	Conversion1	Conversion2	Conversion3	Conversion4	Conversion5	Conversion6	Conversion7	Conversion8	Conversion9	Conversion10	ConversionName	Caliber	ReserveAmmoCapacity	MagazineCapacity	HeadMultiplier	TorsoMultiplier	LimbMultiplier	Damage1	Damage2	Damage1Range	Damage2Range	MuzzleVelocity	PenetrationDepth	Suppression	ReloadTime	EmptyReloadTime	AimingWalkspeed	WeaponWalkspeed	Version1	Firemode1	Firemode1Firerate	Firemode1Special	Firemode1Pellets	Firemode2	Firemode2Firerate	Firemode2Special	Firemode2Pellets	Firemode3	Firemode3Firerate	Firemode3Special	Firemode3Pellets
-                    //1dn 2hr 3r 4v 5c 6c1 7c2 8c3 9c4 10c5 11c6 12c7 13c8 14c9 15c10
-                    //16cn 17c 18rac 19mc 20hm 21tm 22lm 23d1 24d2 25d1r 26d2r 27mv
-                    //28pd 29s 30rt 31ert 32aw 33ww 34v1
-                    //35f1 36f1f 37f1s 38f1p
-                    //39f1 40f1f 41f1s 42f1p
-                    //43f1 44f1f 45f1s 46f1p
-
-
                     conn.Open();
-                    command.CommandText = "SELECT * FROM GunData" + v + " WHERE GunData"+v+".Category = '"+CategoryNames[option] + "';"; //+ " LEFT JOIN ConversionData" + v + " ON ConversionData" + v + ".ConversionName = GunData" + v + ".Conversion"+cs+";";
-
-                    using(var reader = command.ExecuteReader())
+                    command.CommandText = "SELECT * FROM GrenadeData" + v + " WHERE GrenadeData" + v + ".Category = '" + CategoryNames[option] + "';";
+                    using (var reader = command.ExecuteReader())
                     {
-                        while(reader.Read())
+                        while (reader.Read())
                         {
                             string name = reader.GetString(0);
                             List<string> conversions = new();
-                            Action<int> adder = (i) => { if (!reader.IsDBNull(i)) conversions.Add(reader.GetString(i)); };
-                            adder(5);
-                            adder(6);
-                            adder(7);
-                            adder(8);
-                            adder(9);
-                            adder(10);
-                            adder(11);
-                            adder(12);
-                            adder(13);
-                            adder(14);
-                            result.addWeapon(new Gun(name, reader.GetString(1).Contains("True",StringComparison.CurrentCultureIgnoreCase), reader.GetInt32(2), GetSQLConversionRecord(name, conversions, VERSIONSTRING)));
+
+                            result.addWeapon(new Grenade(name, reader.GetString(1).Contains("True", StringComparison.CurrentCultureIgnoreCase), reader.GetInt32(2), reader.GetDouble(3) != 0, reader.GetDouble(3),reader.GetString(4) != "", reader.GetString(4), reader.GetInt32(10),reader.GetDouble(5), reader.GetDouble(6),reader.GetDouble(7)));
+                            meleeID++;
                         }
                     }
+
                 }
+
             }
             return result;
         }

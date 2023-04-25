@@ -18,17 +18,17 @@
         <TextBlock Name="c1r9" VerticalAlignment="Top" Height="18" Margin="0,240,0,0"></TextBlock>
         <TextBlock Name="c1r10" VerticalAlignment="Top" Height="18" Margin="0,270,0,0"></TextBlock>
         <TextBlock Name="c1r11" VerticalAlignment="Top" Height="18" Margin="0,300,0,0"></TextBlock>
-        <TextBlock VerticalAlignment="Top" Name="Name" Height="18" Margin="120,0,0,0">Example Gun</TextBlock>
-        <TextBlock VerticalAlignment="Top" Name="Rank" Height="18" Margin="120,30,0,0">Example Rank</TextBlock>
-        <TextBlock VerticalAlignment="Top" Name="Firemodes" Height="18" Margin="120,60,0,0" TextWrapping="Wrap">Example Firemode</TextBlock>
-        <TextBlock VerticalAlignment="Top" Name="limbMultiplier" Height="18" Margin="120,90,0,0">Example lM</TextBlock>
-        <TextBlock VerticalAlignment="Top" Name="torsoMultiplier" Height="18" Margin="120,120,0,0">Example tM</TextBlock>
-        <TextBlock VerticalAlignment="Top" Name="headMultiplier" Height="18" Margin="120,150,0,0">Example hM</TextBlock>
-        <TextBlock VerticalAlignment="Top" Name="walkspeed" Height="18" Margin="120,180,0,0">Example ws</TextBlock>
-        <TextBlock VerticalAlignment="Top" Name="Range1" Height="18" Margin="120,210,0,0">Example range1</TextBlock>
-        <TextBlock VerticalAlignment="Top" Name="Range2" Height="18" Margin="120,240,0,0">Example range2</TextBlock>
-        <TextBlock VerticalAlignment="Top" Name="Range1Damage" Height="18" Margin="120,270,0,0">Example range1damage</TextBlock>
-        <TextBlock VerticalAlignment="Top" Name="Range2Damage" Height="18" Margin="120,300,0,0">Example range2damage</TextBlock>
+        <TextBlock VerticalAlignment="Top" Name="Name" Height="18" Margin="200,0,0,0">Example Gun</TextBlock>
+        <TextBlock VerticalAlignment="Top" Name="Rank" Height="18" Margin="150,30,0,0">Example Rank</TextBlock>
+        <TextBlock VerticalAlignment="Top" Name="Firemodes" Height="18" Margin="150,60,0,0" TextWrapping="Wrap">Example Firemode</TextBlock>
+        <TextBlock VerticalAlignment="Top" Name="limbMultiplier" Height="18" Margin="150,90,0,0">Example lM</TextBlock>
+        <TextBlock VerticalAlignment="Top" Name="torsoMultiplier" Height="18" Margin="150,120,0,0">Example tM</TextBlock>
+        <TextBlock VerticalAlignment="Top" Name="headMultiplier" Height="18" Margin="150,150,0,0">Example hM</TextBlock>
+        <TextBlock VerticalAlignment="Top" Name="walkspeed" Height="18" Margin="150,180,0,0">Example ws</TextBlock>
+        <TextBlock VerticalAlignment="Top" Name="Range1" Height="18" Margin="150,210,0,0">Example range1</TextBlock>
+        <TextBlock VerticalAlignment="Top" Name="Range2" Height="18" Margin="150,240,0,0">Example range2</TextBlock>
+        <TextBlock VerticalAlignment="Top" Name="Range1Damage" Height="18" Margin="150,270,0,0">Example range1damage</TextBlock>
+        <TextBlock VerticalAlignment="Top" Name="Range2Damage" Height="18" Margin="150,300,0,0">Example range2damage</TextBlock>
 
         <TextBlock Name="c2r4" VerticalAlignment="Top" Height="18" Margin="300,90,0,0"></TextBlock>
         <TextBlock Name="c2r5" VerticalAlignment="Top" Height="18" Margin="300,120,0,0"></TextBlock>
@@ -43,15 +43,15 @@
         <TextBlock VerticalAlignment="Top" Height="18" Margin="300,240,0,0">Range 2:</TextBlock>
         <TextBlock VerticalAlignment="Top" Height="18" Margin="300,270,0,0">Range 1 Damage:</TextBlock>
         <TextBlock VerticalAlignment="Top" Height="18" Margin="300,300,0,0">Range 2 Damage:</TextBlock>-->
-        <TextBlock VerticalAlignment="Top" Name="Penetration" Height="18" Margin="420,90,0,0">Example Penetration</TextBlock>
-        <TextBlock VerticalAlignment="Top" Name="MuzzleVelocity" Height="18" Margin="420,120,0,0">Example MuzzleVelocity</TextBlock>
-        <TextBlock VerticalAlignment="Top" Name="ReloadSpeed" Height="18" Margin="420,150,0,0" TextWrapping="Wrap">Example ReloadSpeed</TextBlock>
-        <TextBlock VerticalAlignment="Top" Name="EmptyReloadSpeed" Height="18" Margin="420,180,0,0">Example EmptyReloadSpeed</TextBlock>
-        <TextBlock VerticalAlignment="Top" Name="Suppression" Height="18" Margin="420,210,0,0">Example Suppression</TextBlock>
-        <TextBlock VerticalAlignment="Top" Name="AimingWalkspeeed" Height="18" Margin="420,240,0,0">Example AimingWalkspeed</TextBlock>
-        <TextBlock VerticalAlignment="Top" Name="Caliber" Height="18" Margin="420,270,0,0">Example caliber</TextBlock>
-        <TextBlock VerticalAlignment="Top" Name="TotalAmmo" Height="18" Margin="420,300,0,0">Example ammo</TextBlock>
-        <TextBlock VerticalAlignment="Top" Name="MagazineCapacity" Height="18" Margin="420,330,0,0">Example magcap</TextBlock>
+        <TextBlock VerticalAlignment="Top" Name="Penetration" Height="18" Margin="450,90,0,0">Example Penetration</TextBlock>
+        <TextBlock VerticalAlignment="Top" Name="MuzzleVelocity" Height="18" Margin="450,120,0,0">Example MuzzleVelocity</TextBlock>
+        <TextBlock VerticalAlignment="Top" Name="ReloadSpeed" Height="18" Margin="450,150,0,0" TextWrapping="Wrap">Example ReloadSpeed</TextBlock>
+        <TextBlock VerticalAlignment="Top" Name="EmptyReloadSpeed" Height="18" Margin="450,180,0,0">Example EmptyReloadSpeed</TextBlock>
+        <TextBlock VerticalAlignment="Top" Name="Suppression" Height="18" Margin="450,210,0,0">Example Suppression</TextBlock>
+        <TextBlock VerticalAlignment="Top" Name="AimingWalkspeeed" Height="18" Margin="450,240,0,0">Example AimingWalkspeed</TextBlock>
+        <TextBlock VerticalAlignment="Top" Name="Caliber" Height="18" Margin="450,270,0,0">Example caliber</TextBlock>
+        <TextBlock VerticalAlignment="Top" Name="TotalAmmo" Height="18" Margin="450,300,0,0">Example ammo</TextBlock>
+        <TextBlock VerticalAlignment="Top" Name="MagazineCapacity" Height="18" Margin="450,330,0,0">Example magcap</TextBlock>
         <!--<TextBlock VerticalAlignment="Top" Name="walkspeed" Height="18" Margin="100,180,0,0">Example ws</TextBlock>
         <TextBlock VerticalAlignment="Top" Name="Range1" Height="18" Margin="100,210,0,0">Example range1</TextBlock>
         <TextBlock VerticalAlignment="Top" Name="Range2" Height="18" Margin="100,240,0,0">Example range2</TextBlock>

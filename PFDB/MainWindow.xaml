@@ -25,10 +25,21 @@
             </Grid.ColumnDefinitions>
 
 
-            <ListView Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Weapons}" SelectionMode="Single" SelectionChanged="GunList_SelectionChanged" Name="GunList"></ListView>
-            <userControls:Stats Grid.Row="1" Grid.Column="2" x:Name="StatsDisplay"></userControls:Stats>
-            <ListView Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Categories}" SelectionMode="Single" SelectionChanged="CategoryList_SelectionChanged" Name="CategoryList"></ListView>
-            <!--<ListView Grid.Row="1" Grid.Column="2" ItemsSource="{Binding Conversions}"></ListView>-->
+            <ListView Grid.Row="1" Grid.Column="0" ItemsSource="{Binding Categories}" SelectionMode="Single" SelectionChanged="CategoryList_SelectionChanged" Name="CategoryList"/>
+            <ListView Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Weapons}" SelectionMode="Single" SelectionChanged="GunList_SelectionChanged" Name="GunList"/>
+            <Grid Grid.Column="2" Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0">
+                    <RadioButton IsChecked="True" HorizontalAlignment="Left" Name="DefaultConversionButton" Click="ConversionButton_Click">Default</RadioButton>
+                    <RadioButton HorizontalAlignment="Left" Name="APConversionButton" Click="ConversionButton_Click">Armour Piercing</RadioButton>
+                    <RadioButton HorizontalAlignment="Left" Name="HPConversionButton" Click="ConversionButton_Click">Hollow Point</RadioButton>
+                </StackPanel>
+                <userControls:Stats Grid.Row="1" x:Name="StatsDisplay"/>
+            </Grid>
         </Grid>
 
 
@@ -58,5 +69,11 @@
 
         </Grid>
         <!--<Button Grid.Row="0" Grid.Column="0" Name="btnAdd" Click="btnAdd_Click" Content="Click Me!"></Button>-->
+
+        <StackPanel Grid.Column="1" Grid.Row="0">
+            <RadioButton IsChecked="True" Name="Version100Button" Click="Version_Click">Version 1.00 (PF Version 8.0.0)</RadioButton>
+            <RadioButton Name="Version101Button" Click="Version_Click"> Version 1.01 (PF Version 8.0.1)</RadioButton>
+            <TextBlock Name="VersionDisplay"></TextBlock>
+        </StackPanel> 
     </Grid>
 </Window>

@@ -1061,7 +1061,7 @@
             {
                 throw new ArgumentException("Cannot be null.", nameof(emptyReloadSpeed));
             }
-            else if (aimingWalkspeed <= 0)
+            else if (aimingWalkspeed <= 0 && !caliber.Contains("20x82mm") && !conversionName.Contains("ntw", StringComparison.CurrentCultureIgnoreCase))
             {
                 throw new ArgumentException("Cannot be null.", nameof(aimingWalkspeed));
             }
@@ -1129,7 +1129,7 @@
             {
                 throw new ArgumentException("Cannot be null.", nameof(emptyReloadSpeed));
             }
-            else if (aimingWalkspeed <= 0)
+            else if (aimingWalkspeed <= 0 && !caliber.Contains("20x82mm") && !conversionName.Contains("ntw", StringComparison.CurrentCultureIgnoreCase))
             {
                 throw new ArgumentException("Cannot be null.", nameof(aimingWalkspeed));
             }
